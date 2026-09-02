@@ -4,6 +4,7 @@ import CurrentlyWatching from '../components/profile/CurrentlyWatching';
 import RecentActivity from '../components/profile/RecentActivity';
 import Wishlist from "../components/profile/Wishlist";
 import ProfileHeader from '../components/profile/profileHeader/ProfileHeader';
+import ChangePassword from '../components/profile/ChangePassword';
 import { useScrollReveal } from "../hooks/UseScrollReveal"
 import { useWishlist } from '../hooks/useWishList'; 
 import useWatchHistory from '../hooks/useWatchHistory'; 
@@ -380,6 +381,13 @@ export default function AniStreamProfilePage() {
                                 />
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Pengaturan akun tinggal di tampilan ringkasan, bukan tab tersendiri. */}
+                {activeTab === 'all' && (
+                    <div className="max-w-2xl mx-auto mt-4 sm:mt-6">
+                        <ChangePassword />
                     </div>
                 )}
 

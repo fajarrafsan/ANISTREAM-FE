@@ -15,6 +15,9 @@ import {
     ServerLoadingOverlay
 } from './PlayerOverlays';
 
+// Jarak minimum antar-laporan progres, dalam detik pemutaran.
+const REPORT_EVERY = 10;
+
 export default function VideoPlayer({
     episode,
     activeStreamUrl,
@@ -22,6 +25,8 @@ export default function VideoPlayer({
     serverLoading,
     onChangeServer,
     hideInternalBack = false,
+    onProgress,
+    resumeFrom = 0,
 }) {
     const navigate = useNavigate();
     const { theme } = useTheme();
@@ -40,6 +45,11 @@ export default function VideoPlayer({
     const [hoverTime, setHoverTime] = useState(0);
     const [playbackRate, setPlaybackRate] = useState(1);
     const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+
+    // Progres dilaporkan paling sering tiap REPORT_EVERY detik pemutaran, bukan
+    // tiap timeupdate (yang menyala ~4x/detik dan akan membanjiri API).
+    const lastReportedRef = useRef(0);
+    const resumeAppliedRef = useRef(false);
     const [showNextEp, setShowNextEp] = useState(false);
     const [iframeError, setIframeError] = useState(false);
     const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -293,13 +303,32 @@ export default function VideoPlayer({
                             src={activeStreamUrl}
                             playsInline
                             onClick={togglePlay}
-                            onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
-                            onLoadedMetadata={(e) => setDuration(e.target.duration)}
-                            onEnded={() => { setIsPlaying(false); if (nextEpisode) setShowNextEp(true); }}
+                            onTimeUpdate={(e) => {
+                                const t = e.target.currentTime;
+                                setCurrentTime(t);
+                                if (onProgress && Math.abs(t - lastReportedRef.current) >= REPORT_EVERY) {
+                                    lastReportedRef.current = t;
+                                    onProgress({ currentTime: t, duration: e.target.duration });
+                                }
+                            }}
+                            onLoadedMetadata={(e) => {
+                                setDuration(e.target.duration);
+                                // Lanjutkan dari posisi tersimpan, kecuali sudah hampir tamat.
+                                if (!resumeAppliedRef.current && resumeFrom > 5 && resumeFrom < e.target.duration - 15) {
+                                    e.target.currentTime = resumeFrom;
+                                    lastReportedRef.current = resumeFrom;
+                                }
+                                resumeAppliedRef.current = true;
+                            }}
+                            onPause={(e) => { if (onProgress) onProgress({ currentTime: e.target.currentTime, duration: e.target.duration }); }}
+                            onEnded={(e) => {
+                                setIsPlaying(false);
+                                if (onProgress) onProgress({ currentTime: e.target.duration, duration: e.target.duration });
+                                if (nextEpisode) setShowNextEp(true);
+                            }}
                             onWaiting={() => setIsBuffering(true)}
                             onCanPlay={() => setIsBuffering(false)}
                             onPlay={() => setIsPlaying(true)}
-                            onPause={() => setIsPlaying(false)}
                         />
                     ) : isEmbeddable ? (
                         <>

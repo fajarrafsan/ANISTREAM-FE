@@ -8,6 +8,9 @@ import HomePage from "./pages/home/HomePage";
 import UnauthorizedPage from "./pages/unauthorized/Unauthorizedpage";
 import AniStreamProfilePage from "./pages/AnimeStreamProfilePage";
 import AnimeDetailsPage from "./pages/AnimeDetailsPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import BatchPage from "./pages/BatchPage";
+import BatchDetailPage from "./pages/BatchDetailPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthModal from "./components/Auth/AuthModal";
@@ -88,6 +91,12 @@ function AppContent() {
                         element={<HomePage />}
                     />
 
+                    {/* Publik: user membuka tautan dari email dalam keadaan belum login. */}
+                    <Route
+                        path="/reset-password"
+                        element={<ResetPasswordPage />}
+                    />
+
                     <Route
                         path="/unauthorized"
                         element={<UnauthorizedPage />}
@@ -121,6 +130,24 @@ function AppContent() {
                         element={
                             <ProtectedRoute>
                                 <WeeklySchedulePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/batch"
+                        element={
+                            <ProtectedRoute>
+                                <BatchPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/batch/:batchId"
+                        element={
+                            <ProtectedRoute>
+                                <BatchDetailPage />
                             </ProtectedRoute>
                         }
                     />

@@ -1,11 +1,14 @@
 import TitleSection from './TitleSection';
 import InfoGrid from './InfoGrid';
 import EpisodeDirectory from './episodeDirectory/EpisodeDirectory';
+import AnimeRating from './AnimeRating';
+import { getAnimeId } from '../../../utils/animeDetailUtils';
 
 export default function MainContent({ anime, activeRange, onRangeChange }) {
     return (
         <div className="w-full min-w-0 space-y-6">
             <TitleSection anime={anime} />
+            <AnimeRating animeId={getAnimeId(anime)} />
             <InfoGrid anime={anime} />
             <EpisodeDirectory
                 episodes={anime?.episodes ?? []}

@@ -3,6 +3,7 @@ import AnimeSection from "../../components/Home/anime/AnimeSection";
 import HomePremiumBanner from "./HomePremiumBanner";
 import HomeAmbientBg from "./HomeAmbientBg";
 import HomeQuickNav from "./HomeQuickNav";
+import ContinueWatching from "../../components/Home/ContinueWatching";
 import HomeSectionDivider from "./HomeSectionDivider";
 import useAnimeHome from "../../hooks/useAnimeHome";
 import HeroCarouselSkeleton from "../../skeletons/heroCarouselSkeleton/HeroCarouselSkeleton";
@@ -112,6 +113,9 @@ export default function HomePage() {
             </div>
 
             <HomeQuickNav />
+
+            {/* Menyembunyikan diri sendiri bila tamu atau tidak ada tontonan tertunda. */}
+            <ContinueWatching />
 
             {/* Ongoing */}
             {loading ? (

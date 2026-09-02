@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import useEpisodeDetail from '../hooks/useEpisodeDetail';
@@ -24,7 +24,7 @@ export default function VideoPlayerPage() {
     const navigate = useNavigate();
     const normalizedEpisodeId = normalizeEpisodeId(episodeId);
     const { episode, loading, error, prevEpisode } = useEpisodeDetail();
-    const { saveHistory } = useWatchHistory();
+    const { saveHistory, history } = useWatchHistory();
 
     console.log("normalizedEpisodeId", normalizedEpisodeId);
 
@@ -37,6 +37,7 @@ export default function VideoPlayerPage() {
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     const historySavedFor = useRef(null);
+    const historyMetaRef = useRef(null);
 
     const animeSlug = episode?.animeId || (episodeId ? episodeId.replace(/-episode-\d+.*$/i, '') : '');
     const commentsApi = useComments(animeSlug);
@@ -106,7 +107,31 @@ export default function VideoPlayerPage() {
         });
 
         historySavedFor.current = normalizedEpisodeId;
+        historyMetaRef.current = {
+            animeId: episode.animeId || normalizedEpisodeId.split("-episode-")[0] || "",
+            episodeId: normalizedEpisodeId,
+            title: parsedAnimeTitle,
+            episodeTitle: parsedEpisodeTitle,
+            poster: episode.poster || null,
+        };
     }, [episode, saveHistory, normalizedEpisodeId]);
+
+    // Posisi terakhir untuk episode ini, dipakai melanjutkan tontonan.
+    const resumeFrom = useMemo(() => {
+        const row = history?.find((h) => h.episodeId === normalizedEpisodeId);
+        return row?.progressSeconds ?? 0;
+    }, [history, normalizedEpisodeId]);
+
+    // Player sudah men-throttle ke tiap 10 detik pemutaran.
+    const handleProgress = useCallback(({ currentTime, duration }) => {
+        const meta = historyMetaRef.current;
+        if (!meta || !Number.isFinite(currentTime)) return;
+        saveHistory({
+            ...meta,
+            progressSeconds: Math.floor(currentTime),
+            durationSeconds: Number.isFinite(duration) ? Math.floor(duration) : undefined,
+        });
+    }, [saveHistory]);
 
     useEffect(() => {
         if (!episode) return;
@@ -383,6 +408,8 @@ export default function VideoPlayerPage() {
                             serverLoading={serverLoading}
                             onChangeServer={handleChangeServer}
                             hideInternalBack
+                            onProgress={handleProgress}
+                            resumeFrom={resumeFrom}
                         />
                     )}
                 </div>

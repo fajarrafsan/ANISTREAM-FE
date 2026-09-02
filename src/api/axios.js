@@ -22,6 +22,8 @@ const AUTH_ROUTES = [
     "/users/register",
     "/google/login",
     "/users/refresh",
+    "/users/forgot-password",
+    "/users/reset-password",
 ];
 
 const isAuthRoute = (url) => AUTH_ROUTES.some(route => url?.includes(route));
