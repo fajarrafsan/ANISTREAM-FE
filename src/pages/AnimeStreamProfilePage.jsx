@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import CurrentlyWatching from '../components/profile/CurrentlyWatching';
 import RecentActivity from '../components/profile/RecentActivity';
-import Wishlist from "../components/profile/WishList";
+import Wishlist from "../components/profile/Wishlist";
 import ProfileHeader from '../components/profile/profileHeader/ProfileHeader';
 import { useScrollReveal } from "../hooks/UseScrollReveal"
 import { useWishlist } from '../hooks/useWishList'; 
