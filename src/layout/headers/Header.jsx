@@ -50,10 +50,18 @@ export default function Header({ activeTab, setActiveTab }) {
             />
 
             {/* Top highlight */}
-            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+            <div
+                className={`absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent to-transparent pointer-events-none ${
+                    isDark ? "via-white/10" : "via-black/[0.06]"
+                }`}
+            />
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-                <div className="flex items-center justify-between h-[60px] md:h-[68px]">
+                <div
+                    className={`flex items-center justify-between transition-[height] duration-300 ease-out ${
+                        isScrolled ? "h-[56px] md:h-[62px]" : "h-[60px] md:h-[72px]"
+                    }`}
+                >
                     <HeaderLogo
                         isDark={isDark}
                         setActiveTab={setActiveTab}
@@ -92,7 +100,7 @@ export default function Header({ activeTab, setActiveTab }) {
                 scrollToTop={scrollToTop}
             />
 
-            <HeaderProgressBar scrollProgress={scrollProgress} />
+            <HeaderProgressBar scrollProgress={scrollProgress} isDark={isDark} />
         </header>
     );
 }

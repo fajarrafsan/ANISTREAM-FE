@@ -17,8 +17,10 @@ export default function HeaderLogo({ setActiveTab, scrollToTop, mobileSearchOpen
         <button
             type="button"
             onClick={handleLogoClick}
-            className="cursor-pointer group shrink-0 select-none text-left bg-transparent border-none p-0"
-            aria-label="AniStream Beranda"
+            className={`cursor-pointer group shrink-0 select-none text-left bg-transparent border-none p-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-4 ${
+                isDark ? "focus-visible:ring-offset-[#08080e]" : "focus-visible:ring-offset-white"
+            }`}
+            aria-label="AniStream — kembali ke beranda"
         >
             <div
                 className={`flex flex-col leading-none overflow-hidden origin-left transition-all duration-300 ${
@@ -26,9 +28,9 @@ export default function HeaderLogo({ setActiveTab, scrollToTop, mobileSearchOpen
                 }`}
             >
                 <span className={`font-display text-xl sm:text-2xl tracking-[0.06em] uppercase transition-colors duration-300 ${isDark ? "text-white" : "text-gray-900"}`}>
-                    Ani<span className="text-red-500 group-hover:text-red-400 transition-colors">Stream</span>
+                    Ani<span className="text-red-500 transition-[color,text-shadow] duration-300 group-hover:text-red-400 group-hover:[text-shadow:0_0_18px_rgba(239,68,68,0.55)]">Stream</span>
                 </span>
-                <span className={`hidden min-[360px]:block text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.28em] mt-1 transition-colors duration-300 ${isDark ? "text-white/35" : "text-gray-500"}`}>
+                <span className={`hidden min-[360px]:block text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.28em] mt-1 transition-colors duration-300 ${isDark ? "text-white/55" : "text-gray-500"}`}>
                     Premium Anime
                 </span>
             </div>

@@ -53,7 +53,8 @@ export default function HeaderMobileMenu({
 
     return (
         <div
-            className={`lg:hidden fixed inset-x-0 top-full z-50 transition-all duration-500 ease-in-out ${menuOpen
+            id="header-mobile-menu"
+            className={`lg:hidden absolute inset-x-0 top-full z-50 transition-all duration-500 ease-in-out ${menuOpen
                 ? "translate-y-0 opacity-100 visible"
                 : "-translate-y-4 opacity-0 invisible pointer-events-none"
                 }`}
