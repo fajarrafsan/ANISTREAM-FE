@@ -1,4 +1,3 @@
-import { User, LogOut } from "lucide-react";
 import { useState } from "react";
 
 export default function AuthSection({
@@ -24,89 +23,62 @@ export default function AuthSection({
             {isLoggedIn ? (
                 <>
                     <button
-                        onClick={() => {
-                            if (!isOnProfile) setDropdownOpen(!dropdownOpen);
-                        }}
-                        className={`relative flex items-center gap-2 group focus:outline-none ${isOnProfile ? "cursor-default" : "cursor-pointer"
-                            }`}
-                        aria-label="Profile"
+                        onClick={() => { if (!isOnProfile) setDropdownOpen(!dropdownOpen); }}
+                        className={`flex items-center gap-2.5 px-2 py-1 rounded-full border transition-all duration-300 focus:outline-none ${
+                            isOnProfile ? "cursor-default" : "cursor-pointer"
+                        } ${
+                            isDark
+                                ? "border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.07]"
+                                : "border-black/[0.08] bg-black/[0.02] hover:bg-black/[0.04]"
+                        }`}
+                        aria-label="Menu akun"
                     >
-                        <div className={`
-                            w-9 h-9 rounded-full border-2 overflow-hidden
-                            flex items-center justify-center font-bold text-sm
-                            transition-all duration-300
-                            ${isOnProfile
-                                ? isDark
-                                    ? "border-red-500 bg-zinc-900 text-white shadow-[0_0_0_3px_rgba(239,68,68,0.25),0_0_20px_rgba(239,68,68,0.4)] scale-105"
-                                    : "border-red-500 bg-red-50 text-red-600 shadow-[0_0_0_3px_rgba(239,68,68,0.15),0_0_16px_rgba(239,68,68,0.25)] scale-105"
-                                : isDark
-                                    ? "border-red-500/40 bg-zinc-900 text-white group-hover:border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.15)] group-hover:shadow-[0_0_15px_rgba(239,68,68,0.3)]"
-                                    : "border-red-300 bg-red-50 text-red-600 group-hover:border-red-500"
-                            }
-                        `}>
+                        <div className={`w-7 h-7 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold ${
+                            isDark ? "bg-zinc-800 text-white" : "bg-red-50 text-red-600"
+                        }`}>
                             {userAvatar ? (
-                                <img
-                                    src={getImageUrl(userAvatar, null)}
-                                    alt={user?.username || "User"}
-                                    className="w-full h-full object-cover"
-                                />
+                                <img src={getImageUrl(userAvatar, null)} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                <span>{user?.username?.charAt(0).toUpperCase() ?? "U"}</span>
+                                user?.username?.charAt(0).toUpperCase() ?? "U"
                             )}
                         </div>
-
-                        {isOnProfile && (
-                            <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)]" />
-                        )}
+                        <span className={`text-xs font-semibold max-w-[80px] truncate ${isDark ? "text-white/80" : "text-gray-800"}`}>
+                            {user?.username ?? "Akun"}
+                        </span>
                     </button>
 
                     {dropdownOpen && !isOnProfile && (
                         <>
                             <div className="fixed inset-0 z-998" onClick={() => setDropdownOpen(false)} />
-                            <div className={`
-                                absolute right-0 mt-3 w-52 rounded-2xl border shadow-2xl z-999
-                                overflow-hidden origin-top-right
-                                animate-in fade-in slide-in-from-top-2 duration-200
-                                ${isDark
-                                    ? "bg-zinc-950/95 border-zinc-800/80 backdrop-blur-md shadow-black/60"
-                                    : "bg-white/95 border-zinc-200/80 backdrop-blur-md"
-                                }
-                            `}>
-                                <div className={`px-4 py-3.5 border-b flex flex-col gap-1 ${isDark ? "border-zinc-800/80" : "border-gray-100"}`}>
-                                    <div className="flex items-center justify-between gap-2 min-w-0">
-                                        <p className={`text-xs font-bold truncate ${isDark ? "text-zinc-100" : "text-zinc-800"}`}>
-                                            {user?.username}
-                                        </p>
-                                        <span className="shrink-0 bg-red-500/10 text-red-500 text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider">
-                                            VIP
-                                        </span>
-                                    </div>
-                                    <p className={`text-[10px] truncate ${isDark ? "text-zinc-500" : "text-zinc-400"}`}>
+                            <div className={`absolute right-0 mt-2 w-48 rounded-xl border shadow-2xl z-999 overflow-hidden ${
+                                isDark
+                                    ? "bg-[#0e0e14]/95 border-white/[0.08] backdrop-blur-lg"
+                                    : "bg-white/95 border-black/[0.08] backdrop-blur-lg"
+                            }`}>
+                                <div className={`px-4 py-3 border-b ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"}`}>
+                                    <p className={`text-xs font-bold truncate ${isDark ? "text-white" : "text-gray-900"}`}>
+                                        {user?.username}
+                                    </p>
+                                    <p className={`text-[10px] truncate mt-0.5 ${isDark ? "text-white/40" : "text-gray-500"}`}>
                                         {user?.email}
                                     </p>
                                 </div>
-
-                                <div className="p-1.5 flex flex-col gap-1">
+                                <div className="p-1.5 flex flex-col gap-0.5">
                                     <button
                                         onClick={() => { setDropdownOpen(false); navigate("/profile"); }}
-                                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${isDark
-                                            ? "text-zinc-300 hover:text-white hover:bg-white/5"
-                                            : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100/50"
-                                            }`}
+                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                                            isDark ? "text-white/70 hover:text-white hover:bg-white/[0.06]" : "text-gray-700 hover:bg-black/[0.04]"
+                                        }`}
                                     >
-                                        <User className="w-4 h-4 text-zinc-400" />
-                                        <span>Buka Profil</span>
+                                        Profil Saya
                                     </button>
-
                                     <button
                                         onClick={handleLogout}
-                                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${isDark
-                                            ? "text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                                            : "text-red-600 hover:text-red-700 hover:bg-red-50"
-                                            }`}
+                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                                            isDark ? "text-red-400 hover:bg-red-500/10" : "text-red-600 hover:bg-red-50"
+                                        }`}
                                     >
-                                        <LogOut className="w-4 h-4" />
-                                        <span>Keluar</span>
+                                        Keluar
                                     </button>
                                 </div>
                             </div>
@@ -116,10 +88,9 @@ export default function AuthSection({
             ) : (
                 <button
                     onClick={() => openModal()}
-                    className="hidden sm:flex items-center gap-2 group bg-linear-to-r from-red-500 to-red-600 text-white border border-red-400/50 px-4 md:px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:from-red-600 hover:to-red-700 hover:-translate-y-0.5 transition-all duration-300 active:scale-95 relative z-10"
+                    className="hidden sm:flex items-center px-5 py-2 rounded-full text-xs font-bold tracking-wide text-white bg-red-600 hover:bg-red-500 border border-red-500/30 shadow-[0_4px_16px_rgba(239,68,68,0.3)] hover:shadow-[0_6px_24px_rgba(239,68,68,0.4)] transition-all duration-300 active:scale-[0.97] cursor-pointer"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" x2="3" y1="12" y2="12" /></svg>
-                    <span>Masuk</span>
+                    Masuk
                 </button>
             )}
         </div>

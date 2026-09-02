@@ -84,6 +84,8 @@ export default function MovieCatalogPage() {
     const [selectedGenre, setSelectedGenre] = useState('');
     const [activeStatus, setActiveStatus] = useState('');
     const [appliedStatus, setAppliedStatus] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
 
     const handleApplyFilters = () => {
         setAppliedStatus(activeStatus);
@@ -94,6 +96,7 @@ export default function MovieCatalogPage() {
         setSelectedGenre('');
         setActiveStatus('');
         setAppliedStatus('');
+        setSearchQuery('');
         changeGenre('');
         setPage(1);
     };
@@ -105,6 +108,15 @@ export default function MovieCatalogPage() {
     const filteredData = useMemo(() => {
         let result = [...data];
 
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            result = result.filter((a) => {
+                const titleMatch = a.title?.toLowerCase().includes(q);
+                const genreMatch = Array.isArray(a.genres) && a.genres.some((g) => g.toLowerCase().includes(q));
+                return titleMatch || genreMatch;
+            });
+        }
+
         if (!isRecent && appliedStatus) {
             result = result.filter((a) => {
                 const s = a.status?.toLowerCase();
@@ -115,7 +127,14 @@ export default function MovieCatalogPage() {
         }
 
         return result;
-    }, [data, appliedStatus, isRecent]);
+    }, [data, appliedStatus, isRecent, searchQuery]);
+
+    const spotlightAnime = useMemo(() => {
+        if (page === 1 && !searchQuery && !appliedStatus && !genreId && filteredData.length > 0 && !isAll) {
+            return filteredData[0];
+        }
+        return null;
+    }, [page, searchQuery, appliedStatus, genreId, filteredData, isAll]);
 
     const handlePageChange = (p) => {
         setPage(p);
@@ -144,44 +163,86 @@ export default function MovieCatalogPage() {
             )}
 
             <main className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 md:px-8 flex flex-col relative z-10 min-w-0">
-                {/* Header */}
-                <header className="relative mb-5 sm:mb-8 md:mb-10 min-w-0">
+                {/* Studio Header */}
+                <header className="relative mb-6 sm:mb-8 min-w-0">
                     <div
-                        className={`absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent ${isDark ? 'via-[#ff1e56]/30' : 'via-slate-300'
-                            } to-transparent`}
-                    />
-
-                    <div className="pt-4 sm:pt-6 pb-4 sm:pb-5 border-b border-dashed relative min-w-0">
+                        className={`relative overflow-hidden rounded-3xl border p-6 sm:p-8 md:p-10 backdrop-blur-2xl transition-all duration-300 ${
+                            isDark
+                                ? 'bg-gradient-to-br from-[#18050e] via-[#0c0306] to-[#050102] border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.8)]'
+                                : 'bg-gradient-to-br from-white via-slate-50 to-rose-50/40 border-slate-200 shadow-xl'
+                        }`}
+                    >
+                        {/* Micro-grid overlay */}
                         <div
-                            className={`absolute -bottom-px left-0 w-4 h-4 border-l-2 border-b-2 ${isDark ? 'border-[#ff1e56]/30' : 'border-slate-300'
-                                }`}
-                        />
-                        <div
-                            className={`absolute -bottom-px right-0 w-4 h-4 border-r-2 border-b-2 ${isDark ? 'border-[#ff1e56]/30' : 'border-slate-300'
-                                }`}
+                            className="absolute inset-0 opacity-[0.12] pointer-events-none"
+                            style={{
+                                backgroundImage: isDark
+                                    ? `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`
+                                    : `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.08) 1px, transparent 0)`,
+                                backgroundSize: "24px 24px"
+                            }}
                         />
 
-                        <div className="flex items-center gap-3 sm:gap-4 mb-2 min-w-0">
-                            <div
-                                className={`w-1 h-8 sm:w-1.5 sm:h-10 rounded-full bg-linear-to-b shrink-0 ${isDark ? 'from-[#ff1e56] to-rose-800' : 'from-rose-50 to-rose-700'
-                                    }`}
-                            />
-                            <div className="min-w-0">
+                        {/* Ambient ruby glow */}
+                        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-48 rounded-full blur-[100px] bg-[#ff1e56]/15 pointer-events-none" />
+
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                            <div className="space-y-2 sm:space-y-3">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-[0.15em] bg-[#ff1e56]/15 border border-[#ff1e56]/30 text-[#ff1e56]">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-[#ff1e56] animate-pulse" />
+                                        <span>ANISTREAM ARCHIVE ENGINE</span>
+                                    </span>
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-mono font-bold uppercase bg-white/[0.04] border border-white/[0.08] text-slate-400">
+                                        <i className="fa-solid fa-bolt text-[9px] text-amber-400" />
+                                        <span>Ultra Fast CDN</span>
+                                    </span>
+                                </div>
+
                                 <h1
-                                    className={`font-black uppercase tracking-tight leading-none text-2xl sm:text-3xl md:text-5xl wrap-break-word ${isDark ? 'text-white' : 'text-slate-900'
-                                        }`}
+                                    className={`font-display font-black text-2xl sm:text-3xl md:text-5xl tracking-tight uppercase leading-none ${
+                                        isDark ? 'text-white' : 'text-slate-900'
+                                    }`}
                                 >
-                                    ANIME CATALOG
+                                    Katalog Anime & Movie
                                 </h1>
+
+                                <p className={`text-xs sm:text-sm font-medium max-w-2xl leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                    Jelajahi arsip pustaka anime terlengkap dengan kualitas tayangan Full HD hingga 4K, subtitle resmi Indonesia, dan update simulcast harian tanpa jeda.
+                                </p>
+                            </div>
+
+                            {/* Luxury Stats Deck */}
+                            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 shrink-0">
+                                <div
+                                    className={`p-3.5 sm:p-4 rounded-2xl border text-center transition-all ${
+                                        isDark ? 'bg-white/[0.03] border-white/[0.08] hover:border-[#ff1e56]/40' : 'bg-white border-slate-200 shadow-sm'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-center gap-1.5 mb-1 text-xs font-mono font-black text-[#ff1e56]">
+                                        <i className="fa-solid fa-layer-group text-[10px]" />
+                                        <span>6 Kategori</span>
+                                    </div>
+                                    <span className={`text-[9px] font-mono uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        Filter Pintar
+                                    </span>
+                                </div>
+
+                                <div
+                                    className={`p-3.5 sm:p-4 rounded-2xl border text-center transition-all ${
+                                        isDark ? 'bg-white/[0.03] border-white/[0.08] hover:border-[#ff1e56]/40' : 'bg-white border-slate-200 shadow-sm'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-center gap-1.5 mb-1 text-xs font-mono font-black text-emerald-400">
+                                        <i className="fa-solid fa-tv text-[10px]" />
+                                        <span>1080p & 4K</span>
+                                    </div>
+                                    <span className={`text-[9px] font-mono uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        Resolusi Sinema
+                                    </span>
+                                </div>
                             </div>
                         </div>
-
-                        <p
-                            className={`text-[10px] sm:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.25em] ml-4 sm:ml-6 ${isDark ? 'text-slate-500' : 'text-slate-400'
-                                }`}
-                        >
-                            Telusuri pustaka anime terlengkap
-                        </p>
                     </div>
                 </header>
 
@@ -195,21 +256,16 @@ export default function MovieCatalogPage() {
                                 <button
                                     key={tab.key}
                                     onClick={() => changeTab(tab.key)}
-                                    className={`relative flex items-center justify-center gap-1 sm:gap-2 px-1 min-[360px]:px-1.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[8px] min-[360px]:text-[9px] min-[390px]:text-[10px] sm:text-[11px] font-black uppercase tracking-wider border transition-all duration-300 select-none overflow-hidden group/tab whitespace-nowrap text-center
+                                    className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[9px] min-[360px]:text-[10px] sm:text-[11px] font-bold uppercase tracking-wider border transition-all duration-200 select-none overflow-hidden group/tab whitespace-nowrap text-center cursor-pointer
                                         ${isActive
-                                            ? isDark
-                                                ? 'bg-linear-to-r from-[#ff1e56] to-rose-600 border-transparent text-white shadow-[0_4px_20px_rgba(255,30,86,0.35)]'
-                                                : 'bg-linear-to-r from-slate-900 to-slate-800 border-transparent text-white shadow-lg shadow-slate-900/20'
+                                            ? 'bg-gradient-to-r from-[#ff1e56] to-rose-600 border-transparent text-white shadow-[0_4px_18px_rgba(255,30,86,0.35)]'
                                             : isDark
-                                                ? 'border-[#2a1117]/80 bg-[#13080c]/60 text-slate-400 hover:border-[#ff1e56]/25 hover:text-slate-200 hover:bg-[#1a0a10]'
-                                                : 'border-slate-200/80 bg-white/80 text-slate-500 hover:bg-white hover:border-slate-300 hover:text-slate-700'
+                                                ? 'border-white/[0.07] bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-slate-200 hover:bg-white/[0.05]'
+                                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                         }`}
                                 >
-                                    {isActive && (
-                                        <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
-                                    )}
                                     <i
-                                        className={`fa-solid ${tab.icon} text-[8px] min-[360px]:text-[9px] sm:text-[10px] ${isActive ? 'text-white' : ''
+                                        className={`fa-solid ${tab.icon} text-[9px] sm:text-[10px] ${isActive ? 'text-white' : 'text-[#ff1e56]'
                                             }`}
                                     />
                                     <span className="relative z-10">{tab.label}</span>
@@ -240,43 +296,173 @@ export default function MovieCatalogPage() {
                     </div>
                 )}
 
+                {/* Spotlight Billboard Banner (UI UX Pro Max Featured Anime) */}
+                {spotlightAnime && !showSkeleton && (
+                    <div className="relative mb-6 sm:mb-8 rounded-3xl overflow-hidden border border-[#ff1e56]/30 shadow-[0_15px_45px_rgba(255,30,86,0.2)] bg-[#0c0307] group/spotlight">
+                        {/* Poster Backdrop with Ken Burns effect */}
+                        <div
+                            className="absolute inset-0 bg-cover bg-center opacity-40 group-hover/spotlight:scale-105 transition-transform duration-1000"
+                            style={{ backgroundImage: `url('${spotlightAnime.poster}')` }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#080204] via-[#080204]/90 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#080204] via-[#080204]/80 to-transparent" />
+
+                        {/* Content */}
+                        <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col sm:flex-row items-center gap-5 sm:gap-7">
+                            <div className="w-24 sm:w-36 md:w-40 aspect-2/3 rounded-2xl overflow-hidden shadow-2xl border border-white/20 shrink-0 hidden xs:block relative group-hover/spotlight:scale-[1.02] transition-transform">
+                                <img src={spotlightAnime.poster} alt="" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
+                                    <span className="text-[9px] font-mono font-bold text-white uppercase truncate">
+                                        {spotlightAnime.type || 'Series'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 sm:space-y-3 flex-1 text-center sm:text-left min-w-0">
+                                <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                                    <span className="px-3 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider bg-[#ff1e56]/20 border border-[#ff1e56]/40 text-[#ff1e56] shadow-[0_0_15px_rgba(255,30,86,0.3)]">
+                                        ★ PREMIERE PILIHAN #1
+                                    </span>
+                                    {spotlightAnime.score && (
+                                        <span className="px-2.5 py-1 rounded-full text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            Score {spotlightAnime.score}
+                                        </span>
+                                    )}
+                                    <span className="px-2.5 py-1 rounded-full text-[9px] font-mono font-bold bg-white/10 text-white border border-white/10 uppercase">
+                                        {spotlightAnime.status || 'Aktif'}
+                                    </span>
+                                </div>
+
+                                <h2 className="font-display font-black text-xl sm:text-3xl md:text-4xl text-white tracking-tight uppercase leading-tight truncate">
+                                    {spotlightAnime.title}
+                                </h2>
+
+                                <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 max-w-2xl font-medium leading-relaxed">
+                                    Tayangan anime unggulan resmi dengan resolusi sinema Full HD, alur audio tajam, dan pemutaran multi-server tanpa hambatan buffer.
+                                </p>
+
+                                <div className="flex items-center justify-center sm:justify-start gap-3 pt-2">
+                                    <button
+                                        onClick={() => navigate(`/anime/detail/${spotlightAnime.animeId}`)}
+                                        className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#ff1e56] to-rose-600 text-white shadow-[0_0_25px_rgba(255,30,86,0.5)] hover:shadow-[0_0_35px_rgba(255,30,86,0.8)] transition-all cursor-pointer flex items-center gap-2.5 hover:scale-[1.02] active:scale-95"
+                                    >
+                                        <i className="fa-solid fa-play text-xs" />
+                                        <span>Tonton Sekarang</span>
+                                    </button>
+                                    <button
+                                        onClick={() => navigate(`/anime/detail/${spotlightAnime.animeId}`)}
+                                        className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 border border-white/15 transition-all cursor-pointer"
+                                    >
+                                        Info Detail
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Content */}
                 <div className="w-full min-w-0">
-                    {/* Status bar */}
+                    {/* Command Bar: Live Search & View Mode Switcher */}
                     <div
-                        className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6 pb-4 border-b relative ${isDark ? 'border-[#2a1117]/40' : 'border-slate-200/60'
-                            }`}
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 p-3 rounded-2xl border transition-all ${
+                            isDark
+                                ? 'border-white/[0.07] bg-[#0c0407]/90 backdrop-blur-xl'
+                                : 'border-slate-200 bg-white shadow-sm'
+                        }`}
                     >
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <span
-                                className={`font-black text-[11px] sm:text-sm uppercase tracking-wider truncate ${isDark ? 'text-white' : 'text-slate-800'
-                                    }`}
-                            >
-                                {showSkeleton
-                                    ? 'Memuat...'
-                                    : `${isAll ? 'Daftar Indeks' : `${filteredData.length} Hasil`}`}
-                            </span>
-
-                            {pagination && !showSkeleton && (
-                                <span
-                                    className={`text-[9px] sm:text-[10px] font-black px-2.5 py-1 rounded-lg border backdrop-blur-sm shrink-0 ${isDark
-                                        ? 'bg-[#ff1e56]/10 text-[#ff1e56] border-[#ff1e56]/20'
-                                        : 'bg-rose-50 text-rose-600 border-rose-200'
-                                        }`}
+                        {/* Search Input */}
+                        <div className="relative flex-1 max-w-md">
+                            <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Cari judul anime di halaman ini..."
+                                className={`w-full pl-9 pr-8 py-2 rounded-xl text-xs border focus:outline-none transition-all ${
+                                    isDark
+                                        ? 'bg-white/[0.03] border-white/[0.08] focus:border-[#ff1e56]/60 text-white placeholder:text-slate-500'
+                                        : 'bg-slate-50 border-slate-200 focus:border-rose-400 text-slate-800 placeholder:text-slate-400'
+                                }`}
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
                                 >
-                                    Hal. {pagination.currentPage} / {pagination.totalPages}
-                                </span>
+                                    <i className="fa-solid fa-xmark" />
+                                </button>
                             )}
                         </div>
 
-                        <div className="flex items-center gap-1.5 self-start sm:self-auto">
-                            <span className={`w-1 h-1 rounded-full ${isDark ? 'bg-[#2a1117]' : 'bg-slate-200'}`} />
-                            <span className={`w-1 h-1 rounded-full ${isDark ? 'bg-[#2a1117]' : 'bg-slate-200'}`} />
-                            <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-[#ff1e56]/40' : 'bg-rose-300'}`} />
+                        {/* Right: Results Count & View Mode Toggle */}
+                        <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                            <span className={`text-[11px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                {showSkeleton ? 'Memuat...' : `${filteredData.length} Anime`}
+                            </span>
+
+                            {/* View Mode Toggle */}
+                            {!isAll && (
+                                <div className={`flex items-center gap-1 p-1 rounded-xl border ${isDark ? 'border-white/[0.08] bg-white/[0.02]' : 'border-slate-200 bg-slate-100'}`}>
+                                    <button
+                                        onClick={() => setViewMode('grid')}
+                                        className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                                            viewMode === 'grid'
+                                                ? 'bg-[#ff1e56] text-white shadow-sm'
+                                                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                                        }`}
+                                        title="Tampilan Grid Poster"
+                                    >
+                                        <i className="fa-solid fa-grip" />
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('list')}
+                                        className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                                            viewMode === 'list'
+                                                ? 'bg-[#ff1e56] text-white shadow-sm'
+                                                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                                        }`}
+                                        title="Tampilan List Bento"
+                                    >
+                                        <i className="fa-solid fa-list" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* Grid Content */}
+                    {/* Active Filters Pill Bar */}
+                    {(selectedGenre || appliedStatus || searchQuery) && (
+                        <div className="flex items-center gap-1.5 flex-wrap mb-4">
+                            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase mr-1">Filter Aktif:</span>
+                            {selectedGenre && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#ff1e56]/15 text-[#ff1e56] border border-[#ff1e56]/30">
+                                    Genre: {selectedGenre}
+                                    <button onClick={() => { setSelectedGenre(''); changeGenre(''); }} className="hover:text-white ml-0.5">✕</button>
+                                </span>
+                            )}
+                            {appliedStatus && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#ff1e56]/15 text-[#ff1e56] border border-[#ff1e56]/30">
+                                    Status: {appliedStatus}
+                                    <button onClick={() => { setActiveStatus(''); setAppliedStatus(''); }} className="hover:text-white ml-0.5">✕</button>
+                                </span>
+                            )}
+                            {searchQuery && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#ff1e56]/15 text-[#ff1e56] border border-[#ff1e56]/30">
+                                    Cari: "{searchQuery}"
+                                    <button onClick={() => setSearchQuery('')} className="hover:text-white ml-0.5">✕</button>
+                                </span>
+                            )}
+                            <button
+                                onClick={handleResetFilters}
+                                className="text-[10px] font-mono text-slate-400 hover:text-[#ff1e56] underline ml-1 cursor-pointer"
+                            >
+                                Reset Semua
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Grid / List Content */}
                     {!error && (
                         <>
                             {/* Hubungkan Logika Deteksi Loading Awal Render */}
@@ -297,7 +483,7 @@ export default function MovieCatalogPage() {
                                             <div
                                                 key={idx}
                                                 className={`relative rounded-2xl border p-3 sm:p-6 transition-all duration-300 group/section ${isDark
-                                                    ? 'border-[#2a1117]/50 bg-linear-to-br from-[#13080c]/60 to-[#0a0305]/80 hover:border-[#2a1117]'
+                                                    ? 'border-[#2a1117]/50 bg-gradient-to-br from-[#13080c]/60 to-[#0a0305]/80 hover:border-[#2a1117]'
                                                     : 'border-slate-200/80 bg-white hover:border-slate-300'
                                                     }`}
                                             >
@@ -332,8 +518,8 @@ export default function MovieCatalogPage() {
                                                         >
                                                             <div
                                                                 className={`absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-500 ${isDark
-                                                                    ? 'bg-linear-to-r from-[#ff1e56]/5 to-transparent'
-                                                                    : 'bg-linear-to-r from-rose-50 to-transparent'
+                                                                    ? 'bg-gradient-to-r from-[#ff1e56]/5 to-transparent'
+                                                                    : 'bg-gradient-to-r from-rose-50 to-transparent'
                                                                     }`}
                                                             />
 
@@ -350,6 +536,18 @@ export default function MovieCatalogPage() {
                                             </div>
                                         ))}
                                     </div>
+                                ) : viewMode === 'list' ? (
+                                    <div className="space-y-3 sm:space-y-4">
+                                        {filteredData.map((anime, i) => (
+                                            <MovieCard
+                                                key={`${anime.animeId ?? 'card'}-${i}`}
+                                                anime={anime}
+                                                variant={isRecent ? 'recent' : 'default'}
+                                                viewMode="list"
+                                                onClick={() => navigate(`/anime/detail/${anime.animeId}`)}
+                                            />
+                                        ))}
+                                    </div>
                                 ) : (
                                     <div className={`grid gap-3 sm:gap-5 ${contentGridClass}`}>
                                         {filteredData.map((anime, i) => (
@@ -357,6 +555,7 @@ export default function MovieCatalogPage() {
                                                 key={`${anime.animeId ?? 'card'}-${i}`}
                                                 anime={anime}
                                                 variant={isRecent ? 'recent' : 'default'}
+                                                viewMode="grid"
                                                 onClick={() => navigate(`/anime/detail/${anime.animeId}`)}
                                             />
                                         ))}
@@ -364,51 +563,59 @@ export default function MovieCatalogPage() {
                                 )
                             ) : (
                                 <div
-                                    className={`relative text-center py-16 sm:py-24 px-4 rounded-2xl border border-dashed flex flex-col items-center gap-4 overflow-hidden ${isDark ? 'border-[#2a1117]/60' : 'border-slate-200'
-                                        }`}
+                                    className={`relative text-center py-16 sm:py-24 px-4 rounded-3xl border border-dashed flex flex-col items-center gap-4 overflow-hidden ${
+                                        isDark ? 'border-white/[0.12] bg-[#0c0307]/50' : 'border-slate-200 bg-slate-50/50'
+                                    }`}
                                 >
                                     <div
-                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full blur-3xl ${isDark ? 'bg-[#ff1e56]/5' : 'bg-rose-200/20'
-                                            }`}
+                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full blur-3xl ${
+                                            isDark ? 'bg-[#ff1e56]/10' : 'bg-rose-200/30'
+                                        }`}
                                     />
 
                                     <div
-                                        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border-2 mb-2 ${isDark ? 'bg-[#13080c] border-[#2a1117]' : 'bg-slate-50 border-slate-200'
-                                            }`}
+                                        className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center border shadow-xl mb-1 ${
+                                            isDark ? 'bg-white/[0.03] border-white/[0.1] text-[#ff1e56]' : 'bg-white border-slate-200 text-rose-500'
+                                        }`}
                                     >
-                                        <i
-                                            className={`fa-solid fa-folder-open text-xl sm:text-2xl ${isDark ? 'text-[#ff1e56]/30' : 'text-rose-300'
-                                                }`}
-                                        />
+                                        <i className="fa-solid fa-film text-2xl sm:text-3xl" />
                                     </div>
-                                    <p className={`text-sm font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                        Tidak ada anime yang cocok
-                                    </p>
+                                    <div className="space-y-1 relative z-10">
+                                        <p className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                            Tidak ada anime yang cocok
+                                        </p>
+                                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                            Coba sesuaikan kata kunci pencarian atau ubah filter kategori Anda.
+                                        </p>
+                                    </div>
                                     <button
                                         onClick={handleResetFilters}
-                                        className={`px-4 sm:px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider border transition-all duration-300 ${isDark
-                                            ? 'bg-[#13080c] border-[#2a1117] text-slate-300 hover:border-[#ff1e56]/30 hover:text-white'
-                                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                                            }`}
+                                        className={`px-5 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border transition-all duration-300 relative z-10 cursor-pointer ${
+                                            isDark
+                                                ? 'bg-[#ff1e56]/15 border-[#ff1e56]/30 text-[#ff1e56] hover:bg-[#ff1e56] hover:text-white hover:shadow-[0_0_20px_rgba(255,30,86,0.5)]'
+                                                : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400 shadow-sm'
+                                        }`}
                                     >
-                                        Reset Filter
+                                        <i className="fa-solid fa-rotate-left mr-1.5" />
+                                        Reset Filter & Pencarian
                                     </button>
                                 </div>
                             )}
 
                             {/* Pagination */}
                             {pagination && pagination.totalPages > 1 && !showSkeleton && (
-                                <div className="mt-8 sm:mt-12 flex justify-center items-center gap-1 sm:gap-2 flex-wrap">
+                                <div className="mt-8 sm:mt-12 flex justify-center items-center gap-1.5 sm:gap-2 flex-wrap">
                                     <button
                                         onClick={() => handlePageChange(page - 1)}
                                         disabled={!pagination.hasPrevPage}
-                                        className={`group flex items-center gap-1 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-wider border transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${isDark
-                                            ? 'border-[#2a1117] bg-[#13080c] text-slate-400 hover:border-[#ff1e56]/30 hover:text-white'
-                                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                            }`}
+                                        className={`group flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer ${
+                                            isDark
+                                                ? 'border-white/[0.08] bg-white/[0.02] text-slate-300 hover:border-[#ff1e56]/50 hover:text-white hover:bg-[#ff1e56]/10'
+                                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm'
+                                        }`}
                                     >
-                                        <i className="fa-solid fa-chevron-left text-[8px] sm:text-[9px] group-hover:-translate-x-0.5 transition-transform" />
-                                        Prev
+                                        <i className="fa-solid fa-chevron-left text-[10px] group-hover:-translate-x-0.5 transition-transform" />
+                                        <span>Prev</span>
                                     </button>
 
                                     {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
@@ -424,8 +631,9 @@ export default function MovieCatalogPage() {
                                             p === '...' ? (
                                                 <span
                                                     key={`dot-${idx}`}
-                                                    className={`px-1.5 py-1.5 text-xs font-bold ${isDark ? 'text-slate-600' : 'text-slate-400'
-                                                        }`}
+                                                    className={`px-2 py-1.5 text-xs font-bold font-mono ${
+                                                        isDark ? 'text-slate-600' : 'text-slate-400'
+                                                    }`}
                                                 >
                                                     ...
                                                 </span>
@@ -433,18 +641,14 @@ export default function MovieCatalogPage() {
                                                 <button
                                                     key={p}
                                                     onClick={() => handlePageChange(p)}
-                                                    className={`relative px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[9px] sm:text-xs font-black transition-all duration-300 border overflow-hidden min-w-8 sm:min-w-9 ${page === p
-                                                        ? isDark
-                                                            ? 'bg-linear-to-r from-[#ff1e56] to-rose-600 border-transparent text-white shadow-[0_4px_15px_rgba(255,30,86,0.3)]'
-                                                            : 'bg-slate-900 border-transparent text-white shadow-lg'
-                                                        : isDark
-                                                            ? 'border-[#2a1117] bg-[#13080c] text-slate-400 hover:border-[#ff1e56]/25 hover:text-white'
-                                                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                                        }`}
+                                                    className={`relative px-3.5 sm:px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all duration-300 border min-w-9 sm:min-w-10 cursor-pointer ${
+                                                        page === p
+                                                            ? 'bg-gradient-to-r from-[#ff1e56] to-rose-600 border-[#ff1e56] text-white shadow-[0_0_20px_rgba(255,30,86,0.5)]'
+                                                            : isDark
+                                                                ? 'border-white/[0.08] bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-white hover:bg-white/[0.06]'
+                                                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm'
+                                                    }`}
                                                 >
-                                                    {page === p && (
-                                                        <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
-                                                    )}
                                                     {p}
                                                 </button>
                                             )
@@ -453,13 +657,14 @@ export default function MovieCatalogPage() {
                                     <button
                                         onClick={() => handlePageChange(page + 1)}
                                         disabled={!pagination.hasNextPage}
-                                        className={`group flex items-center gap-1 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-wider border transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${isDark
-                                            ? 'border-[#2a1117] bg-[#13080c] text-slate-400 hover:border-[#ff1e56]/30 hover:text-white'
-                                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                                            }`}
+                                        className={`group flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider border transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer ${
+                                            isDark
+                                                ? 'border-white/[0.08] bg-white/[0.02] text-slate-300 hover:border-[#ff1e56]/50 hover:text-white hover:bg-[#ff1e56]/10'
+                                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 shadow-sm'
+                                        }`}
                                     >
-                                        Next
-                                        <i className="fa-solid fa-chevron-right text-[8px] sm:text-[9px] group-hover:translate-x-0.5 transition-transform" />
+                                        <span>Next</span>
+                                        <i className="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-0.5 transition-transform" />
                                     </button>
                                 </div>
                             )}

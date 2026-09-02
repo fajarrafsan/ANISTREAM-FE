@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthModalActions } from "../../context/AuthModalContext";
 import { useAuth } from "../../context/AuthContext";
 import useToast from "../../hooks/useToast";
 import useAnimeSearch from "../../hooks/useSearchAnime";
-import useBreakpoint from "../../components/headerActions/hooks/useBreakPoint";
 import { getImageUrl } from "../../components/headerActions/constants";
 import DesktopSearch from "../../components/headerActions/components/DesktopSearch";
 import MobileSearch from "../../components/headerActions/components/SearchMobile";
@@ -25,47 +24,43 @@ export default function HeaderActions({
     setMobileSearchOpen,
 }) {
     const { openModal } = useAuthModalActions();
-    const { user, isLoggedIn, logout } = useAuth();
+    const { isLoggedIn, logout, user } = useAuth();
     const toast = useToast();
     const navigate = useNavigate();
     const location = useLocation();
 
     const [isFocused, setIsFocused] = useState(false);
-    const [localLoading, setLocalLoading] = useState(false);
 
     const {
         query: searchQuery,
         setQuery: setSearchQuery,
         results: searchResults,
         isOpen: isSearchOpen,
-        phase: searchPhase, 
-        error: searchError,
+        phase: searchPhase,
+        loading: searchLoading,
         openSearch,
         searchAnime: triggerSearch,
         closeSearch,
+        resetSearch,
     } = useAnimeSearch();
 
-    const bp = useBreakpoint();
     const isOnProfile = location.pathname === "/profile";
     const userAvatar = user?.profil?.avatar || user?.profile?.avatar || user?.avatar || null;
 
-    const handleLogout = async () => {
-        try {
-            await logout();
-            toast.success("Berhasil logout! Sampai jumpa lagi!", 3000);
-        } catch (error) {
-            toast.error("Gagal logout. Silakan coba lagi.", 3000);
-        }
-    };
-
-    const handleCloseMobileSearch = () => {
-        setMobileSearchOpen(false);
-        setSearchQuery("");
+    const handleCloseSearch = useCallback(() => {
         closeSearch();
-    };
+        setIsFocused(false);
+    }, [closeSearch]);
 
-    const handleLocalSubmit = () => {
-        if (!searchQuery.trim() || localLoading) return;
+    const handleCloseMobileSearch = useCallback(() => {
+        setMobileSearchOpen(false);
+        setIsFocused(false);
+        resetSearch();
+    }, [setMobileSearchOpen, resetSearch]);
+
+    const handleLocalSubmit = useCallback(() => {
+        const q = searchQuery.trim();
+        if (!q || searchLoading) return;
 
         if (!isLoggedIn) {
             toast.warning("Silakan masuk terlebih dahulu untuk mencari anime.", 3000);
@@ -73,62 +68,66 @@ export default function HeaderActions({
             return;
         }
 
-        triggerSearch(searchQuery);
-    };
+        triggerSearch(q);
+    }, [searchQuery, searchLoading, isLoggedIn, toast, openModal, triggerSearch]);
 
-    const handleDesktopSearchClick = (e, inputRef) => {
-        if (!isFocused) {
-            e.preventDefault();
-            inputRef.current?.focus();
-        } else {
-            handleLocalSubmit();
-        }
-    };
-
-    const handleLocalKeyDown = (e, isMobile = false) => {
+    const handleLocalKeyDown = useCallback((e) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            if (isMobile || isFocused) {
-                handleLocalSubmit();
+            handleLocalSubmit();
+        }
+        if (e.key === "Escape") {
+            e.preventDefault();
+            if (mobileSearchOpen) {
+                handleCloseMobileSearch();
+            } else {
+                handleCloseSearch();
             }
+        }
+    }, [handleLocalSubmit, mobileSearchOpen, handleCloseMobileSearch, handleCloseSearch]);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast.success("Berhasil logout! Sampai jumpa lagi!", 3000);
+        } catch {
+            toast.error("Gagal logout. Silakan coba lagi.", 3000);
         }
     };
 
     return (
-        <div className={`flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 md:gap-3 transition-all duration-500 ${mobileSearchOpen ? "flex-1 justify-end max-w-full" : "shrink-0"
-            }`}>
+        <div className={`flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 md:gap-3 transition-all duration-300 ${
+            mobileSearchOpen ? "flex-1 justify-end max-w-full" : "shrink-0"
+        }`}>
             <DesktopSearch
                 isDark={isDark}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 isFocused={isFocused}
                 setIsFocused={setIsFocused}
-                localLoading={localLoading}
-                onDesktopSearchClick={handleDesktopSearchClick}
+                searchLoading={searchLoading}
                 onKeyDown={handleLocalKeyDown}
                 isSearchOpen={isSearchOpen}
                 searchResults={searchResults}
-                searchError={searchError}
                 searchPhase={searchPhase}
                 openSearch={openSearch}
-                closeSearch={closeSearch}
+                onClose={handleCloseSearch}
+                onSubmit={handleLocalSubmit}
             />
 
             <MobileSearch
                 isDark={isDark}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
-                localLoading={localLoading}
+                searchLoading={searchLoading}
                 onSubmit={handleLocalSubmit}
                 onKeyDown={handleLocalKeyDown}
                 onCloseMobileSearch={handleCloseMobileSearch}
                 isSearchOpen={isSearchOpen}
                 searchResults={searchResults}
-                searchError={searchError}
-                closeSearch={closeSearch}
-                mobileSearchOpen={mobileSearchOpen}
-                openSearch={openSearch}
                 searchPhase={searchPhase}
+                openSearch={openSearch}
+                mobileSearchOpen={mobileSearchOpen}
                 setMobileSearchOpen={setMobileSearchOpen}
             />
 
@@ -146,7 +145,7 @@ export default function HeaderActions({
                     openModal={openModal}
                     navigate={navigate}
                     getImageUrl={getImageUrl}
-                    onLogout={logout}
+                    onLogout={handleLogout}
                 />
             )}
 

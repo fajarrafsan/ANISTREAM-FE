@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTheme } from "../../../context/ThemeContext";
 import { getEpisodeBadge, cleanEpisodeTitle } from "../../../utils/relatedUtils";
 
@@ -7,9 +8,11 @@ export default function EpisodeCard({
     isActive,
     handleEpisodeClick,
     setHoveredIndex,
+    isGrid = false,
 }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
+    const [imgFailed, setImgFailed] = useState(false);
 
     const epBadge = getEpisodeBadge(ep.title);
     const cleanTitle = cleanEpisodeTitle(ep.title);
@@ -18,57 +21,57 @@ export default function EpisodeCard({
         <div
             data-active={isActive}
             onClick={() => handleEpisodeClick(ep.title)}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            className={`relative flex-none group/ep cursor-pointer select-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive ? "scale-[1.02] z-10" : "scale-100 hover:z-10"
-                }`}
-            style={{ width: "clamp(8.1rem, 41vw, 11rem)" }}
+            onMouseEnter={() => setHoveredIndex?.(index)}
+            onMouseLeave={() => setHoveredIndex?.(null)}
+            className={`relative group/ep cursor-pointer select-none transition-all duration-300 ${
+                isGrid ? "w-full" : "flex-none"
+            } ${isActive ? "scale-[1.02] z-10" : "scale-100 hover:scale-[1.03] hover:z-10"}`}
+            style={isGrid ? undefined : { width: "clamp(8.1rem, 41vw, 11.5rem)" }}
         >
             {/* NEON BREATHING GLOW ── Denyut pendar ganda yang sangat halus untuk kartu aktif */}
             {isActive && (
                 <div
-                    className={`absolute -inset-1 rounded-xl -z-10 opacity-70 animate-[pulse_3s_infinite] ${isDark
-                        ? "shadow-[0_0_20px_rgba(255,30,86,0.35),0_0_40px_rgba(255,30,86,0.15)]"
-                        : "shadow-[0_0_20px_rgba(244,63,94,0.25),0_0_40px_rgba(244,63,94,0.1)]"
+                    className={`absolute -inset-1 rounded-2xl -z-10 opacity-80 animate-[pulse_2.5s_infinite] ${isDark
+                        ? "shadow-[0_0_25px_rgba(255,30,86,0.5),0_0_50px_rgba(255,30,86,0.25)]"
+                        : "shadow-[0_0_20px_rgba(244,63,94,0.3),0_0_40px_rgba(244,63,94,0.15)]"
                         }`}
                 />
             )}
 
             <div
-                className={`relative w-full aspect-16/10 rounded-xl overflow-hidden border transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive
+                className={`relative w-full aspect-16/10 rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-300 ${isActive
                     ? isDark
-                        ? "border-[#ff1e56]/80 shadow-[inset_0_0_20px_rgba(255,30,86,0.2),0_0_14px_rgba(255,30,86,0.25)]"
-                        : "border-rose-400/80 shadow-[inset_0_0_20px_rgba(244,63,94,0.15),0_0_14px_rgba(244,63,94,0.2)]"
+                        ? "border-[#ff1e56] shadow-[inset_0_0_20px_rgba(255,30,86,0.25),0_0_15px_rgba(255,30,86,0.35)]"
+                        : "border-rose-500 shadow-[inset_0_0_20px_rgba(244,63,94,0.2),0_0_15px_rgba(244,63,94,0.25)]"
                     : isDark
-                        ? "border-white/[0.06] shadow-[0_6px_18px_rgba(0,0,0,0.42)] group-hover/ep:border-[#ff1e56]/45 group-hover/ep:shadow-[0_12px_28px_rgba(255,30,86,0.15)]"
-                        : "border-slate-200/80 shadow-[0_6px_18px_rgba(148,163,184,0.12)] group-hover/ep:border-rose-300/80 group-hover/ep:shadow-[0_12px_28px_rgba(244,63,94,0.15)]"
+                        ? "border-white/[0.08] shadow-[0_6px_18px_rgba(0,0,0,0.5)] group-hover/ep:border-[#ff1e56]/50 group-hover/ep:shadow-[0_12px_28px_rgba(255,30,86,0.2)]"
+                        : "border-slate-200 shadow-[0_4px_12px_rgba(148,163,184,0.1)] group-hover/ep:border-rose-300 group-hover/ep:shadow-[0_8px_20px_rgba(244,63,94,0.15)]"
                     }`}
             >
-                {/* DIAGONAL HOLOGRAPHIC SHEEN ── Efek kilau menyapu saat di-hover */}
-                <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/[0.12] to-transparent -translate-x-full group-hover/ep:translate-x-full transition-transform duration-[1.2s] ease-out z-15 pointer-events-none" />
+                {/* DIAGONAL HOLOGRAPHIC SHEEN */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.15] to-transparent -translate-x-full group-hover/ep:translate-x-full transition-transform duration-1000 ease-out z-15 pointer-events-none" />
 
-                {/* NOW RADAR BADGE ── Denyut pendar ganda hijau/merah premium */}
+                {/* NOW PLAYING EQUALIZER BADGE */}
                 {isActive && (
                     <span
-                        className={`absolute top-2 left-2 backdrop-blur-md border text-white text-[6px] sm:text-[7px] font-black px-2 py-0.5 rounded-md tracking-wider uppercase z-20 shadow-md flex items-center gap-1.5 ${isDark
-                            ? "bg-[#ff1e56]/90 border-[#ff1e56]/50"
-                            : "bg-rose-500/90 border-rose-300/50"
-                            }`}
+                        className="absolute top-2 left-2 backdrop-blur-md border text-white text-[7px] sm:text-[8px] font-black px-2 py-1 rounded-lg tracking-wider uppercase z-20 shadow-md flex items-center gap-1.5 bg-[#ff1e56] border-white/20 shadow-[0_0_12px_rgba(255,30,86,0.6)]"
                     >
-                        <span className="relative flex h-1.5 w-1.5 shrink-0">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+                        {/* Audio visualizer equalizer bars */}
+                        <span className="flex items-end gap-[1.5px] h-2.5">
+                            <span className="w-[2px] bg-white rounded-full animate-bounce h-2" />
+                            <span className="w-[2px] bg-white rounded-full animate-bounce [animation-delay:0.15s] h-2.5" />
+                            <span className="w-[2px] bg-white rounded-full animate-bounce [animation-delay:0.3s] h-1.5" />
                         </span>
-                        NOW
+                        DIPUTAR
                     </span>
                 )}
 
-                {/* EP BADGE ── Luxury glassmorphic tag */}
+                {/* EP BADGE */}
                 {!isActive && (
                     <span
-                        className={`absolute top-2 left-2 backdrop-blur-md border text-[6px] sm:text-[7px] font-black px-2 py-0.5 rounded-md tracking-wider uppercase z-20 shadow-md ${isDark
-                            ? "bg-neutral-950/70 border-white/[0.08] text-neutral-300"
-                            : "bg-white/90 border-slate-200/60 text-slate-600"
+                        className={`absolute top-2 left-2 backdrop-blur-md border text-[7px] sm:text-[8px] font-black px-2 py-0.5 rounded-lg tracking-wider uppercase z-20 shadow-sm ${isDark
+                            ? "bg-black/75 border-white/10 text-neutral-200"
+                            : "bg-white/90 border-slate-200 text-slate-700"
                             }`}
                     >
                         {epBadge}
@@ -89,10 +92,11 @@ export default function EpisodeCard({
                 )}
 
                 {/* Thumbnail dengan Ken-burns zoom halus */}
-                {ep.poster ? (
+                {ep.poster && !imgFailed ? (
                     <img
                         src={ep.poster}
-                        alt={ep.title}
+                        alt=""
+                        onError={() => setImgFailed(true)}
                         className={`w-full h-full object-cover transition-all duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive
                             ? "scale-105 brightness-[0.70] contrast-[1.05]"
                             : "group-hover/ep:scale-[1.08] group-hover/ep:brightness-[0.75] group-hover/ep:contrast-[1.02]"
@@ -101,22 +105,28 @@ export default function EpisodeCard({
                     />
                 ) : (
                     <div
-                        className={`w-full h-full flex items-center justify-center ${isDark
-                            ? "bg-linear-to-br from-[#1a0a0f] to-[#0d0407]"
-                            : "bg-linear-to-br from-slate-100 to-slate-200"
+                        className={`w-full h-full flex flex-col items-center justify-center gap-1.5 ${isDark
+                            ? "bg-gradient-to-br from-[#1c080e] via-[#120508] to-[#0a0305]"
+                            : "bg-gradient-to-br from-rose-50 to-slate-100"
                             }`}
                     >
-                        <i
-                            className={`fa-solid fa-film text-lg ${isDark ? "text-slate-700" : "text-slate-400"
-                                }`}
-                        />
+                        <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center border ${
+                            isDark ? "bg-[#ff1e56]/10 border-[#ff1e56]/20 text-[#ff1e56]" : "bg-rose-100 border-rose-200 text-rose-600"
+                        }`}>
+                            <i className="fa-solid fa-clapperboard text-xs sm:text-sm" />
+                        </div>
+                        <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-wider ${
+                            isDark ? "text-slate-500" : "text-slate-400"
+                        }`}>
+                            {epBadge}
+                        </span>
                     </div>
                 )}
 
                 {/* Gradient overlay */}
                 <div
-                    className={`absolute inset-0 bg-linear-to-t transition-opacity duration-500 ${isDark
-                        ? "from-neutral-950 via-neutral-900/30 to-transparent"
+                    className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${isDark
+                        ? "from-neutral-950 via-neutral-900/40 to-transparent"
                         : "from-white/95 via-white/20 to-transparent"
                         } ${isActive ? "opacity-100" : "opacity-75 group-hover/ep:opacity-100"
                         }`}
@@ -148,7 +158,7 @@ export default function EpisodeCard({
                                 }`}
                         />
                         <div
-                            className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-linear-to-br from-[#ff1e56] to-[#c4143a] flex items-center justify-center transition-all duration-300 shadow-xl ${isActive
+                            className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#ff1e56] to-[#c4143a] flex items-center justify-center transition-all duration-300 shadow-xl ${isActive
                                 ? "shadow-[#ff1e56]/40"
                                 : "shadow-black/60 group-hover/play:shadow-[#ff1e56]/50"
                                 }`}

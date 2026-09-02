@@ -1,101 +1,107 @@
-import { useMemo } from "react";
+import { useRef, useCallback } from "react";
 import { useTheme } from "../../../context/ThemeContext";
+import { motion } from "motion/react";
 
-import useHeroCarousel from "./UseHeroCarousel";
-import useHeroMouseParallax from "../../../hooks/useHeroMouseParallax";
-import { getSectionStyle, heroKeyframes } from "../hero/HeroStyle";
-
-import HeroBackground from "./HeroBackGround";
-import HeroOverlays from "./HeroOverlays";
+import useHeroCarousel from "./useHeroCarousel";
+import { getSectionStyle } from "./HeroStyle";
+import { HeroBackdropLayer } from "./HeroBackdrop";
 import HeroContent from "./HeroContent";
-import HeroInfoCard from "./HeroInfoCard";
-import HeroControls from "./HeroControls";
-import HeroParticles from "./HeroParticles";
+import HeroFilmstrip from "./HeroFilmstrip";
 
 export default function HeroCarousel({ animeList = [] }) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-  const total = animeList.length;
+    const { theme } = useTheme();
+    const isDark = theme === "dark";
+    const total = animeList.length;
+    const sectionRef = useRef(null);
 
-  const { containerRef, mousePos } = useHeroMouseParallax();
+    const {
+        currentSlide,
+        isLoaded,
+        goTo,
+        handlePrev,
+        handleNext,
+        handleTouchStart,
+        handleTouchEnd,
+        pauseAuto,
+        resumeAuto,
+    } = useHeroCarousel(total);
 
-  const {
-    currentSlide,
-    isLoaded,
-    animationKey,
-    goTo,
-    handlePrev,
-    handleNext,
-    handleTouchStart,
-    handleTouchEnd,
-  } = useHeroCarousel(total);
+    const current = animeList[currentSlide];
 
-  const current = animeList[currentSlide];
+    const handleGoTo = useCallback((index) => {
+        const dir = index > currentSlide ? 1 : -1;
+        goTo(index, dir);
+    }, [currentSlide, goTo]);
 
-  const sectionStyle = useMemo(() => getSectionStyle(isDark), [isDark]);
+    if (total === 0) return null;
 
-  const bgSlides = useMemo(() => {
-    if (total === 0) return [];
-    const prev = ((currentSlide - 1) % total + total) % total;
-    const next = (currentSlide + 1) % total;
-    const indices = new Set([prev, currentSlide, next]);
-    return Array.from(indices).sort((a, b) => a - b).map((i) => animeList[i]);
-  }, [animeList, currentSlide, total]);
+    return (
+        <section
+            ref={sectionRef}
+            className="relative w-full overflow-hidden select-none
+                aspect-[3/1] min-h-[420px] max-h-[680px]
+                sm:min-h-[460px] sm:max-h-[720px]
+                md:max-h-[760px]"
+            style={getSectionStyle(isDark)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onMouseEnter={pauseAuto}
+            onMouseLeave={resumeAuto}
+        >
+            <HeroBackdropLayer
+                animeList={animeList}
+                currentSlide={currentSlide}
+                isDark={isDark}
+            />
 
-  return (
-    <section
-      ref={containerRef}
-      className="relative h-[80vh] sm:h-[90vh] min-h-[500px] sm:min-h-[650px] max-h-[1000px] overflow-hidden select-none transition-colors duration-500"
-      style={sectionStyle}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* === BACKGROUND (only active + neighbors) === */}
-      {bgSlides.map((anime) => (
-        <HeroBackground
-          key={anime.id}
-          anime={anime}
-          index={animeList.indexOf(anime)}
-          currentSlide={currentSlide}
-          isLoaded={isLoaded}
-          isDark={isDark}
-        />
-      ))}
+            {/* Top fade for header */}
+            <div
+                className={`absolute top-0 inset-x-0 h-16 z-5 pointer-events-none ${
+                    isDark
+                        ? "bg-linear-to-b from-[#050508]/80 to-transparent"
+                        : "bg-linear-to-b from-[#f8f9fa]/80 to-transparent"
+                }`}
+            />
 
-      {/* === PARTICLES === */}
-      <HeroParticles isDark={isDark} mousePos={mousePos} />
+            {/* Content overlay */}
+            <motion.div
+                className="relative z-10 h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isLoaded ? 1 : 0 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+                <HeroContent
+                    current={current}
+                    currentIndex={currentSlide}
+                    isDark={isDark}
+                />
+            </motion.div>
 
-      {/* === OVERLAYS === */}
-      <HeroOverlays isDark={isDark} isLoaded={isLoaded} currentSlide={currentSlide} />
+            <HeroFilmstrip
+                items={animeList}
+                currentIndex={currentSlide}
+                isDark={isDark}
+                onSelect={handleGoTo}
+                onPrev={handlePrev}
+                onNext={handleNext}
+            />
 
-      {/* === MAIN CONTENT === */}
-      <HeroContent current={current} isDark={isDark} animationKey={animationKey} />
-
-      {/* === RIGHT INFO CARD === */}
-      <HeroInfoCard current={current} isDark={isDark} animationKey={animationKey} />
-
-      {/* === BOTTOM CONTROLS === */}
-      <HeroControls
-        heroAnime={animeList}
-        currentSlide={currentSlide}
-        total={total}
-        isDark={isDark}
-        goTo={goTo}
-        handlePrev={handlePrev}
-        handleNext={handleNext}
-      />
-
-      {/* === SCROLL INDICATOR === */}
-      <div className="absolute bottom-16 sm:bottom-24 left-1/2 -translate-x-1/2 z-5 flex flex-col items-center gap-1.5">
-        <span className={`text-[9px] sm:text-[11px] tracking-[0.35em] uppercase font-medium animate-pulse transition-colors duration-500 ${isDark ? "text-white/25" : "text-gray-400"}`}>
-          Scroll
-        </span>
-        <svg className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-700 animate-bounce ${isDark ? "text-white/25" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      </div>
-
-      <style>{heroKeyframes}</style>
-    </section>
-  );
+            {total > 1 && (
+                <div className="absolute bottom-[108px] sm:bottom-[118px] left-1/2 -translate-x-1/2 z-20 flex sm:hidden gap-1.5">
+                    {animeList.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => handleGoTo(i)}
+                            aria-label={`Slide ${i + 1}`}
+                            className={`rounded-full transition-all duration-400 cursor-pointer h-[3px] ${
+                                i === currentSlide
+                                    ? "w-6 bg-red-500"
+                                    : isDark ? "w-1.5 bg-white/25" : "w-1.5 bg-black/20"
+                            }`}
+                        />
+                    ))}
+                </div>
+            )}
+        </section>
+    );
 }

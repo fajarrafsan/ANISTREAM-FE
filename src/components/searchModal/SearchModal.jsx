@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import useSearchHistory from "../../hooks/useSearchHistory";
@@ -16,6 +16,9 @@ export default function SearchModal({
     onClose,
     isDark,
     anchorRef,
+    onSubmit,
+    searchLoading,
+    isMobile = false,
 }) {
     const modalRef = useRef(null);
     const navigate = useNavigate();
@@ -23,28 +26,43 @@ export default function SearchModal({
     const { history, historyLoading, saveHistory, deleteOne, deleteAll } =
         useSearchHistory();
 
+    const handleClose = useCallback(() => {
+        onClose?.();
+    }, [onClose]);
+
     useEffect(() => {
         if (!isOpen) return;
 
-        const handleEsc = (e) => e.key === "Escape" && onClose();
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
+                e.preventDefault();
+                handleClose();
+            }
+        };
+
         const handlePointerDown = (e) => {
             const insideModal = modalRef.current?.contains(e.target);
             const insideAnchor = anchorRef?.current?.contains(e.target);
             if (!insideModal && !insideAnchor) {
-                onClose();
+                handleClose();
             }
         };
 
-        document.addEventListener("keydown", handleEsc);
-        document.addEventListener("pointerdown", handlePointerDown);
-        document.body.style.overflow = "hidden";
+        document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("pointerdown", handlePointerDown, true);
+
+        if (isMobile) {
+            document.body.style.overflow = "hidden";
+        }
 
         return () => {
-            document.removeEventListener("keydown", handleEsc);
-            document.removeEventListener("pointerdown", handlePointerDown);
-            document.body.style.overflow = "";
+            document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("pointerdown", handlePointerDown, true);
+            if (isMobile) {
+                document.body.style.overflow = "";
+            }
         };
-    }, [isOpen, onClose, anchorRef]);
+    }, [isOpen, handleClose, anchorRef, isMobile]);
 
     if (!isOpen) return null;
 
@@ -52,7 +70,7 @@ export default function SearchModal({
     const showResults = phase === "results" && results.length > 0;
     const isEmpty = phase === "results" && results.length === 0;
     const isLoading = phase === "loading";
-    const error = phase === "error";
+    const hasError = phase === "error";
 
     const handleSelectAnime = (anime) => {
         if (!anime?.animeId) return;
@@ -65,85 +83,101 @@ export default function SearchModal({
                 type: anime.type ?? null,
             });
         }
+        handleClose();
         navigate(`/anime/detail/${anime.animeId}`);
     };
 
     const handleSelectHistory = (item) => {
+        if (!item?.animeId) return;
+        handleClose();
         navigate(`/anime/detail/${item.animeId}`);
     };
 
     return (
         <>
-            <div
-                className="fixed inset-0 z-40 md:hidden pointer-events-none"
-                style={{
-                    background: isDark ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)",
-                    animation: "modalFadeIn 0.2s ease-out",
-                }}
-            />
+            {isMobile && (
+                <div
+                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-[2px]"
+                    onClick={handleClose}
+                    aria-hidden="true"
+                />
+            )}
+
             <div
                 ref={modalRef}
-                tabIndex={-1}
-                onClick={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Pencarian anime"
                 className={`
-                    fixed z-50
-                    left-3 right-3
-                    top-20
-                    max-h-[70vh]
-                    md:absolute md:top-full md:mt-2 md:left-0 md:right-0
-                    md:max-h-[480px] md:min-w-[380px] md:max-w-[440px]
-                    rounded-2xl overflow-hidden
-                    border
+                    fixed z-50 flex flex-col
+                    left-3 right-3 top-[4.5rem] max-h-[min(70vh,520px)]
+                    md:absolute md:top-full md:mt-2 md:left-0 md:right-auto
+                    md:w-[min(440px,calc(100vw-2rem))] md:max-h-[480px]
+                    rounded-2xl overflow-hidden border
                     ${isDark
                         ? "bg-[#13080c] border-[#2a1117]/80"
-                        : "bg-white border-slate-200"
+                        : "bg-white border-slate-200 shadow-xl"
                     }
                 `}
                 style={{
                     boxShadow: isDark
                         ? "0 25px 50px -12px rgba(0,0,0,0.9), 0 0 40px rgba(255,30,86,0.08)"
-                        : "0 25px 50px -12px rgba(0,0,0,0.2), 0 0 40px rgba(255,30,86,0.04)",
-                    animation: "modalSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
+                        : "0 25px 50px -12px rgba(0,0,0,0.15)",
                 }}
             >
-                <div
-                    className={`absolute top-0 left-0 right-0 h-px ${isDark ? "bg-linear-to-r from-transparent via-[#ff1e56]/30 to-transparent" : "bg-linear-to-r from-transparent via-rose-300/50 to-transparent"}`}
-                />
-                <div
-                    className={`absolute top-3 left-3 w-4 h-4 border-l border-t rounded-tl-md ${isDark ? "border-[#ff1e56]/15" : "border-rose-300/30"}`}
-                />
-                <div
-                    className={`absolute top-3 right-3 w-4 h-4 border-r border-t rounded-tr-md ${isDark ? "border-[#ff1e56]/15" : "border-rose-300/30"}`}
-                />
+                {/* Hint bar */}
+                <div className={`flex items-center justify-between px-4 py-2 border-b shrink-0 ${
+                    isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-black/[0.05] bg-black/[0.02]"
+                }`}>
+                    <p className={`text-[10px] font-medium ${isDark ? "text-white/40" : "text-gray-500"}`}>
+                        {searchLoading
+                            ? "Sedang mencari..."
+                            : query.trim()
+                                ? `Ketik Enter untuk cari "${query.trim()}"`
+                                : "Riwayat pencarian atau ketik keyword"}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={handleClose}
+                        className={`text-[10px] font-semibold px-2 py-1 rounded-md cursor-pointer ${
+                            isDark ? "text-white/50 hover:text-white hover:bg-white/[0.06]" : "text-gray-500 hover:bg-black/[0.04]"
+                        }`}
+                    >
+                        Tutup
+                    </button>
+                </div>
 
-                {isLoading && <LoadingState isDark={isDark} />}
+                <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
+                    {isLoading && <LoadingState isDark={isDark} />}
 
-                {error && !isLoading && <ErrorState isDark={isDark} />}
+                    {hasError && !isLoading && (
+                        <ErrorState isDark={isDark} onRetry={() => onSubmit?.()} />
+                    )}
 
-                {isEmpty && <EmptyState isDark={isDark} />}
+                    {isEmpty && !isLoading && <EmptyState isDark={isDark} />}
 
-                {showHistory && (
-                    <HistorySection
-                        isDark={isDark}
-                        isLoggedIn={isLoggedIn}
-                        history={history}
-                        historyLoading={historyLoading}
-                        onSelectHistory={handleSelectHistory}
-                        onDeleteOne={deleteOne}
-                        onDeleteAll={deleteAll}
-                    />
-                )}
+                    {showHistory && !isLoading && (
+                        <HistorySection
+                            isDark={isDark}
+                            isLoggedIn={isLoggedIn}
+                            history={history}
+                            historyLoading={historyLoading}
+                            onSelectHistory={handleSelectHistory}
+                            onDeleteOne={deleteOne}
+                            onDeleteAll={deleteAll}
+                        />
+                    )}
 
-                {showResults && (
-                    <ResultsSection
-                        isDark={isDark}
-                        results={results}
-                        query={query}
-                        onSelectAnime={handleSelectAnime}
-                        onClose={onClose}
-                    />
-                )}
+                    {showResults && !isLoading && (
+                        <ResultsSection
+                            isDark={isDark}
+                            results={results}
+                            query={query}
+                            onSelectAnime={handleSelectAnime}
+                            onClose={handleClose}
+                        />
+                    )}
+                </div>
             </div>
         </>
     );

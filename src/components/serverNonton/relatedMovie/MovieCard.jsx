@@ -35,12 +35,12 @@ export default function MovieCard({
                 className={`relative w-full aspect-2/3 rounded-2xl overflow-hidden border transition-all duration-500 ${cardOuterClass}`}
             >
                 {/* Diagonal Holographic Sheen */}
-                <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/[0.12] to-transparent opacity-0 group-hover/movie:opacity-100 transition-opacity duration-700 z-15 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.12] to-transparent opacity-0 group-hover/movie:opacity-100 transition-opacity duration-700 z-15 pointer-events-none" />
 
                 {/* Top Badges */}
                 <div className="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-start justify-between gap-1.5">
                     {movie.rating ? (
-                        <span className="inline-flex items-center gap-1.5 bg-linear-to-r from-amber-500/90 to-orange-500/90 text-white text-[7px] sm:text-[8px] font-black px-2 py-0.5 rounded-md tracking-wider shadow-lg shadow-orange-500/20 backdrop-blur-sm">
+                        <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500/90 to-orange-500/90 text-white text-[7px] sm:text-[8px] font-black px-2 py-0.5 rounded-md tracking-wider shadow-lg shadow-orange-500/20 backdrop-blur-sm">
                             <i className="fa-solid fa-star text-[6px]" />
                             {movie.rating}
                         </span>
@@ -77,8 +77,8 @@ export default function MovieCard({
                     <div
                         className={`w-full h-full flex items-center justify-center ${
                             isDark
-                                ? "bg-linear-to-br from-[#1a0a0f] to-[#0d0407]"
-                                : "bg-linear-to-br from-slate-50 to-slate-100"
+                                ? "bg-gradient-to-br from-[#1a0a0f] to-[#0d0407]"
+                                : "bg-gradient-to-br from-slate-50 to-slate-100"
                         }`}
                     >
                         <i className={`fa-solid fa-film text-xl sm:text-2xl ${isDark ? "text-slate-700" : "text-slate-300"}`} />
@@ -87,7 +87,7 @@ export default function MovieCard({
 
                 {/* Bottom Overlay Gradient */}
                 <div
-                    className={`absolute inset-0 bg-linear-to-t transition-opacity duration-500 ${
+                    className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${
                         isDark
                             ? "from-neutral-950 via-neutral-900/30 to-transparent opacity-85 group-hover/movie:opacity-100"
                             : "from-white/95 via-white/20 to-transparent opacity-65 group-hover/movie:opacity-85"
@@ -109,7 +109,7 @@ export default function MovieCard({
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/movie:opacity-100 transition-all duration-500 scale-50 group-hover/movie:scale-100 z-10">
                     <div className="relative group/play">
                         <div className="absolute inset-0 w-10 h-10 rounded-full bg-[#ff1e56]/30 blur-md group-hover/play:scale-135 transition-transform duration-500 animate-pulse" />
-                        <div className="relative w-10 h-10 rounded-full bg-linear-to-br from-[#ff1e56] to-[#c4143a] flex items-center justify-center shadow-[0_0_30px_rgba(255,30,86,0.4)] group-hover/movie:shadow-[0_0_50px_rgba(255,30,86,0.6)] transition-shadow duration-500">
+                        <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#ff1e56] to-[#c4143a] flex items-center justify-center shadow-[0_0_30px_rgba(255,30,86,0.4)] group-hover/movie:shadow-[0_0_50px_rgba(255,30,86,0.6)] transition-shadow duration-500">
                             <i className="fa-solid fa-circle-info text-white text-xs" />
                         </div>
                     </div>

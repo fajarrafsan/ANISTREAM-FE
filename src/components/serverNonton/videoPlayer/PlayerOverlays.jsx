@@ -45,15 +45,15 @@ export function IframeErrorState({ activeStreamUrl, reloadIframe }) {
         <div
             className={`w-full h-full flex flex-col items-center justify-center gap-4 px-4 sm:px-6 text-center ${
                 isDark
-                    ? "text-slate-400 bg-linear-to-b from-[#0a0305] to-[#0d0508]"
-                    : "text-slate-600 bg-linear-to-b from-white to-slate-50"
+                    ? "text-slate-400 bg-gradient-to-b from-[#0a0305] to-[#0d0508]"
+                    : "text-slate-600 bg-gradient-to-b from-white to-slate-50"
             }`}
         >
             <div className="relative">
                 <div
                     className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border flex items-center justify-center ${
                         isDark
-                            ? "bg-linear-to-br from-[#1a0a0f] to-[#0a0204] border-[#2a1117]/50"
+                            ? "bg-gradient-to-br from-[#1a0a0f] to-[#0a0204] border-[#2a1117]/50"
                             : "bg-white border-slate-200 shadow-sm"
                     }`}
                 >
@@ -111,15 +111,15 @@ export function BlockedState({ activeStreamUrl }) {
         <div
             className={`w-full h-full flex flex-col items-center justify-center gap-4 sm:gap-5 px-4 sm:px-6 text-center ${
                 isDark
-                    ? "text-slate-400 bg-linear-to-b from-[#0a0305] to-[#0d0508]"
-                    : "text-slate-600 bg-linear-to-b from-white to-slate-50"
+                    ? "text-slate-400 bg-gradient-to-b from-[#0a0305] to-[#0d0508]"
+                    : "text-slate-600 bg-gradient-to-b from-white to-slate-50"
             }`}
         >
             <div className="relative">
                 <div
                     className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-xl ${
                         isDark
-                            ? "bg-linear-to-br from-[#1a0a0f] to-[#0a0204] border-[#2a1117]/50"
+                            ? "bg-gradient-to-br from-[#1a0a0f] to-[#0a0204] border-[#2a1117]/50"
                             : "bg-white border-slate-200"
                     }`}
                 >
@@ -134,14 +134,14 @@ export function BlockedState({ activeStreamUrl }) {
                         isDark ? "text-slate-300" : "text-slate-800"
                     }`}
                 >
-                    Server Tidak Dapat Diputar
+                    Server Tidak Dapat Diputar Langsung
                 </p>
                 <p
                     className={`text-xs max-w-xs leading-relaxed ${
                         isDark ? "text-slate-500" : "text-slate-500"
                     }`}
                 >
-                    Server ini memblokir pemutaran langsung. Buka di tab baru atau pilih server lain.
+                    Server ini membatasi embed langsung. Silakan buka di tab baru atau pilih server streaming lain di bawah.
                 </p>
             </div>
 
@@ -149,7 +149,7 @@ export function BlockedState({ activeStreamUrl }) {
                 href={activeStreamUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-linear-to-r from-[#ff1e56] to-[#c4143a] hover:from-[#ff336a] hover:to-[#d91a4a] text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all duration-300 cursor-pointer shadow-lg shadow-red-900/30 hover:shadow-red-900/50 group/link w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff1e56] to-[#c4143a] hover:from-[#ff336a] hover:to-[#d91a4a] text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all duration-300 cursor-pointer shadow-lg shadow-red-900/30 hover:shadow-red-900/50 group/link w-full sm:w-auto"
             >
                 <i className="fa-solid fa-arrow-up-right-from-square text-xs transition-transform" />
                 Buka di Tab Baru
@@ -167,15 +167,15 @@ export function EmptyState() {
         <div
             className={`w-full h-full flex flex-col items-center justify-center gap-4 px-4 ${
                 isDark
-                    ? "text-slate-600 bg-linear-to-b from-[#0a0305] to-[#0d0508]"
-                    : "text-slate-500 bg-linear-to-b from-white to-slate-50"
+                    ? "text-slate-600 bg-gradient-to-b from-[#0a0305] to-[#0d0508]"
+                    : "text-slate-500 bg-gradient-to-b from-white to-slate-50"
             }`}
         >
             <div className="relative">
                 <div
                     className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border flex items-center justify-center ${
                         isDark
-                            ? "bg-linear-to-br from-[#1a0a0f] to-[#0a0204] border-[#2a1117]/40"
+                            ? "bg-gradient-to-br from-[#1a0a0f] to-[#0a0204] border-[#2a1117]/40"
                             : "bg-white border-slate-200 shadow-sm"
                     }`}
                 >
@@ -189,10 +189,10 @@ export function EmptyState() {
             </div>
             <span
                 className={`text-sm font-bold ${
-                    isDark ? "text-slate-700" : "text-slate-700"
+                    isDark ? "text-slate-600" : "text-slate-600"
                 }`}
             >
-                Video tidak tersedia
+                Video belum tersedia di server ini
             </span>
         </div>
     );
@@ -204,36 +204,43 @@ export function NextEpisodeOverlay({ nextEpisode, onNavigate, onClose }) {
     const isDark = theme === "dark";
 
     return (
-        <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/45 backdrop-blur-sm px-4">
+        <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/60 backdrop-blur-md px-4 select-none">
             <div
-                className={`text-center px-4 sm:px-5 py-4 rounded-2xl border shadow-xl w-full max-w-sm ${
+                className={`text-center p-6 sm:p-7 rounded-2xl sm:rounded-3xl border shadow-2xl w-full max-w-sm ${
                     isDark
-                        ? "bg-[#11050a]/95 border-[#2d1219]/80"
-                        : "bg-white border-slate-200"
+                        ? "bg-[#0c0407]/95 border-white/10 shadow-[0_0_50px_rgba(255,30,86,0.3)]"
+                        : "bg-white border-slate-200 shadow-2xl"
                 }`}
             >
-                <p
-                    className={`text-sm mb-3 ${
-                        isDark ? "text-slate-400" : "text-slate-500"
-                    }`}
-                >
-                    Episode berikutnya
-                </p>
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#ff1e56] to-[#ff4d79] flex items-center justify-center mx-auto mb-3 text-white shadow-[0_0_20px_rgba(255,30,86,0.5)]">
+                    <i className="fa-solid fa-forward text-lg" />
+                </div>
+
+                <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#ff1e56] block mb-1">
+                    Episode Selesai
+                </span>
+
+                <h4 className="font-display font-black text-base sm:text-lg mb-4">
+                    Putar Episode Selanjutnya?
+                </h4>
+
                 <button
                     onClick={() => onNavigate(`/episode/${nextEpisode.episodeId}`)}
-                    className="inline-flex items-center justify-center gap-2 bg-linear-to-r from-[#ff1e56] to-[#c4143a] hover:from-[#ff336a] hover:to-[#d91a4a] text-white font-bold px-6 py-3 rounded-xl text-sm transition-all duration-300 shadow-lg shadow-red-900/30 cursor-pointer w-full sm:w-auto"
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff1e56] to-[#c4143a] hover:from-[#ff336a] hover:to-[#d91a4a] text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(255,30,86,0.4)] cursor-pointer w-full border border-white/20 active:scale-95"
                 >
-                    <i className="fa-solid fa-forward" /> Episode Selanjutnya
+                    <span>Lanjutkan Nonton</span>
+                    <i className="fa-solid fa-play text-[10px]" />
                 </button>
+
                 <button
                     onClick={onClose}
-                    className={`block mx-auto mt-3 text-[10px] transition-colors ${
+                    className={`block mx-auto mt-3 text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                         isDark
                             ? "text-slate-500 hover:text-slate-300"
                             : "text-slate-400 hover:text-slate-600"
                     }`}
                 >
-                    Tutup
+                    Nanti Saja
                 </button>
             </div>
         </div>

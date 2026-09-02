@@ -21,6 +21,7 @@ export default function VideoPlayer({
     selectedServer,
     serverLoading,
     onChangeServer,
+    hideInternalBack = false,
 }) {
     const navigate = useNavigate();
     const { theme } = useTheme();
@@ -210,42 +211,48 @@ export default function VideoPlayer({
         <div className={`w-full transition-colors duration-300 ${shellClass}`}>
 
             {/* Top Bar */}
-            <div className="mt-3 sm:mt-6 mb-2.5 sm:mb-4 px-3 sm:px-0">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className={`group inline-flex items-center gap-1.5 sm:gap-2.5 backdrop-blur-xl border rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 transition-all duration-300 cursor-pointer w-fit ${isDark
-                            ? "bg-black/60 border-white/10 hover:border-[#ff1e56]/30 hover:bg-black/80"
-                            : "bg-white/90 border-slate-200 hover:border-rose-300/60 hover:bg-white shadow-sm"
-                            }`}
-                    >
-                        <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg flex items-center justify-center transition-colors ${isDark
-                            ? "bg-white/5 group-hover:bg-[#ff1e56]/10"
-                            : "bg-slate-100 group-hover:bg-rose-100"
-                            }`}>
-                            <i className={`fa-solid fa-arrow-left text-[9px] sm:text-[10px] transition-colors ${isDark
-                                ? "text-slate-400 group-hover:text-[#ff1e56]"
-                                : "text-slate-500 group-hover:text-rose-600"
-                                }`} />
-                        </div>
-                        <span className={`text-[10px] sm:text-[11px] font-bold transition-colors ${isDark
-                            ? "text-slate-300 group-hover:text-white"
-                            : "text-slate-600 group-hover:text-slate-900"
-                            }`}>
-                            Kembali
-                        </span>
-                    </button>
+            {!hideInternalBack && (
+                <div className="mt-3 sm:mt-6 mb-2.5 sm:mb-4 px-3 sm:px-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+                        <button
+                            onClick={() => {
+                                if (episode?.animeId) navigate(`/anime/detail/${episode.animeId}`);
+                                else navigate(-1);
+                            }}
+                            className={`group inline-flex items-center gap-1.5 sm:gap-2.5 backdrop-blur-xl border rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 transition-all duration-300 cursor-pointer w-fit ${isDark
+                                ? "bg-black/60 border-white/10 hover:border-[#ff1e56]/30 hover:bg-black/80"
+                                : "bg-white/90 border-slate-200 hover:border-rose-300/60 hover:bg-white shadow-sm"
+                                }`}
+                            title="Kembali ke Detail Anime"
+                        >
+                            <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg flex items-center justify-center transition-colors ${isDark
+                                ? "bg-white/5 group-hover:bg-[#ff1e56]/10"
+                                : "bg-slate-100 group-hover:bg-rose-100"
+                                }`}>
+                                <i className={`fa-solid fa-arrow-left text-[9px] sm:text-[10px] transition-colors ${isDark
+                                    ? "text-slate-400 group-hover:text-[#ff1e56]"
+                                    : "text-slate-500 group-hover:text-rose-600"
+                                    }`} />
+                            </div>
+                            <span className={`text-[10px] sm:text-[11px] font-bold transition-colors ${isDark
+                                ? "text-slate-300 group-hover:text-white"
+                                : "text-slate-600 group-hover:text-slate-900"
+                                }`}>
+                                Detail Anime
+                            </span>
+                        </button>
 
-                    <div className="hidden sm:block text-right">
-                        <p className={`text-[11px] font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-                            {episodeTitle}
-                        </p>
-                        <p className={`text-[10px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
-                            Gunakan tombol ini untuk kembali ke halaman sebelumnya
-                        </p>
+                        <div className="hidden sm:block text-right">
+                            <p className={`text-[11px] font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                                {episodeTitle}
+                            </p>
+                            <p className={`text-[10px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                Gunakan tombol ini untuk kembali ke halaman sebelumnya
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Video Area */}
             <div

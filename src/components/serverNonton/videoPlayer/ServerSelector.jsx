@@ -123,11 +123,11 @@ export default function ServerSelector({
                                     : "cursor-pointer"
                                 } ${isActive
                                     ? isDark
-                                        ? "bg-linear-to-r from-[#ff1e56]/15 to-[#ff1e56]/5 border-[#ff1e56]/40 text-[#ff1e56] shadow-lg shadow-red-900/10"
-                                        : "bg-rose-50 border-rose-300 text-[#ff1e56] shadow-sm"
+                                        ? "bg-gradient-to-r from-[#ff1e56]/20 via-[#ff1e56]/10 to-transparent border-[#ff1e56] text-white shadow-[0_0_15px_rgba(255,30,86,0.3)]"
+                                        : "bg-rose-50 border-rose-400 text-rose-600 shadow-sm"
                                     : isDark
-                                        ? "bg-[#13080c]/80 border-[#2a1117]/50 text-slate-500 hover:border-[#ff1e56]/25 hover:text-slate-300 hover:bg-[#1a0a0f]"
-                                        : "bg-white border-slate-200 text-slate-600 hover:border-rose-300 hover:text-slate-900 hover:bg-slate-50"
+                                        ? "bg-white/[0.03] border-white/10 text-slate-300 hover:border-[#ff1e56]/30 hover:text-white hover:bg-white/[0.06]"
+                                        : "bg-white border-slate-200 text-slate-700 hover:border-rose-300 hover:text-slate-900 shadow-sm"
                                 }`}
                         >
                             {isLoading ? (

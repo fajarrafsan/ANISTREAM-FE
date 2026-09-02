@@ -46,52 +46,52 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
 
     return (
         <div
-            className={`relative overflow-hidden rounded-2xl border shadow-lg transition-all duration-300 p-3 sm:p-5 md:p-6 lg:p-8 ${isDark
-                    ? "bg-[#110508]/40 border-[#2d1219]/40 backdrop-blur-md hover:border-[#ff1e56]/20"
-                    : "bg-white border-slate-200 shadow-slate-200/60 hover:border-rose-300/60"
+            className={`relative overflow-hidden rounded-2xl sm:rounded-3xl border shadow-xl transition-all duration-300 p-3.5 sm:p-6 md:p-7 lg:p-8 ${isDark
+                ? "bg-[#0b0406]/90 border-white/5 backdrop-blur-xl hover:border-[#ff1e56]/30 shadow-2xl"
+                : "bg-white border-slate-200 shadow-xl hover:border-rose-300/60"
                 }`}
         >
             <div
-                className={`absolute -top-12 -left-12 w-36 h-36 sm:w-48 sm:h-48 rounded-full blur-3xl pointer-events-none ${isDark ? "bg-[#ff1e56]/8" : "bg-rose-200/40"
+                className={`absolute -top-12 -left-12 w-36 h-36 sm:w-48 sm:h-48 rounded-full blur-3xl pointer-events-none ${isDark ? "bg-[#ff1e56]/10" : "bg-rose-200/40"
                     }`}
             />
             <div
                 className={`absolute -bottom-16 -right-16 w-28 h-28 sm:w-36 sm:h-36 rounded-full blur-3xl pointer-events-none ${isDark
-                        ? "bg-linear-to-br from-[#c41e3a]/4 to-transparent"
-                        : "bg-linear-to-br from-rose-100/50 to-transparent"
+                    ? "bg-gradient-to-br from-[#c41e3a]/5 to-transparent"
+                    : "bg-gradient-to-br from-rose-100/50 to-transparent"
                     }`}
             />
             <div
-                className={`absolute left-0 top-0 bottom-0 w-[3px] bg-linear-to-b ${isDark ? "from-[#ff1e56] to-transparent" : "from-rose-400 to-transparent"
+                className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b ${isDark ? "from-[#ff1e56] to-transparent" : "from-rose-400 to-transparent"
                     }`}
             />
 
             <div className="relative">
                 {/* Badges */}
-                <div className="flex flex-wrap items-center gap-1.5 mb-3 sm:mb-5">
-                    <span className="inline-flex items-center gap-1 bg-linear-to-r from-[#ff1e56] to-[#c41e3a] text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 rounded-lg tracking-wider uppercase shadow-[0_4px_15px_-2px_rgba(255,30,86,0.35)] select-none">
-                        <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                        EP BARU
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3 sm:mb-5">
+                    <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ff1e56] to-[#c41e3a] text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 rounded-lg tracking-wider uppercase shadow-[0_0_15px_rgba(255,30,86,0.35)] select-none border border-white/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        EPISODE STREAMING
                     </span>
 
                     <span
                         className={`inline-flex items-center gap-1 border text-[8px] sm:text-[10px] font-bold px-2.5 py-1 rounded-lg tracking-wider uppercase select-none ${isDark
-                                ? "bg-[#17080e] border-[#2d1219] text-slate-400"
-                                : "bg-slate-50 border-slate-200 text-slate-500"
+                            ? "bg-white/[0.03] border-white/10 text-slate-300"
+                            : "bg-slate-50 border-slate-200 text-slate-600"
                             }`}
                     >
-                        <i className="fa-solid fa-closed-captioning text-[8px] text-slate-500" />
+                        <i className="fa-solid fa-closed-captioning text-[9px] text-[#ff1e56]" />
                         Sub Indo
                     </span>
 
                     {selectedServer && (
                         <span
-                            className={`inline-flex items-center gap-1 border text-[8px] sm:text-[10px] font-bold px-2.5 py-1 rounded-lg tracking-wider uppercase select-none max-w-full ${isDark
-                                    ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400"
-                                    : "bg-emerald-50 border-emerald-200 text-emerald-600"
+                            className={`inline-flex items-center gap-1.5 border text-[8px] sm:text-[10px] font-bold px-2.5 py-1 rounded-lg tracking-wider uppercase select-none max-w-full ${isDark
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                                : "bg-emerald-50 border-emerald-200 text-emerald-600"
                                 }`}
                         >
-                            <span className="w-1 h-1 rounded-full bg-emerald-500 animate-ping" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                             <i className="fa-solid fa-server text-[8px]" />
                             <span className="truncate max-w-[120px] sm:max-w-none">
                                 {selectedServer.name} ({selectedServer.resolution})
@@ -103,14 +103,14 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                 {/* Title Block */}
                 <div className="mb-3 sm:mb-5">
                     <span
-                        className={`text-[8px] sm:text-[10px] font-mono font-extrabold uppercase tracking-widest block mb-1 ${isDark ? "text-[#ff1e56]" : "text-rose-500"
+                        className={`text-[9px] sm:text-[11px] font-black uppercase tracking-widest block mb-1 ${isDark ? "text-[#ff1e56]" : "text-rose-500"
                             }`}
                     >
                         {episodeTitle}
                     </span>
 
                     <h1
-                        className={`font-black leading-tight tracking-tight wrap-break-word text-lg sm:text-2xl md:text-3xl lg:text-4xl ${isDark ? "text-white" : "text-slate-900"
+                        className={`font-display font-black leading-tight tracking-tight wrap-break-word text-xl sm:text-2xl md:text-3xl lg:text-4xl ${isDark ? "text-white" : "text-slate-900"
                             }`}
                     >
                         {animeTitle}
@@ -155,34 +155,50 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                    {/* Detail Serial Button */}
+                    {animeId && (
+                        <button
+                            onClick={() => navigate(`/anime/detail/${animeId}`)}
+                            className={`group inline-flex items-center justify-center gap-2 font-black h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer border w-full sm:w-auto shadow-sm ${isDark
+                                ? "bg-white/[0.04] border-white/10 hover:border-[#ff1e56]/40 hover:bg-white/[0.08] text-slate-200 hover:text-white"
+                                : "bg-white border-slate-200 hover:border-rose-400 text-slate-700 hover:text-slate-900"
+                                }`}
+                        >
+                            <i className="fa-solid fa-layer-group text-[10px] text-[#ff1e56] group-hover:scale-110 transition-transform" />
+                            <span>Semua Episode & Detail</span>
+                        </button>
+                    )}
+
+                    {/* Next Episode Button */}
                     {episode?.hasNextEpisode && episode?.nextEpisode ? (
                         <button
                             onClick={() => navigate(`/episode/${episode.nextEpisode.episodeId}`)}
-                            className="group inline-flex items-center justify-center gap-2 bg-linear-to-r from-[#ff1e56] to-[#c41e3a] text-white font-black h-9 sm:h-11 px-3.5 sm:px-6 rounded-xl text-[9px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 shadow-[0_4px_16px_-2px_rgba(255,30,86,0.35)] hover:shadow-[0_6px_25px_rgba(255,30,86,0.55)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-full sm:w-auto"
+                            className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff1e56] via-[#e11d48] to-[#be123c] text-white font-black h-10 sm:h-11 px-4 sm:px-6 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(255,30,86,0.35)] hover:shadow-[0_6px_25px_rgba(255,30,86,0.55)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-full sm:w-auto border border-white/20"
                         >
-                            <i className="fa-solid fa-forward text-[9px] transition-transform group-hover:translate-x-1" />
                             <span>Episode selanjutnya</span>
+                            <i className="fa-solid fa-forward text-[9px] transition-transform group-hover:translate-x-1" />
                         </button>
                     ) : (
                         <button
                             disabled
-                            className={`inline-flex items-center justify-center gap-2 font-bold h-9 sm:h-11 px-3.5 sm:px-6 rounded-xl text-[9px] sm:text-[11px] tracking-widest uppercase cursor-not-allowed border w-full sm:w-auto ${isDark
-                                    ? "bg-[#170a0e] border-[#2d1219] text-slate-600"
-                                    : "bg-slate-100 border-slate-200 text-slate-400"
+                            className={`inline-flex items-center justify-center gap-2 font-bold h-10 sm:h-11 px-4 sm:px-6 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase cursor-not-allowed border w-full sm:w-auto ${isDark
+                                ? "bg-[#170a0e] border-[#2d1219] text-slate-600"
+                                : "bg-slate-100 border-slate-200 text-slate-400"
                                 }`}
                         >
-                            <i className="fa-solid fa-lock text-[9px]" />
-                            <span>Episode terakhir</span>
+                            <i className="fa-solid fa-flag-checkered text-[9px] text-[#ff1e56]" />
+                            <span>Episode Terakhir (Tamat)</span>
                         </button>
                     )}
 
+                    {/* Prev Episode Button */}
                     {episode?.hasPrevEpisode && episode?.prevEpisode && (
                         <button
                             onClick={() => navigate(`/episode/${episode.prevEpisode.episodeId}`)}
-                            className={`group inline-flex items-center justify-center gap-2 font-semibold h-9 sm:h-11 px-3.5 sm:px-5 rounded-xl text-[9px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer border w-full sm:w-auto ${isDark
-                                    ? "bg-[#13080c]/80 border-[#2a1117] hover:border-[#ff1e56]/30 text-slate-400 hover:text-white"
-                                    : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900"
+                            className={`group inline-flex items-center justify-center gap-2 font-black h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer border w-full sm:w-auto ${isDark
+                                ? "bg-white/[0.03] border-white/10 hover:border-[#ff1e56]/30 text-slate-300 hover:text-white hover:bg-white/[0.06]"
+                                : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900 shadow-sm"
                                 }`}
                         >
                             <i className="fa-solid fa-backward text-[9px] transition-transform group-hover:-translate-x-1" />
@@ -190,26 +206,59 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                         </button>
                     )}
 
+                    {/* Wishlist Button */}
                     <button
                         onClick={handleWishlistClick}
                         disabled={wishlistLoading}
-                        className={`group inline-flex items-center justify-center gap-2 font-semibold h-9 sm:h-11 px-3.5 sm:px-5 rounded-xl text-[9px] sm:text-[11px] tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border w-full sm:w-auto ${isBookmarked
-                                ? isDark
-                                    ? "bg-[#ff1e56]/15 border-[#ff1e56]/40 text-[#ff1e56]"
-                                    : "bg-rose-50 border-rose-300 text-rose-600"
-                                : isDark
-                                    ? "bg-[#13080c]/80 border-[#2a1117] hover:border-[#ff1e56]/30 text-slate-400 hover:text-white"
-                                    : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900"
+                        className={`group inline-flex items-center justify-center gap-2 font-black h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border w-full sm:w-auto ${isBookmarked
+                            ? isDark
+                                ? "bg-[#ff1e56]/15 border-[#ff1e56]/40 text-[#ff1e56] shadow-[0_0_15px_rgba(255,30,86,0.25)]"
+                                : "bg-rose-50 border-rose-300 text-rose-600"
+                            : isDark
+                                ? "bg-white/[0.03] border-white/10 hover:border-[#ff1e56]/30 text-slate-300 hover:text-white hover:bg-white/[0.06]"
+                                : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900 shadow-sm"
                             }`}
                     >
                         {wishlistLoading ? (
                             <span className="w-3 h-3 rounded-full border border-current border-t-transparent animate-spin" />
                         ) : isBookmarked ? (
-                            <i className="fa-solid fa-bookmark text-[9px] text-[#ff1e56] animate-pulse" />
+                            <i className="fa-solid fa-bookmark text-[10px] text-[#ff1e56] animate-pulse" />
                         ) : (
-                            <i className="fa-solid fa-bookmark text-[9px] text-[#ff1e56]/70 group-hover:text-[#ff1e56] transition-colors" />
+                            <i className="fa-solid fa-bookmark text-[10px] text-[#ff1e56]/70 group-hover:text-[#ff1e56] transition-colors" />
                         )}
                         <span>{isBookmarked ? 'TERSIMPAN' : 'WISHLIST'}</span>
+                    </button>
+
+                    {/* Quick Jump to Download */}
+                    <button
+                        onClick={() => {
+                            const el = document.getElementById("download-section");
+                            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className={`group inline-flex items-center justify-center gap-1.5 font-bold h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border w-full sm:w-auto ${isDark
+                            ? "bg-white/[0.02] border-white/[0.08] hover:border-[#ff1e56]/30 text-slate-400 hover:text-white"
+                            : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900"
+                            }`}
+                        title="Lompat ke bagian link unduhan"
+                    >
+                        <i className="fa-solid fa-arrow-down text-[10px] text-[#ff1e56]" />
+                        <span>Unduh</span>
+                    </button>
+
+                    {/* Quick Jump to Discussion */}
+                    <button
+                        onClick={() => {
+                            const el = document.getElementById("comments-section");
+                            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className={`group inline-flex items-center justify-center gap-1.5 font-bold h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border w-full sm:w-auto ${isDark
+                            ? "bg-white/[0.02] border-white/[0.08] hover:border-[#ff1e56]/30 text-slate-400 hover:text-white"
+                            : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900"
+                            }`}
+                        title="Lompat ke kolom komentar"
+                    >
+                        <i className="fa-solid fa-comments text-[10px] text-[#ff1e56]" />
+                        <span>Diskusi</span>
                     </button>
                 </div>
             </div>

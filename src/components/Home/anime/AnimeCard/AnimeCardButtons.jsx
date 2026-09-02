@@ -1,127 +1,95 @@
+import { motion } from "motion/react";
 import { useTheme } from "../../../../context/ThemeContext";
 import { useAuth } from "../../../../context/AuthContext";
 import { useAuthModal } from "../../../../context/AuthModalContext";
 import useToast from "../../../../hooks/useToast";
 import { useWishlist } from "../../../../context/WishlistContext";
-import { WatchButton } from "../../../ui/WatchButton";
-import { BookmarkCheck, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function AnimeCardButtons({
     anime,
-    isHovered,
     isDark,
     onPlay,
-    isMobile: propIsMobile,
+    reducedMotion = false,
 }) {
     const { theme } = useTheme();
     const dark = isDark !== undefined ? isDark : theme === "dark";
+    const navigate = useNavigate();
 
     const { isLoggedIn } = useAuth();
     const { openModal } = useAuthModal();
     const toast = useToast();
     const { toggleWishlist, isWishlisted, isLoading } = useWishlist();
 
-    const isMobile = propIsMobile !== undefined
-        ? propIsMobile
-        : (typeof window !== "undefined" && window.innerWidth < 640);
-
     const isBookmarked = anime?.animeId ? isWishlisted(anime.animeId) : false;
     const wishlistLoading = anime?.animeId ? isLoading(anime.animeId) : false;
+    const isOngoing = anime.status === "ONGOING";
 
-    const handlePlayClick = (e) => {
-        e?.stopPropagation();
-        e?.preventDefault();
+    const tap = reducedMotion ? {} : { whileHover: { scale: 1.02 }, whileTap: { scale: 0.96 } };
 
+    const handlePrimaryClick = (e) => {
+        e.stopPropagation();
         if (!isLoggedIn) {
-            toast.warning("Silakan login terlebih dahulu untuk menonton anime ini", 3000);
-            openModal({
-                redirectAction: () => onPlay?.(),
-                mode: "login"
-            });
+            toast.warning("Silakan login terlebih dahulu", 3000);
+            openModal({ mode: "login" });
             return;
         }
-        onPlay?.();
+        if (isOngoing) {
+            const animeId = anime.animeId;
+            if (!animeId) return;
+            const episodeNum = (anime.episode ?? "").replace(/\D/g, "") || "1";
+            navigate(`/episode/${animeId}-episode-${episodeNum}`);
+        } else {
+            onPlay?.();
+        }
     };
 
     const handleBookmarkClick = async (e) => {
-        e?.stopPropagation();
-        e?.preventDefault();
-
+        e.stopPropagation();
         if (!isLoggedIn) {
-            toast.warning("Silakan login terlebih dahulu untuk menyimpan ke Watchlist", 3000);
-            openModal({
-                redirectAction: () => {
-                    if (anime?.animeId && isLoggedIn) {
-                        toggleWishlist(anime);
-                    }
-                },
-                mode: "login"
-            });
+            toast.warning("Silakan login terlebih dahulu", 3000);
+            openModal({ mode: "login" });
             return;
         }
-
-        if (!anime?.animeId || !anime?.title) {
-            toast.error("Data anime tidak lengkap", 3000);
-            return;
-        }
-
+        if (!anime?.animeId) return;
         await toggleWishlist(anime);
     };
 
     return (
-        <div className={`flex flex-col ${isMobile ? "gap-1" : "gap-1.5"}`}>
-            {/* Tombol Tonton */}
-            <div
+        <div className="flex flex-col gap-2">
+            <motion.button
+                type="button"
+                onClick={handlePrimaryClick}
+                {...tap}
+                className="relative w-full min-h-[44px] font-bold rounded-xl cursor-pointer overflow-hidden text-[11px] sm:text-xs text-white border border-red-400/30"
                 style={{
-                    transform: isHovered ? "translateX(0) scale(1)" : `translateX(${isMobile ? "12px" : "20px"}) scale(0.95)`,
-                    opacity: isHovered ? 1 : 0,
-                    transition: `transform ${isMobile ? "300ms" : "350ms"} cubic-bezier(0.34, 1.56, 0.64, 1) 100ms, opacity 300ms ease 100ms`,
+                    background: "linear-gradient(135deg, #dc2626 0%, #ff1e56 50%, #ef4444 100%)",
+                    boxShadow: "0 4px 20px rgba(255,30,86,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
                 }}
             >
-                <WatchButton onClick={handlePlayClick} isDark={dark} isMobile={isMobile} />
-            </div>
+                <motion.span
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12"
+                    animate={reducedMotion ? {} : { x: ["-120%", "220%"] }}
+                    transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.2, ease: "easeInOut" }}
+                />
+                <span className="relative z-10">{isOngoing ? "Tonton Sekarang" : "Lihat Detail"}</span>
+            </motion.button>
 
-            {/* Tombol Watchlist */}
-            <button
+            <motion.button
+                type="button"
                 onClick={handleBookmarkClick}
                 disabled={wishlistLoading}
-                className={`w-full font-semibold rounded-md hover:shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer border disabled:opacity-60 disabled:cursor-not-allowed transition-all ${isMobile ? "text-[9px] py-1" : "text-[10px] py-1.5"
-                    } ${isBookmarked
-                        ? "bg-red-500 border-red-500 text-white shadow-red-500/30 font-bold"
+                {...tap}
+                className={`w-full min-h-[44px] font-bold rounded-xl cursor-pointer border text-[11px] sm:text-xs transition-colors disabled:opacity-50 ${
+                    isBookmarked
+                        ? "bg-red-500/20 border-red-400/35 text-red-300"
                         : dark
-                            ? "bg-white/10 border-white/10 text-white hover:bg-white/20"
-                            : "bg-gray-100 border-gray-200 text-gray-850 hover:bg-gray-200"
-                    }`}
-                style={{
-                    transform: isHovered ? "translateX(0) scale(1)" : `translateX(${isMobile ? "12px" : "20px"}) scale(0.95)`,
-                    opacity: isHovered ? 1 : 0,
-                    transition: `transform ${isMobile ? "300ms" : "350ms"} cubic-bezier(0.34, 1.56, 0.64, 1) 180ms, opacity 300ms ease 180ms, background-color 200ms ease, box-shadow 200ms ease, border-color 200ms ease`,
-                }}
+                            ? "bg-white/[0.06] border-white/[0.1] text-white/85 hover:bg-white/[0.1]"
+                            : "bg-white/10 border-white/15 text-white/90 hover:bg-white/15"
+                }`}
             >
-                <span className={`flex items-center justify-center ${isMobile ? "gap-0.5" : "gap-1"}`}>
-                    {wishlistLoading ? (
-                        <Loader2 className={`${isMobile ? "w-2.5 h-2.5" : "w-3 h-3"} animate-spin`} />
-                    ) : isBookmarked ? (
-                        <BookmarkCheck className={`${isMobile ? "w-2.5 h-2.5" : "w-3 h-3"} text-white fill-current animate-pulse`} />
-                    ) : (
-                        <PlusIcon dark={dark} isMobile={isMobile} />
-                    )}
-                    {/* Teks ditampilkan konsisten dengan perlindungan wrap */}
-                    <span className="whitespace-nowrap">
-                        {isBookmarked ? "Tersimpan" : "Watchlist"}
-                    </span>
-                </span>
-            </button>
+                {wishlistLoading ? "Menyimpan..." : isBookmarked ? "Di Watchlist" : "+ Simpan ke Watchlist"}
+            </motion.button>
         </div>
-    );
-}
-
-function PlusIcon({ dark, isMobile }) {
-    const size = isMobile ? "8" : "10";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-colors duration-300 ${dark ? "text-white" : "text-gray-600"}`}>
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
     );
 }

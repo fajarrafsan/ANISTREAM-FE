@@ -12,8 +12,8 @@ export default function AnimeDetailSkeleton({ fullPage = false }) {
     if (fullPage) return <LoadingSpinner />;
 
     return (
-        <div className={`font-sans antialiased relative overflow-x-hidden min-h-screen transition-colors duration-300 ${
-            isDark ? "bg-[#070204] text-slate-100" : "bg-white text-slate-900"
+        <div className={`font-sans antialiased relative min-h-screen transition-colors duration-300 ${
+            isDark ? "bg-[#08080e] text-slate-100" : "bg-white text-slate-900"
         }`}>
 
             {/* ── Ambient Glows ── */}
@@ -30,14 +30,12 @@ export default function AnimeDetailSkeleton({ fullPage = false }) {
             </div>
 
             {/* ── Main ── */}
-            <main className="max-w-7xl mx-auto px-4 pb-24 -mt-28 xs:-mt-36 sm:-mt-48 md:-mt-56 lg:-mt-64 relative z-20">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <main className="relative z-20 mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-8 pb-16 sm:pb-20 md:pb-24 -mt-24 sm:-mt-32 md:-mt-40 lg:-mt-44 space-y-6 sm:space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-start">
                     <SidebarSkeleton />
-                    <div className="lg:col-span-9 space-y-6">
-                        <MainContentSkeleton />
-                        <TabsSectionSkeleton />
-                    </div>
+                    <MainContentSkeleton />
                 </div>
+                <TabsSectionSkeleton />
             </main>
 
             {/* ── Footer ── */}

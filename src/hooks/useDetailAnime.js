@@ -15,6 +15,7 @@ export default function useAnimeDetail() {
             try {
                 setLoading(true);
                 setError(null);
+                setAnime(null);
 
                 const response = await api.get(`/anime/detail/${slug}`);
 

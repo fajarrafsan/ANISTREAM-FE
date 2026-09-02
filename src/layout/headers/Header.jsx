@@ -1,11 +1,10 @@
 import { useTheme } from "../../context/ThemeContext";
 import { useState, useEffect, useRef } from "react";
-import useHeader from "./UseHeader";
+import useHeader from "./useHeader";
 
 import HeaderLogo from "./HeaderLogo";
 import HeaderDesktopNav from "./HeaderDesktopNav";
 import HeaderMobileMenu from "./HeaderMobileMenu";
-import HeaderBottomGradient from "./HeaderBottomGradient";
 import HeaderProgressBar from "./HeaderProgressBar";
 import HeaderActions from "./HeaderActions";
 import useBreakpoint from "../../components/headerActions/hooks/useBreakPoint";
@@ -18,11 +17,8 @@ export default function Header({ activeTab, setActiveTab }) {
         menuOpen,
         setMenuOpen,
         isScrolled,
-        isHidden,
         scrollProgress,
         scrollToTop,
-        searchQuery,
-        setSearchQuery,
     } = useHeader();
 
     const { isDesktop } = useBreakpoint();
@@ -37,76 +33,42 @@ export default function Header({ activeTab, setActiveTab }) {
         if (isDesktop) setMobileSearchOpen(false);
     }, [isDesktop]);
 
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => {
-        const t = setTimeout(() => setMounted(true), 80);
-        return () => clearTimeout(t);
-    }, []);
+    const showSolid = isScrolled || mobileSearchOpen;
 
     return (
-        <header
-            className={`fixed top-0 left-0 right-0 z-9999 transition-all duration-500 ease-in-out ${isHidden ? "-translate-y-full" : "translate-y-0"
-                }`}
-            style={{
-                opacity: mounted ? 1 : 0,
-                transform: isHidden
-                    ? "translateY(-100%)"
-                    : mounted ? "translateY(0px)" : "translateY(-16px)",
-                transition: mounted
-                    ? "opacity 500ms ease, transform 500ms cubic-bezier(0.4, 0, 0.2, 1)"
-                    : "none",
-            }}
-        >
+        <header className="fixed top-0 left-0 right-0 z-9999">
             <div
-                className={`absolute inset-0 transition-all duration-500 ${isScrolled || mobileSearchOpen
-                    ? isDark
-                        ? "bg-[#0a0a0c]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl"
-                        : "bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm"
-                    : "bg-transparent border-b border-transparent"
-                    }`}
+                className={`absolute inset-0 border-b backdrop-blur-lg transition-[background-color,border-color,box-shadow] duration-300 ease-out ${
+                    showSolid
+                        ? isDark
+                            ? "bg-[#08080e]/90 border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.45)]"
+                            : "bg-white/92 border-black/[0.07] shadow-[0_4px_20px_rgba(0,0,0,0.07)]"
+                        : isDark
+                            ? "bg-[#08080e]/40 border-white/[0.04]"
+                            : "bg-white/50 border-black/[0.04]"
+                }`}
             />
 
-            <div className="relative max-w-7xl mx-auto px-3 min-[360px]:px-4 sm:px-6 md:px-10">
-                <div className="flex items-center justify-between h-[60px] sm:h-20 md:h-[88px]">
+            {/* Top highlight */}
+            <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
 
-                    {/* Logo */}
-                    <div style={{
-                        opacity: mounted ? 1 : 0,
-                        transform: mounted ? "none" : "translateX(-16px)",
-                        transition: "opacity 500ms ease 150ms, transform 500ms cubic-bezier(0.4, 0, 0.2, 1) 150ms",
-                    }}>
-                        <HeaderLogo
-                            isDark={isDark}
-                            setActiveTab={setActiveTab}
-                            scrollToTop={scrollToTop}
-                            mobileSearchOpen={mobileSearchOpen}
-                        />
-                    </div>
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                <div className="flex items-center justify-between h-[60px] md:h-[68px]">
+                    <HeaderLogo
+                        isDark={isDark}
+                        setActiveTab={setActiveTab}
+                        scrollToTop={scrollToTop}
+                        mobileSearchOpen={mobileSearchOpen}
+                    />
 
-                    {/* Nav */}
-                    <div style={{
-                        opacity: mounted ? 1 : 0,
-                        transform: mounted ? "none" : "translateY(-8px)",
-                        transition: "opacity 500ms ease 250ms, transform 500ms cubic-bezier(0.4, 0, 0.2, 1) 250ms",
-                    }}>
-                        <HeaderDesktopNav
-                            isDark={isDark}
-                            activeTab={activeTab}
-                            setActiveTab={setActiveTab}
-                            scrollToTop={scrollToTop}
-                        />
-                    </div>
+                    <HeaderDesktopNav
+                        isDark={isDark}
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        scrollToTop={scrollToTop}
+                    />
 
-                    {/* Actions */}
-                    <div
-                        className={`relative transition-all duration-500 ${mobileSearchOpen ? "flex-1 flex justify-end z-[100]" : "z-20"
-                            }`}
-                        style={{
-                            opacity: mounted ? 1 : 0,
-                            transform: mounted ? "none" : "translateX(16px)",
-                            transition: "opacity 500ms ease 350ms, transform 500ms cubic-bezier(0.4, 0, 0.2, 1) 350ms",
-                        }}
-                    >
+                    <div className={mobileSearchOpen ? "flex-1 flex justify-end z-[100]" : "z-20"}>
                         <HeaderActions
                             isDark={isDark}
                             theme={theme}
@@ -125,14 +87,11 @@ export default function Header({ activeTab, setActiveTab }) {
             <HeaderMobileMenu
                 menuOpen={menuOpen}
                 isDark={isDark}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 scrollToTop={scrollToTop}
             />
 
-            <HeaderBottomGradient isDark={isDark} isScrolled={isScrolled} />
             <HeaderProgressBar scrollProgress={scrollProgress} />
         </header>
     );

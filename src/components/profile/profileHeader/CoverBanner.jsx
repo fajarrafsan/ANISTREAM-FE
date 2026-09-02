@@ -28,64 +28,42 @@ export default function CoverBanner({
                         alt="Cover Banner"
                         className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover/banner:scale-[1.02] ${isUploadingCover ? 'blur-sm brightness-50' : ''}`}
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-black/10 opacity-0 group-hover/banner:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 opacity-0 group-hover/banner:opacity-100 transition-opacity duration-500" />
                 </>
             ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
                     <div className={`absolute inset-0 transition-all duration-700 ${
                         isDark 
-                            ? "bg-linear-to-br from-[#0a0a10] via-[#12121a] to-[#050508] animate-gradientShift" 
-                            : "bg-linear-to-br from-[#f0f1f6] via-[#e4e6ee] to-[#d8dae6] animate-gradientShift"
-                    }`}
-                    style={{backgroundSize: '200% 200%'}} />
+                            ? "bg-gradient-to-br from-[#16040a] via-[#090204] to-[#040102]" 
+                            : "bg-gradient-to-br from-rose-50 via-slate-100 to-slate-200"
+                    }`} />
                     
+                    {/* Micro-grid overlay */}
                     <div
-                        className="absolute inset-0 opacity-[0.12] transition-all duration-500"
+                        className="absolute inset-0 opacity-[0.15] transition-all duration-500 pointer-events-none"
                         style={{
                             backgroundImage: isDark
-                                ? `linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)`
-                                : `linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)`,
-                            backgroundSize: "48px 48px"
+                                ? `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`
+                                : `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.1) 1px, transparent 0)`,
+                            backgroundSize: "24px 24px"
                         }}
                     />
 
-                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-40 rounded-full blur-3xl transition-all duration-700 animate-pulse-slow ${
-                        isDark ? "bg-red-500/8" : "bg-red-500/12"
-                    }`} />
-                    <div className={`absolute top-1/5 left-1/5 w-36 h-36 rounded-full blur-2xl transition-all duration-700 animate-float-slower ${
-                        isDark ? "bg-red-900/12" : "bg-red-400/12"
-                    }`} />
-                    <div className={`absolute bottom-1/5 right-1/5 w-28 h-28 rounded-full blur-2xl transition-all duration-700 animate-float-slow ${
-                        isDark ? "bg-red-800/12" : "bg-orange-400/12"
-                    }`} />
+                    {/* Ambient ruby glows */}
+                    <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-48 rounded-full blur-[100px] bg-[#ff1e56]/15 pointer-events-none" />
+                    <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-80 h-40 rounded-full blur-[90px] bg-rose-900/20 pointer-events-none" />
 
-                    <div className="absolute top-[15%] left-[20%] w-1.5 h-1.5 rounded-full bg-red-500/20 animate-float-delayed" />
-                    <div className="absolute bottom-[25%] right-[15%] w-2 h-2 rounded-full bg-red-400/15 animate-float" />
-                    <div className="absolute top-[40%] right-[30%] w-1 h-1 rounded-full bg-orange-400/20 animate-float-slow" />
-
-                    <div className="relative z-10 flex flex-col items-center gap-4 select-none">
-                        <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center transition-all duration-500 group-hover/banner:scale-110 group-hover/banner:-translate-y-1 ${
-                            isDark ? "border-white/8 bg-white/[0.03] backdrop-blur-sm" : "border-black/8 bg-black/[0.02] backdrop-blur-sm"
-                        }`}>
-                            <span className={`material-symbols-outlined text-2xl transition-colors duration-500 ${
-                                isDark ? "text-white/25" : "text-black/30"
-                            }`}>
-                                landscape
-                            </span>
+                    <div className="relative z-10 flex flex-col items-center gap-2.5 select-none text-center px-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-[0.2em] bg-[#ff1e56]/10 border border-[#ff1e56]/30 text-[#ff1e56] backdrop-blur-md">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#ff1e56] animate-pulse" />
+                            <span>ANISTREAM CINEMA MEMBER LOUNGE</span>
                         </div>
-                        
-                        <div className="flex flex-col items-center gap-1.5">
-                            <p className={`text-xs font-mono font-bold tracking-[0.3em] uppercase transition-colors duration-500 ${
-                                isDark ? "text-white/20" : "text-black/35"
-                            }`}>
-                                Belum Ada Sampul
-                            </p>
-                            <p className={`text-[10px] font-mono tracking-wider transition-colors duration-500 ${
-                                isDark ? "text-white/10" : "text-black/20"
-                            }`}>
-                                Klik untuk menambahkan foto sampul
-                            </p>
-                        </div>
+                        <h3 className={`font-display font-black text-lg sm:text-xl md:text-2xl tracking-tight uppercase ${isDark ? 'text-white/80' : 'text-slate-800'}`}>
+                            Studio Personal Dashboard
+                        </h3>
+                        <p className={`text-[10px] sm:text-xs font-mono tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            Kustomisasi foto sampul akunmu agar tampil lebih personal dan sinematik
+                        </p>
                     </div>
 
                     <div
@@ -100,13 +78,13 @@ export default function CoverBanner({
                 </div>
             )}
 
-            <div className={`absolute inset-0 bg-linear-to-t transition-all duration-500 ${
+            <div className={`absolute inset-0 bg-gradient-to-t transition-all duration-500 ${
                 isDark 
                     ? "from-[#07070a] via-[#07070a]/60 to-transparent" 
                     : "from-white via-white/50 to-transparent"
             }`} />
             
-            <div className={`absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-red-500/30 to-transparent opacity-50`} />
+            <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/30 to-transparent opacity-50`} />
 
             {/* Overlay Loading Upload */}
             {isUploadingCover && (

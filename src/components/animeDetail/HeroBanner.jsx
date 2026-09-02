@@ -1,164 +1,147 @@
-import { useTheme } from '../../context/ThemeContext'; 
+import { motion, useScroll, useTransform } from "motion/react";
+import { useTheme } from "../../context/ThemeContext";
+import { useMotionSafe, DETAIL_EASE } from "./constants/animeDetailMotion";
+import { useRef } from "react";
 
 export default function HeroBanner({ bannerImage, title = "Anime" }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
+    const reduced = useMotionSafe();
+    const ref = useRef(null);
 
-    const hasBanner = bannerImage && bannerImage.trim() !== '';
+    const { scrollYProgress } = useScroll({
+        target: ref,
+        offset: ["start start", "end start"],
+    });
+
+    const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+    const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
+
+    const hasBanner = bannerImage && bannerImage.trim() !== "";
 
     return (
-        <div className="relative w-full h-[240px] sm:h-[320px] md:h-[460px] lg:h-[560px] overflow-hidden group">
-            {/* Layer 0: Animated particles */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div
-                    className={`absolute top-1/4 left-1/4 w-1 h-1 rounded-full animate-float-slow ${isDark ? "bg-[#ff1e56]/40" : "bg-rose-400/30"
-                        }`}
-                />
-                <div
-                    className={`absolute top-1/3 right-1/3 w-0.5 h-0.5 rounded-full animate-float-slower ${isDark ? "bg-[#ff1e56]/30" : "bg-rose-400/20"
-                        }`}
-                />
-                <div
-                    className={`absolute bottom-1/4 left-1/2 w-1 h-1 rounded-full animate-float-slow ${isDark ? "bg-red-400/20" : "bg-rose-300/20"
-                        }`}
-                />
+        <div ref={ref} className="relative w-full h-[320px] sm:h-[380px] md:h-[450px] lg:h-[500px] overflow-hidden select-none">
+            {/* Layer 0: Blurred backdrop layer — deep cinematic atmosphere */}
+            {hasBanner && (
+                <motion.div 
+                    style={{ y: bgY, opacity }}
+                    className="absolute inset-0 z-0 scale-125 blur-3xl opacity-50 pointer-events-none"
+                >
+                    <img
+                        src={bannerImage}
+                        alt=""
+                        aria-hidden
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                    />
+                </motion.div>
+            )}
+
+            {/* Layer 1: Animated ambient particles */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                {[...Array(14)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className={`absolute w-1.5 h-1.5 rounded-full ${isDark ? "bg-[#ff1e56]/40 shadow-[0_0_10px_#ff1e56]" : "bg-rose-400/30 shadow-[0_0_8px_#fb7185]"}`}
+                        initial={{
+                            x: (i * 97) % 1200,
+                            y: (i * 63) % 500,
+                            opacity: 0.2,
+                            scale: 0.8,
+                        }}
+                        animate={{
+                            y: [null, -150],
+                            opacity: [0.2, 0.7, 0],
+                            scale: [0.8, 1.4, 0.6],
+                        }}
+                        transition={{
+                            duration: 7 + (i % 5) * 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: (i % 4) * 1.2,
+                        }}
+                    />
+                ))}
             </div>
 
-            {/* Layer 1: Main image / fallback */}
+            {/* Layer 2: Main Banner Image with Parallax */}
             {hasBanner ? (
-                <div className="absolute inset-0 scale-105 group-hover:scale-110 transition-transform duration-1800 ease-out">
+                <motion.div
+                    style={{ y: bgY }}
+                    className="absolute inset-0 z-[1]"
+                    initial={reduced ? false : { scale: 1.08, filter: "blur(6px)" }}
+                    animate={{ scale: 1, filter: "blur(0px)" }}
+                    transition={{ duration: 1.2, ease: DETAIL_EASE }}
+                >
                     <img
                         src={bannerImage}
                         alt={title}
-                        className={`w-full h-full object-cover object-center transition-all duration-1000 ${isDark
-                                ? "opacity-55 sm:opacity-50 group-hover:opacity-60 contrast-[1.05]"
-                                : "opacity-80 sm:opacity-75 group-hover:opacity-85 contrast-[1.08] saturate-[1.12]"
+                        className={`w-full h-full object-cover object-center transition-all duration-700 ${isDark
+                            ? "opacity-65 contrast-[1.1] brightness-[0.9]"
+                            : "opacity-85 contrast-[1.05] saturate-[1.15]"
                             }`}
                         loading="eager"
                     />
-                </div>
+                </motion.div>
             ) : (
                 <div
-                    className={`absolute inset-0 ${isDark
-                            ? "bg-linear-to-br from-[#1a0a0f] via-[#0d0407] to-black"
-                            : "bg-linear-to-br from-rose-50 via-white to-slate-100"
+                    className={`absolute inset-0 z-[1] ${isDark
+                        ? "bg-gradient-to-br from-[#1a0a0f] via-[#0a0a0f] to-[#08080e]"
+                        : "bg-gradient-to-br from-rose-50 via-white to-slate-100"
                         }`}
                 >
                     <div
                         className="absolute inset-0"
                         style={{
-                            opacity: isDark ? 0.03 : 0.06,
+                            opacity: isDark ? 0.04 : 0.08,
                             backgroundImage: `radial-gradient(circle at 1px 1px, ${isDark ? "#ff1e56" : "#f43f5e"} 1px, transparent 0)`,
-                            backgroundSize: "32px 32px",
+                            backgroundSize: "40px 40px",
                         }}
                     />
                 </div>
             )}
 
-            {/* Layer 2: Ken Burns */}
-            <div className="absolute inset-0 animate-ken-burns pointer-events-none" />
+            {/* Layer 3: Top Navigation Shadow Vignette */}
+            <div className={`absolute top-0 left-0 right-0 h-32 sm:h-44 z-10 bg-gradient-to-b ${isDark ? "from-[#08080e]/95 via-[#08080e]/50 to-transparent" : "from-white/95 via-white/40 to-transparent"} pointer-events-none`} />
 
-            {/* Layer 3: Vignette  */}
-            <div
-                className="absolute inset-0 z-10 pointer-events-none"
-                style={{
-                    boxShadow: isDark
-                        ? "inset 0 0 100px 35px rgba(7,2,4,0.92), inset 0 0 220px 80px rgba(7,2,4,0.55)"
-                        : "inset 0 0 80px 20px rgba(255,255,255,0.45), inset 0 0 160px 40px rgba(255,255,255,0.2)",
-                }}
-            />
-            <div
-                className={`absolute top-0 left-0 right-0 h-[120px] sm:h-[160px] md:h-[200px] z-10 bg-linear-to-b ${isDark
-                        ? "from-[#070204] via-[#070204]/80 to-transparent"
-                        : "from-white via-white/40 to-transparent"
+            {/* Layer 4: Left Side Soft Vignette */}
+            <div className={`absolute inset-y-0 left-0 w-1/3 sm:w-1/2 z-10 bg-gradient-to-r ${isDark ? "from-[#08080e]/80 via-[#08080e]/30 to-transparent" : "from-white/70 via-white/20 to-transparent"} pointer-events-none`} />
+
+            {/* Layer 5: Right Side Soft Vignette */}
+            <div className={`absolute inset-y-0 right-0 w-1/4 sm:w-1/3 z-10 bg-gradient-to-l ${isDark ? "from-[#08080e]/70 to-transparent" : "from-white/60 to-transparent"} pointer-events-none`} />
+
+            {/* Layer 6: CRITICAL SEAMLESS BOTTOM TRANSITION (Fades completely into page background) */}
+            {/* 6A: Broad bottom gradient covering the lower 65% */}
+            <div 
+                className={`absolute bottom-0 left-0 right-0 h-[65%] z-10 pointer-events-none bg-gradient-to-t ${isDark
+                    ? "from-[#08080e] via-[#08080e]/85 via-45% to-transparent"
+                    : "from-white via-white/85 via-45% to-transparent"
                     }`}
             />
-            {/* Bottom */}
-            <div
-                className={`absolute bottom-0 left-0 right-0 h-[180px] sm:h-[240px] md:h-[300px] z-10 bg-linear-to-t ${isDark
-                        ? "from-[#070204] via-[#070204]/75 to-transparent"
-                        : "from-white via-white/50 to-transparent"
-                    }`}
-            />
-            {/* Left */}
-            <div
-                className={`absolute inset-y-0 left-0 w-[55%] sm:w-[45%] md:w-[40%] z-10 bg-linear-to-r ${isDark
-                        ? "from-[#070204]/95 via-[#070204]/55 to-transparent"
-                        : "from-white/70 via-white/20 to-transparent"
-                    }`}
-            />
-            {/* Right */}
-            <div
-                className={`absolute inset-y-0 right-0 w-[30%] sm:w-[28%] md:w-[25%] z-10 bg-linear-to-l ${isDark ? "from-[#070204]/60 to-transparent" : "from-white/20 to-transparent"
+            {/* 6B: Solid bottom blend to guarantee 100% pure background color at the container boundary */}
+            <div 
+                className={`absolute bottom-0 left-0 right-0 h-28 sm:h-36 z-10 pointer-events-none bg-gradient-to-t ${isDark
+                    ? "from-[#08080e] from-40% via-[#08080e]/95 to-transparent"
+                    : "from-white from-40% via-white/95 to-transparent"
                     }`}
             />
 
-            {/* Layer 5: Scanlines — dark only */}
-            {isDark && (
-                <div className="absolute inset-0 z-10 opacity-[0.04] pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.3)_50%)] bg-size-[100%_3px]" />
-            )}
-
-            {/* Layer 6: Noise texture */}
-            <div
-                className="absolute inset-0 z-10 pointer-events-none mix-blend-overlay"
-                style={{
-                    opacity: isDark ? 0.015 : 0.008,
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-                }}
+            {/* Layer 7: Subtle glowing accent orb (Positioned safely above bottom so it never clips) */}
+            <motion.div
+                style={{ opacity }}
+                className={`absolute top-1/3 left-1/4 -translate-x-1/2 w-96 h-64 blur-[110px] rounded-full z-10 pointer-events-none ${isDark ? "bg-[#ff1e56]/12" : "bg-rose-400/8"
+                    }`}
             />
 
-            {/* Layer 7: Top accent line */}
-            <div className="absolute top-0 left-0 right-0 z-20">
+            {/* Top Accent Line */}
+            <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
                 <div
-                    className={`h-[2px] bg-linear-to-r from-transparent ${isDark
-                            ? "via-[#ff1e56] to-transparent shadow-[0_0_20px_rgba(255,30,86,0.8)]"
-                            : "via-rose-400/60 to-transparent shadow-[0_0_20px_rgba(244,63,94,0.3)]"
-                        }`}
-                />
-                <div
-                    className={`h-px mt-px blur-sm bg-linear-to-r ${isDark
-                            ? "from-[#ff1e56]/50 via-[#ff1e56]/20 to-transparent"
-                            : "from-rose-400/30 via-rose-300/10 to-transparent"
+                    className={`h-[1.5px] bg-gradient-to-r from-transparent ${isDark
+                        ? "via-[#ff1e56] to-transparent shadow-[0_0_25px_rgba(255,30,86,1)]"
+                        : "via-rose-400/80 to-transparent shadow-[0_0_20px_rgba(244,63,94,0.5)]"
                         }`}
                 />
             </div>
-
-            {/* Layer 8: Bottom accent line */}
-            <div className="absolute bottom-0 left-0 right-0 z-20">
-                <div
-                    className={`h-px bg-linear-to-r from-transparent ${isDark ? "via-[#2a1117]" : "via-slate-300/50"
-                        } to-transparent`}
-                />
-            </div>
-
-            {/* Layer 9: Corner accents on hover */}
-            <div
-                className={`absolute top-4 left-4 sm:top-6 sm:left-6 w-8 h-8 sm:w-12 sm:h-12 border-l-2 border-t-2 rounded-tl-lg z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${isDark ? "border-[#ff1e56]/30" : "border-rose-400/30"
-                    }`}
-            />
-            <div
-                className={`absolute top-4 right-4 sm:top-6 sm:right-6 w-8 h-8 sm:w-12 sm:h-12 border-r-2 border-t-2 rounded-tr-lg z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${isDark ? "border-[#ff1e56]/30" : "border-rose-400/30"
-                    }`}
-            />
-
-            {/* Layer 10: Corner bracket */}
-            <div className="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 z-20 flex items-end gap-1 opacity-70 sm:opacity-60">
-                <div
-                    className={`w-3 h-3 sm:w-4 sm:h-4 border-l-2 border-b-2 rounded-bl-sm ${isDark ? "border-[#ff1e56]/40" : "border-rose-400/30"
-                        }`}
-                />
-            </div>
-
-            {/* Layer 11: Light sweep on hover */}
-            <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none">
-                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500 ease-in-out" />
-            </div>
-
-            {/* Layer 12: Bottom ambient glow */}
-            <div
-                className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] sm:w-3/4 h-20 sm:h-24 md:h-32 blur-3xl rounded-full z-10 pointer-events-none ${isDark ? "bg-[#ff1e56]/5" : "bg-rose-400/5"
-                    }`}
-            />
         </div>
     );
 }

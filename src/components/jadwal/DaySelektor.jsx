@@ -1,44 +1,63 @@
 import { useTheme } from "../../context/ThemeContext";
 
 const DAYS = [
-    { key: "SUN", label: "MIN" },
-    { key: "MON", label: "SEN" },
-    { key: "TUE", label: "SEL" },
-    { key: "WED", label: "RAB" },
-    { key: "THU", label: "KAM" },
-    { key: "FRI", label: "JUM" },
-    { key: "SAT", label: "SAB" },
+    { key: "SUN", label: "MIN", fullLabel: "Minggu" },
+    { key: "MON", label: "SEN", fullLabel: "Senin" },
+    { key: "TUE", label: "SEL", fullLabel: "Selasa" },
+    { key: "WED", label: "RAB", fullLabel: "Rabu" },
+    { key: "THU", label: "KAM", fullLabel: "Kamis" },
+    { key: "FRI", label: "JUM", fullLabel: "Jumat" },
+    { key: "SAT", label: "SAB", fullLabel: "Sabtu" },
 ];
+
+const DAY_INDEX_KEYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 export default function DaySelector({ activeDay, onDayChange }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
+    const todayKey = DAY_INDEX_KEYS[new Date().getDay()];
+
     return (
         <section className="w-full relative select-none">
-            {/* Mengubah sistem flex-scroll menjadi grid 7 kolom di mobile agar pas dalam satu layar */}
+            {/* 7 Columns Grid on Mobile, Flex on Desktop */}
             <div className="grid grid-cols-7 sm:flex sm:flex-wrap gap-1 sm:gap-2 pb-1">
                 {DAYS.map((day) => {
                     const isActive = activeDay === day.key;
+                    const isToday = todayKey === day.key;
+
                     return (
                         <button
                             key={day.key}
                             onClick={() => onDayChange(day.key)}
-                            className={`relative rounded-lg font-black uppercase transition-all duration-300 select-none overflow-hidden text-center flex items-center justify-center
-                                px-1 sm:px-4 py-2 sm:py-2.5 text-[8px] min-[360px]:text-[9px] min-[390px]:text-[10px] sm:text-xs tracking-wider min-w-0 sm:min-w-[60px]
+                            className={`relative rounded-xl font-black uppercase transition-all duration-200 select-none overflow-hidden text-center flex flex-col items-center justify-center cursor-pointer
+                                px-1 sm:px-4 py-2 sm:py-2.5 text-[8px] min-[360px]:text-[9px] min-[390px]:text-[10px] sm:text-xs tracking-wider min-w-0 sm:min-w-[70px] border
                                 ${isActive
-                                    ? isDark
-                                        ? "bg-[#ff1e56] border-[#ff1e56] text-white shadow-[0_2px_12px_rgba(255,30,86,0.3)]"
-                                        : "bg-slate-900 border-slate-900 text-white shadow-md"
+                                    ? 'bg-gradient-to-r from-[#ff1e56] to-rose-600 border-transparent text-white shadow-[0_4px_18px_rgba(255,30,86,0.35)]'
                                     : isDark
-                                        ? "bg-[#13080c]/60 border border-[#2a1117]/50 text-slate-500 hover:border-[#ff1e56]/25 hover:text-slate-300"
-                                        : "bg-white/60 border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                                        ? 'bg-white/[0.03] border-white/[0.07] text-slate-400 hover:border-white/20 hover:text-white hover:bg-white/[0.06]'
+                                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900 shadow-sm'
                                 }`}
                         >
-                            {isActive && (
-                                <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                            <span className="relative z-10 flex items-center gap-1">
+                                <span className="sm:hidden">{day.label}</span>
+                                <span className="hidden sm:inline">{day.fullLabel}</span>
+                                {isToday && (
+                                    <span
+                                        className={`w-1.5 h-1.5 rounded-full ${
+                                            isActive ? 'bg-white' : 'bg-[#ff1e56]'
+                                        } animate-pulse`}
+                                        title="Hari Ini"
+                                    />
+                                )}
+                            </span>
+                            {isToday && (
+                                <span className={`text-[6px] sm:text-[7px] font-mono lowercase tracking-normal mt-0.5 opacity-80 ${
+                                    isActive ? 'text-white' : 'text-[#ff1e56]'
+                                }`}>
+                                    hari ini
+                                </span>
                             )}
-                            <span className="relative z-10">{day.label}</span>
                         </button>
                     );
                 })}

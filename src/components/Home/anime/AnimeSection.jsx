@@ -8,6 +8,7 @@ import useToast from "../../../hooks/useToast";
 
 export default function AnimeSection({
     title,
+    subtitle,
     accent,
     animeList,
     viewAllLabel = "Lihat Semua",
@@ -47,6 +48,15 @@ export default function AnimeSection({
 
     return (
         <section className="relative max-w-7xl mx-auto overflow-visible transition-colors duration-300 px-3 py-5 sm:px-6 sm:py-8 md:px-8 md:py-10">
+            {/* Premium glass panel backdrop */}
+            <div
+                className={`absolute inset-x-3 sm:inset-x-6 md:inset-x-8 inset-y-2 rounded-2xl sm:rounded-3xl pointer-events-none z-0 border ${
+                    isDark
+                        ? "bg-white/[0.015] border-white/[0.04]"
+                        : "bg-white/40 border-black/[0.04] shadow-sm"
+                }`}
+            />
+
             {/* Subtle background glow */}
             <div
                 className="absolute -top-20 left-1/2 -translate-x-1/2 w-[60vw] h-40 pointer-events-none z-0"
@@ -83,16 +93,31 @@ export default function AnimeSection({
                         />
                     </div>
 
-                    {/* Title */}
-                    <h2
-                        className={`font-display font-black tracking-tight truncate text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-colors duration-500 ${
-                            isDark
-                                ? isOngoing ? "text-red-300" : "text-emerald-300"
-                                : isOngoing ? "text-red-600" : "text-emerald-600"
-                        }`}
-                    >
-                        {title}
-                    </h2>
+                    {/* Title + Subtitle */}
+                    <div className="min-w-0">
+                        <h2
+                            className={`font-display font-black tracking-tight truncate text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-colors duration-500 ${
+                                isDark
+                                    ? isOngoing ? "text-red-300" : "text-emerald-300"
+                                    : isOngoing ? "text-red-600" : "text-emerald-600"
+                            }`}
+                        >
+                            {title}
+                        </h2>
+                        {subtitle && (
+                            <p
+                                className={`text-[10px] sm:text-xs font-medium tracking-wide mt-0.5 transition-colors duration-500 truncate ${
+                                    isDark ? "text-white/30" : "text-gray-500"
+                                }`}
+                                style={{
+                                    opacity: headerVisible ? 1 : 0,
+                                    transition: "opacity 500ms ease 200ms",
+                                }}
+                            >
+                                {subtitle}
+                            </p>
+                        )}
+                    </div>
 
                     {/* Live count badge */}
                     {animeList?.length > 0 && (

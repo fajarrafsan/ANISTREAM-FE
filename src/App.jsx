@@ -79,7 +79,7 @@ function AppContent() {
                 className={
                     hideLayout
                         ? ""
-                        : "pt-[74px] sm:pt-[82px] md:pt-[90px]"
+                        : "pt-[60px] md:pt-[68px]"
                 }
             >
                 <Routes>

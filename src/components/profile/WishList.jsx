@@ -68,7 +68,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                     {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className="animate-pulse">
                             <div className={`relative aspect-2/3 rounded-[24px] overflow-hidden ${isDark ? 'bg-neutral-800/40 border border-white/5' : 'bg-neutral-200/50 border border-black/5'}`}>
-                                <div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/[0.05] to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent" />
                             </div>
                         </div>
                     ))}
@@ -95,9 +95,9 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                 <div className="flex items-center gap-3 md:gap-4">
                     <div className="relative flex items-center justify-center w-1.5 h-7">
                         <div className="absolute inset-0 bg-[#ec001d] blur-[8px] opacity-70 dark:opacity-100 rounded-full" />
-                        <div className="relative w-full h-full bg-linear-to-b from-[#ff4a5a] to-[#a60014] rounded-full shadow-[0_0_10px_rgba(236,0,29,0.5)]" />
+                        <div className="relative w-full h-full bg-gradient-to-b from-[#ff4a5a] to-[#a60014] rounded-full shadow-[0_0_10px_rgba(236,0,29,0.5)]" />
                     </div>
-                    <h2 className={`font-sora text-base md:text-lg font-extrabold tracking-widest uppercase bg-clip-text text-transparent transition-colors duration-300 ${isDark ? "bg-linear-to-r from-white via-neutral-200 to-neutral-500" : "bg-linear-to-r from-neutral-900 via-neutral-700 to-neutral-400"}`}>
+                    <h2 className={`font-sora text-base md:text-lg font-extrabold tracking-widest uppercase bg-clip-text text-transparent transition-colors duration-300 ${isDark ? "bg-gradient-to-r from-white via-neutral-200 to-neutral-500" : "bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-400"}`}>
                         My Wishlist
                     </h2>
                 </div>
@@ -111,7 +111,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
             </div>
 
             {wishlist.length === 0 ? (
-                <div className={`relative overflow-hidden flex flex-col items-center justify-center p-16 sm:p-24 rounded-[32px] border transition-all duration-500 group ${isDark ? "border-white/5 bg-linear-to-b from-neutral-900/50 to-neutral-950/80 backdrop-blur-xl" : "border-black/5 bg-linear-to-b from-white/50 to-neutral-50/80 backdrop-blur-xl"}`}>
+                <div className={`relative overflow-hidden flex flex-col items-center justify-center p-16 sm:p-24 rounded-[32px] border transition-all duration-500 group ${isDark ? "border-white/5 bg-gradient-to-b from-neutral-900/50 to-neutral-950/80 backdrop-blur-xl" : "border-black/5 bg-gradient-to-b from-white/50 to-neutral-50/80 backdrop-blur-xl"}`}>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#ec001d]/10 rounded-full blur-[60px] pointer-events-none" />
                     <div className={`relative flex items-center justify-center w-20 h-20 rounded-2xl mb-6 border transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-2 ${isDark ? "bg-neutral-800/30 border-white/10 text-neutral-400" : "bg-white border-neutral-200 text-neutral-400"}`}>
                         <span className="material-symbols-outlined text-4xl">bookmark_add</span>
@@ -148,7 +148,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                                         <span className="material-symbols-outlined text-[16px]">close</span>
                                     </button>
 
-                                    <div className={`absolute inset-0 bg-linear-to-br from-transparent via-transparent to-[#ec001d]/0 group-hover:to-[#ec001d]/10 transition-all duration-700 z-10 pointer-events-none`} />
+                                    <div className={`absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[#ec001d]/0 group-hover:to-[#ec001d]/10 transition-all duration-700 z-10 pointer-events-none`} />
 
                                     {brokenImages[itemId] || !imageSrc ? (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center bg-neutral-900">
@@ -166,7 +166,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                                         />
                                     )}
 
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/30 to-black/10 opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/10 opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-20 pointer-events-none">
                                         <div className="w-14 h-14 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative">
@@ -179,7 +179,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                                         <h3 className="font-sora text-[13px] sm:text-[15px] font-bold text-white leading-snug line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
                                             {item.title}
                                         </h3>
-                                        <div className="h-[3px] bg-linear-to-r from-[#ec001d] to-[#ff4a5a] mt-3 rounded-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100 ease-out shadow-[0_0_10px_rgba(236,0,29,0.8)]" />
+                                        <div className="h-[3px] bg-gradient-to-r from-[#ec001d] to-[#ff4a5a] mt-3 rounded-full origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100 ease-out shadow-[0_0_10px_rgba(236,0,29,0.8)]" />
                                     </div>
                                 </article>
                             );
@@ -188,7 +188,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
 
                     {/* Gradient Fade-Out Effect saat Collapse */}
                     {!isExpanded && wishlist.length > collapsedLimit && (
-                        <div className={`absolute bottom-0 left-0 w-full h-32 pointer-events-none transition-all duration-700 bg-linear-to-t z-20 ${isDark ? "from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent" : "from-[#fafafa] via-[#fafafa]/80 to-transparent"}`} />
+                        <div className={`absolute bottom-0 left-0 w-full h-32 pointer-events-none transition-all duration-700 bg-gradient-to-t z-20 ${isDark ? "from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent" : "from-[#fafafa] via-[#fafafa]/80 to-transparent"}`} />
                     )}
                 </div>
             )}
@@ -205,8 +205,8 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                                     : "bg-white border-neutral-200 text-neutral-600 hover:text-white hover:border-[#ec001d]"
                             }`}
                         >
-                            <div className="absolute inset-0 bg-linear-to-r from-[#ec001d] to-[#a60014] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0" />
-                            <div className="absolute -inset-1 bg-linear-to-r from-[#ec001d]/20 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#ec001d] to-[#a60014] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-0" />
+                            <div className="absolute -inset-1 bg-gradient-to-r from-[#ec001d]/20 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <span className="relative z-10 transition-transform duration-500 group-hover:-translate-y-0.5">View All ({wishlist.length - collapsedLimit} More)</span>
                             <span className="material-symbols-outlined text-xl relative z-10 transition-transform duration-500 group-hover:translate-y-1">keyboard_arrow_down</span>
                         </button>
@@ -241,7 +241,7 @@ export default function Wishlist({ wishlist = [], loading, onRemove, isExpanded,
                                             <button
                                                 key={pageNum}
                                                 onClick={() => handlePageChange(pageNum)}
-                                                className={`w-9 h-9 text-[11px] font-mono font-bold rounded-xl transition-all duration-300 ${isActive ? 'bg-linear-to-tr from-[#ec001d] to-[#ff4a5a] text-white shadow-[0_4px_12px_rgba(236,0,29,0.3)] scale-105' : isDark ? 'text-neutral-400 hover:text-white hover:bg-white/5' : 'text-neutral-500 hover:text-black hover:bg-neutral-50'}`}
+                                                className={`w-9 h-9 text-[11px] font-mono font-bold rounded-xl transition-all duration-300 ${isActive ? 'bg-gradient-to-tr from-[#ec001d] to-[#ff4a5a] text-white shadow-[0_4px_12px_rgba(236,0,29,0.3)] scale-105' : isDark ? 'text-neutral-400 hover:text-white hover:bg-white/5' : 'text-neutral-500 hover:text-black hover:bg-neutral-50'}`}
                                             >
                                                 {pageNum}
                                             </button>

@@ -1,148 +1,167 @@
-import { useTheme } from "../../../../context/ThemeContext";
-import { useAuth } from "../../../../context/AuthContext";
-import { useAuthModal } from "../../../../context/AuthModalContext";
-import useToast from "../../../../hooks/useToast";
 import { motion } from "motion/react";
-import { useNavigate } from "react-router-dom";
+import { useCardSpotlight } from "./useCardSpotlight";
+import {
+    imageVariants,
+    titleBarVariants,
+    motionTransition,
+    CARD_EASE,
+} from "./animeCardMotion";
 
-export default function AnimeCardImage({ anime, isHovered, isOngoing, isDark, isMobile }) {
-    const { theme } = useTheme();
-    const { isLoggedIn } = useAuth();
-    const { openModal } = useAuthModal();
-    const toast = useToast();
-    const dark = isDark !== undefined ? isDark : theme === "dark";
-    const navigate = useNavigate();
+export default function AnimeCardImage({
+    anime,
+    isExpanded,
+    isOngoing,
+    isDark,
+    canHover = true,
+    reducedMotion = false,
+}) {
+    const {
+        ref: spotRef,
+        spot,
+        active: spotActive,
+        handleMouseMove,
+        handleMouseEnter,
+        handleMouseLeave,
+    } = useCardSpotlight();
 
-    const mobile = isMobile !== undefined ? isMobile : typeof window !== "undefined" && window.innerWidth < 640;
-
-    const handlePlay = (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        // Cek apakah user sudah login
-        if (!isLoggedIn) {
-            toast.warning("Silakan login terlebih dahulu", 3000);
-            openModal({ mode: "login" });
-            return;
-        }
-
-        const animeId = anime.animeId;
-
-        if (!animeId) return;
-
-        // Kalau COMPLETE, masuk ke detail page
-        if (anime.status === "COMPLETE") {
-            navigate(`/anime/detail/${animeId}`);
-            return;
-        }
-
-        // Kalau ongoing, masuk ke episode page seperti biasa
-        const episodeNum = (anime.episode ?? "").replace(/\D/g, "") || "1";
-        navigate(`/episode/${animeId}-episode-${episodeNum}`);
-    };
+    const imgState = isExpanded ? "expanded" : "rest";
 
     return (
-        <div className="relative flex-1 overflow-hidden aspect-3/4 rounded-xl group/card">
-
-            {/* Gambar */}
-            <img
+        <div
+            ref={spotRef}
+            className="absolute inset-0 overflow-hidden"
+            onMouseMove={canHover ? handleMouseMove : undefined}
+            onMouseEnter={canHover ? handleMouseEnter : undefined}
+            onMouseLeave={canHover ? handleMouseLeave : undefined}
+        >
+            <motion.img
                 src={anime.image}
                 alt={anime.title}
-                className={`w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${isHovered ? "scale-110" : "scale-100"}`}
+                loading="lazy"
+                draggable={false}
+                variants={imageVariants}
+                initial="rest"
+                animate={imgState}
+                transition={motionTransition(reducedMotion, { duration: 0.65, ease: CARD_EASE })}
+                className="absolute inset-0 w-full h-full object-cover"
+            />
+
+            {/* Cursor spotlight */}
+            <motion.div
+                className="pointer-events-none absolute inset-0"
+                animate={{ opacity: spotActive && canHover && !isExpanded ? 1 : 0 }}
+                transition={{ duration: 0.35 }}
                 style={{
-                    filter: isHovered ? "brightness(1.1) contrast(1.05)" : "brightness(1) contrast(1)",
-                    transition: "transform 0.7s cubic-bezier(0.25,1,0.5,1), filter 0.5s ease",
+                    background: `radial-gradient(circle at ${spot.x}% ${spot.y}%, rgba(255,30,86,0.22) 0%, transparent 52%)`,
                 }}
             />
 
-            {/* Gradient Overlay — lighter to keep image clearer */}
-            <div className={`absolute inset-0 transition-opacity duration-400 ${isHovered ? "opacity-100" : "opacity-50"} bg-linear-to-t from-black/80 via-black/20 to-black/10`} />
+            {/* Film grain */}
+            <div
+                className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay z-[1]"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                }}
+            />
 
-            {/* Shimmer */}
-            <ShimmerOverlay isHovered={isHovered} dark={dark} isMobile={mobile} />
+            <motion.div
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/5"
+                animate={{ opacity: isExpanded ? 0.35 : 1 }}
+                transition={{ duration: 0.35, ease: CARD_EASE }}
+            />
 
-            {/* Play Button */}
-            <PlayButton isHovered={isHovered} dark={dark} isMobile={mobile} onPlay={handlePlay} />
-
-            {/* Badge Status — premium glass */}
-            <div className={`absolute z-10 ${mobile ? "top-1.5 left-1.5" : "top-2.5 left-2.5"}`}>
-                <div className={`flex items-center backdrop-blur-md rounded-md border font-black uppercase tracking-wider transition-all duration-300 ${mobile ? "gap-1 px-1.5 py-0.5 text-[8px]" : "gap-1.5 px-2.5 py-1 text-[9px]"} ${isOngoing ? "bg-red-500/15 text-red-400 border-red-500/20 shadow-sm shadow-red-500/10" : "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 shadow-sm shadow-emerald-500/10"}`}>
-                    <span className={`rounded-full animate-pulse ${mobile ? "w-1 h-1" : "w-1.5 h-1.5"} ${isOngoing ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"}`} />
-                    <span>{isOngoing ? "ONGOING" : "COMPLETE"}</span>
-                </div>
+            {/* Badges */}
+            <div className="absolute top-2.5 inset-x-2.5 z-10 flex items-start justify-between gap-1.5">
+                <StatusBadge isOngoing={isOngoing} reducedMotion={reducedMotion} />
+                {anime.rating && (
+                    <motion.span
+                        initial={false}
+                        whileHover={reducedMotion ? {} : { scale: 1.04 }}
+                        className="inline-flex items-center gap-0.5 rounded-lg border px-2 py-0.5 text-[8px] sm:text-[9px] font-bold backdrop-blur-xl bg-black/55 border-amber-400/25 text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.15)]"
+                    >
+                        {anime.rating}
+                        <span className="text-amber-400/80">★</span>
+                    </motion.span>
+                )}
             </div>
 
-            {/* Rating — premium glass */}
-            <div className={`absolute backdrop-blur-md rounded-md border flex items-center gap-1 transition-all duration-300 ${mobile ? "top-1.5 right-1.5 px-1.5 py-0.5" : "top-2.5 right-2.5 px-2 py-1"} ${dark ? "bg-zinc-950/70 border-zinc-800/40 text-white shadow-sm shadow-black/20" : "bg-white/80 border-zinc-200/50 text-zinc-900 shadow-sm"}`}>
-                <span className={`text-yellow-400 ${mobile ? "text-[8px]" : "text-[10px]"}`}>★</span>
-                <span className={`font-extrabold ${mobile ? "text-[8px]" : "text-[10px]"}`}>{anime.rating}</span>
-            </div>
+            {isOngoing && anime.episode && (
+                <motion.div
+                    className="absolute top-10 right-2.5 z-10"
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={motionTransition(reducedMotion, { delay: 0.1, duration: 0.35 })}
+                >
+                    <span className="rounded-lg border px-2 py-0.5 text-[8px] font-bold backdrop-blur-xl bg-black/55 border-white/12 text-white/90">
+                        {anime.episode}
+                    </span>
+                </motion.div>
+            )}
 
-            {/* Episode Badge — premium glass */}
-            {isOngoing && (
-                <div className={`absolute backdrop-blur-md rounded-md border transition-all duration-300 ${mobile ? "bottom-1.5 right-1.5 px-1.5 py-0.5 text-[8px]" : "bottom-2.5 right-2.5 px-2.5 py-1 text-[9px]"} ${dark ? "bg-zinc-950/70 border-zinc-800/40 text-zinc-200 shadow-sm shadow-black/20" : "bg-white/80 border-zinc-200/50 text-zinc-800 shadow-sm"}`}>
-                    <span className="font-bold">{anime.episode}</span>
+            {/* Title bar */}
+            <motion.div
+                className="absolute inset-x-0 bottom-0 z-10 p-3 pt-10"
+                variants={titleBarVariants}
+                initial="visible"
+                animate={isExpanded ? "hidden" : "visible"}
+            >
+                <h3 className="font-display font-bold leading-tight line-clamp-2 text-sm sm:text-[15px] text-white tracking-wide drop-shadow-lg">
+                    {anime.title}
+                </h3>
+                <div className="flex items-center gap-2 mt-1.5 min-w-0 text-[10px] sm:text-[11px]">
+                    {anime.genre && (
+                        <span className="truncate font-medium text-white/60">{anime.genre}</span>
+                    )}
+                    {anime.year && (
+                        <>
+                            <span className="w-1 h-1 rounded-full bg-red-400/60 shrink-0" />
+                            <span className="shrink-0 font-semibold text-white/50">{anime.year}</span>
+                        </>
+                    )}
                 </div>
+                {/* Accent line */}
+                <motion.div
+                    className="mt-2 h-[2px] rounded-full origin-left bg-gradient-to-r from-red-500/80 to-transparent"
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true }}
+                    transition={motionTransition(reducedMotion, { duration: 0.5, ease: CARD_EASE })}
+                />
+            </motion.div>
+
+            {/* Hover hint — desktop only */}
+            {canHover && !isExpanded && (
+                <motion.div
+                    className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-2.5 py-1 rounded-full text-[9px] font-semibold tracking-wide text-white/70 backdrop-blur-md bg-black/30 border border-white/10"
+                    initial={{ opacity: 0, y: 6 }}
+                    whileHover={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25 }}
+                >
+                    Hover untuk detail
+                </motion.div>
             )}
         </div>
     );
 }
 
-function ShimmerOverlay({ isHovered, dark, isMobile }) {
-    const shimmerGradient = dark
-        ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.02) 20%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.02) 70%, transparent 100%)"
-        : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 20%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0.03) 80%, transparent 100%)";
-
+function StatusBadge({ isOngoing, reducedMotion }) {
     return (
-        <div
-            className="pointer-events-none absolute inset-0 overflow-hidden"
-            style={{
-                opacity: isHovered ? 1 : 0,
-                transition: `opacity ${isMobile ? "0.3s" : "0.5s"} ease-out`,
-                willChange: "opacity",
-            }}
+        <motion.span
+            initial={false}
+            animate={
+                isOngoing && !reducedMotion
+                    ? { boxShadow: ["0 0 0 rgba(239,68,68,0)", "0 0 14px rgba(239,68,68,0.35)", "0 0 0 rgba(239,68,68,0)"] }
+                    : {}
+            }
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[7px] sm:text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-xl ${
+                isOngoing
+                    ? "bg-red-500/15 text-red-300 border-red-400/30"
+                    : "bg-emerald-500/12 text-emerald-300 border-emerald-400/25"
+            }`}
         >
-            <div
-                className="absolute inset-y-0 w-full"
-                style={{
-                    background: shimmerGradient,
-                    backgroundSize: "200% 100%",
-                    animation: `aci-hardware-shine ${isMobile ? "1.8s" : "2.2s"} cubic-bezier(0.25, 1, 0.5, 1) infinite`,
-                }}
-            />
-        </div>
-    );
-}
-
-function PlayButton({ isHovered, dark, isMobile, onPlay }) {
-    return (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.5, y: 8 }}
-                    animate={{
-                        opacity: isHovered ? 1 : 0,
-                        scale: isHovered ? 1 : 0.5,
-                        y: isHovered ? 0 : 8,
-                    }}
-                    transition={{
-                        duration: isMobile ? 0.3 : 0.45,
-                        ease: [0.34, 1.56, 0.64, 1],
-                    }}
-                    className="relative pointer-events-auto"
-                >
-                    {/* Outer glow rings */}
-                    <div className={`absolute inset-0 rounded-full bg-red-500/20 blur-xl scale-[2] ${isMobile ? "scale-150" : ""}`} />
-                    <div className={`absolute inset-0 rounded-full bg-red-500/10 blur-3xl scale-[2.5] ${isMobile ? "scale-180" : ""}`} />
-                    <motion.div
-                        whileHover={{ scale: 1.12 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        onClick={onPlay}
-                        className={`relative rounded-full bg-linear-to-br from-red-500 via-red-600 to-red-700 flex items-center justify-center shadow-2xl cursor-pointer ${isMobile ? "w-9 h-9" : "w-12 h-12"} ${dark ? "shadow-red-500/50 ring-2 ring-white/20" : "shadow-red-500/40 ring-2 ring-white/40"}`}
-                    >
-                        <span className={`ml-0.5 drop-shadow-lg text-white ${isMobile ? "text-xs" : "text-base"}`}>▶</span>
-                    </motion.div>
-                </motion.div>
-        </div>
+            <span className={`w-1.5 h-1.5 rounded-full ${isOngoing ? "bg-red-400" : "bg-emerald-400"}`} />
+            {isOngoing ? "Ongoing" : "Selesai"}
+        </motion.span>
     );
 }

@@ -99,7 +99,7 @@ export default function RecentActivity({ recentWatched = [], recentWishlist = []
     return (
         <div className="flex flex-col transition-colors duration-500">
             <div className="flex items-center gap-2.5 mb-5 shrink-0">
-                <div className="w-1 h-5 bg-linear-to-b from-[#ec001d] to-rose-500 rounded-full shadow-[0_2px_10px_rgba(236,0,29,0.4)]" />
+                <div className="w-1 h-5 bg-gradient-to-b from-[#ec001d] to-rose-500 rounded-full shadow-[0_2px_10px_rgba(236,0,29,0.4)]" />
                 <h2 className={`font-sora text-xs md:text-sm font-extrabold tracking-tight uppercase transition-colors duration-300 ${
                     isDark ? "text-white" : "text-neutral-800"
                 }`}>
@@ -117,11 +117,11 @@ export default function RecentActivity({ recentWatched = [], recentWishlist = []
             <div className={`relative border rounded-3xl p-5 backdrop-blur-md transition-all duration-300 ${
                 isDark
                     ? "bg-white/[0.02] border-white/5 shadow-none"
-                    : "bg-linear-to-b from-white to-neutral-50/80 border-neutral-200/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)]"
+                    : "bg-gradient-to-b from-white to-neutral-50/80 border-neutral-200/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)]"
             }`}>
                 <div className={`absolute inset-0 rounded-3xl pointer-events-none opacity-30 ${
                     isDark
-                        ? "bg-linear-to-b from-transparent via-red-500/[0.02] to-transparent"
+                        ? "bg-gradient-to-b from-transparent via-red-500/[0.02] to-transparent"
                         : ""
                 }`} />
 
@@ -256,7 +256,7 @@ export default function RecentActivity({ recentWatched = [], recentWishlist = []
                                             onClick={() => setPage(p)}
                                             className={`relative w-7 h-7 rounded-xl text-[10px] font-bold font-mono transition-all duration-300 ${
                                                 p === page
-                                                    ? "bg-linear-to-br from-[#ec001d] to-rose-600 text-white shadow-[0_4px_12px_rgba(236,0,29,0.35)] scale-105"
+                                                    ? "bg-gradient-to-br from-[#ec001d] to-rose-600 text-white shadow-[0_4px_12px_rgba(236,0,29,0.35)] scale-105"
                                                     : `${pageBase}`
                                             }`}
                                         >

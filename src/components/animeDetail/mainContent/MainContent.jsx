@@ -4,7 +4,7 @@ import EpisodeDirectory from './episodeDirectory/EpisodeDirectory';
 
 export default function MainContent({ anime, activeRange, onRangeChange }) {
     return (
-        <div className="lg:col-span-9 space-y-6">
+        <div className="w-full min-w-0 space-y-6">
             <TitleSection anime={anime} />
             <InfoGrid anime={anime} />
             <EpisodeDirectory

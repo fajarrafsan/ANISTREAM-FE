@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useTheme } from "../../../context/ThemeContext";
 
 export default function TabButton({ active, onClick, children }) {
@@ -5,24 +6,30 @@ export default function TabButton({ active, onClick, children }) {
     const isDark = theme === "dark";
 
     return (
-        <button
+        <motion.button
+            whileTap={{ scale: 0.96 }}
             onClick={onClick}
             type="button"
-            className={`w-full sm:w-auto shrink-0 whitespace-nowrap rounded-md border touch-manipulation transition-all duration-200 select-none outline-none focus:outline-none
-                px-2 py-1.5 text-[9px] leading-none text-center
-                max-[320px]:px-1 max-[320px]:py-1 max-[320px]:text-[8px]
-                sm:px-3 sm:py-1.5 sm:text-xs sm:rounded-lg
-                md:px-4 md:py-2 md:text-sm
-                font-bold
+            className={`relative w-full sm:w-auto shrink-0 whitespace-nowrap rounded-xl touch-manipulation transition-colors duration-200 select-none outline-none focus:outline-none overflow-hidden
+                px-2 py-2 text-[9px] leading-none text-center
+                xs:px-3 xs:text-[10px]
+                sm:px-4 sm:py-2.5 sm:text-xs font-black uppercase tracking-wider
                 ${
                     active
-                        ? "bg-linear-to-r from-red-500 to-rose-500 text-white border-transparent shadow-[0_0_10px_rgba(255,30,86,0.2)]"
+                        ? "text-white"
                         : isDark
-                            ? "text-slate-400 bg-transparent border-transparent hover:bg-[#10070a] hover:text-white"
-                            : "text-slate-600 bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300"
+                            ? "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 }`}
         >
-            {children}
-        </button>
+            {active && (
+                <motion.div
+                    layoutId="activeTabIndicator"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#ff1e56] to-[#c41e3a] shadow-[0_0_20px_rgba(255,30,86,0.45)] border border-white/20 z-0"
+                />
+            )}
+            <span className="relative z-10">{children}</span>
+        </motion.button>
     );
 }

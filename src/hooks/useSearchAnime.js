@@ -7,29 +7,46 @@ export default function useAnimeSearch() {
     const [error, setError] = useState(null);
     const [query, setQueryState] = useState("");
     const [isOpen, setIsOpen] = useState(false);
+    const [phase, setPhase] = useState("idle"); // idle | loading | results | error
 
-    const [phase, setPhase] = useState("idle"); // 'idle' | 'loading' | 'results' | 'error'
-
-    const lastFetchedQuery = useRef("");
-    const isOpenRef = useRef(false);
+    const abortRef = useRef(null);
+    const requestIdRef = useRef(0);
+    const lastSearchedRef = useRef("");
 
     const setQuery = useCallback((value) => {
         setQueryState(value);
         if (!value.trim()) {
+            abortRef.current?.abort();
             setPhase("idle");
             setResults([]);
             setError(null);
-            lastFetchedQuery.current = "";
+            lastSearchedRef.current = "";
+        } else if (value.trim() !== lastSearchedRef.current) {
+            abortRef.current?.abort();
+            setPhase("idle");
+            setResults([]);
+            setError(null);
         }
     }, []);
 
     const openSearch = useCallback(() => {
-        isOpenRef.current = true;
         setIsOpen(true);
     }, []);
 
     const closeSearch = useCallback(() => {
-        isOpenRef.current = false;
+        abortRef.current?.abort();
+        abortRef.current = null;
+        setIsOpen(false);
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        abortRef.current?.abort();
+        abortRef.current = null;
+        lastSearchedRef.current = "";
+        setQueryState("");
+        setResults([]);
+        setError(null);
+        setPhase("idle");
         setIsOpen(false);
     }, []);
 
@@ -37,50 +54,52 @@ export default function useAnimeSearch() {
         const trimmed = keyword.trim();
         if (!trimmed) return;
 
-        if (trimmed === lastFetchedQuery.current && isOpenRef.current && phase === "results") return;
-        lastFetchedQuery.current = trimmed;
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        const requestId = ++requestIdRef.current;
 
+        setIsOpen(true);
         setPhase("loading");
         setError(null);
-        isOpenRef.current = true;
-        setIsOpen(true);
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
             const response = await api.get("/anime/search", {
                 params: { q: trimmed },
+                signal: controller.signal,
             });
 
-            const mapped = mapSearchAnimeList(response.data.data.animeList);
+            if (requestId !== requestIdRef.current) return;
+
+            const list = response.data?.data?.animeList ?? [];
+            const mapped = mapSearchAnimeList(list);
+            lastSearchedRef.current = trimmed;
             setResults(mapped);
             setPhase("results");
         } catch (err) {
+            if (controller.signal.aborted || requestId !== requestIdRef.current) return;
+
             setError(
                 err.response?.data?.message ||
                 err.message ||
-                "Terjadi kesalahan"
+                "Gagal mencari anime"
             );
             setResults([]);
             setPhase("error");
         }
-    }, [phase]);
-
-    const handleKeyDown = useCallback((e) => {
-        if (e.key === "Enter") searchAnime(query);
-    }, [query, searchAnime]);
+    }, []);
 
     return {
         query,
         setQuery,
         results,
-        loading: phase === "loading",   
+        loading: phase === "loading",
         error,
         isOpen,
+        phase,
         openSearch,
-        phase,                           
         searchAnime,
         closeSearch,
-        handleKeyDown,
+        resetSearch,
     };
 }

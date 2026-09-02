@@ -19,7 +19,7 @@ export default function BioSection({
         <div className="w-full">
             {isEditingBio ? (
                 <div className="relative group animate-in fade-in zoom-in duration-300">
-                    <div className={`absolute -inset-0.5 bg-linear-to-r rounded-2xl blur-md opacity-75 group-focus-within:opacity-100 transition duration-500 ${isDark ? "from-red-600/30 to-orange-600/30" : "from-red-600/10 to-orange-600/10"
+                    <div className={`absolute -inset-0.5 bg-gradient-to-r rounded-2xl blur-md opacity-75 group-focus-within:opacity-100 transition duration-500 ${isDark ? "from-red-600/30 to-orange-600/30" : "from-red-600/10 to-orange-600/10"
                         }`}></div>
 
                     <div className={`relative flex flex-col gap-3 backdrop-blur-xl rounded-2xl p-4 transition-all duration-300 ${isDark
@@ -66,7 +66,7 @@ export default function BioSection({
                                 <button
                                     onClick={onBioSave}
                                     disabled={isSavingBio}
-                                    className={`px-5 py-1.5 rounded-xl text-[10px] font-black bg-linear-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] ${isDark ? "shadow-red-600/20" : "shadow-red-500/20"
+                                    className={`px-5 py-1.5 rounded-xl text-[10px] font-black bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] ${isDark ? "shadow-red-600/20" : "shadow-red-500/20"
                                         }`}
                                 >
                                     {isSavingBio ? (

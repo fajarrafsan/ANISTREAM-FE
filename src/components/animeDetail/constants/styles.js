@@ -4,6 +4,18 @@ export const customStyles = `
     background-size: 24px 24px;
     opacity: 0.04;
   }
+  .glass-panel-dark {
+    background: rgba(10, 10, 15, 0.72);
+    border: 1px solid rgba(255, 30, 86, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
     height: 5px;

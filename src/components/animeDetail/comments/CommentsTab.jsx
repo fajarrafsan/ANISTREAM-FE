@@ -1,12 +1,13 @@
+import { motion } from "motion/react";
 import { useTheme } from "../../../context/ThemeContext";
 import CommentForm from "./CommentForm";
 import CommentItem from "./CommentItem";
 import CommentSkeleton from "./CommentSkeleton";
 
 const SORT_OPTIONS = [
-    { id: "newest", label: "Terbaru" },
-    { id: "oldest", label: "Terlama" },
-    { id: "popular", label: "Populer" },
+    { id: "newest", label: "Terbaru", icon: "fa-arrow-down-short-wide" },
+    { id: "oldest", label: "Terlama", icon: "fa-arrow-up-wide-short" },
+    { id: "popular", label: "Populer", icon: "fa-fire" },
 ];
 
 // Ambil nama & avatar user aktif (mengikuti pola ProfileHeader).
@@ -42,9 +43,8 @@ export default function CommentsTab({ commentsApi }) {
     } = commentsApi;
 
     const cardBaseClass = isDark
-        ? "bg-[#0d0407]/90 border border-[#2a1117]/80 shadow-2xl backdrop-blur-xl"
-        : "bg-white border border-slate-200 shadow-xl";
-    const cornerBorderClass = isDark ? "border-red-900/15" : "border-slate-300/50";
+        ? "bg-[#0b0406]/90 border border-white/5 shadow-2xl backdrop-blur-xl rounded-3xl p-4 sm:p-6 md:p-8"
+        : "bg-white/95 border border-slate-200 shadow-xl rounded-3xl p-4 sm:p-6 md:p-8";
 
     const handleAddMain = (content) => addComment({ content, parentId: null });
 
@@ -61,176 +61,154 @@ export default function CommentsTab({ commentsApi }) {
     };
 
     return (
-        <>
-            <style>{`
-                @keyframes da-fadeIn {
-                    from { opacity: 0; transform: translateY(6px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
-            
         <div className="relative group">
-            {/* Ambient glow */}
-            <div
-                className={`absolute -inset-1 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-700 ${
-                    isDark
-                        ? "bg-linear-to-br from-red-900/20 via-transparent to-red-950/15"
-                        : "bg-linear-to-br from-rose-200/40 via-transparent to-slate-100/30"
-                }`}
-            />
+            {/* Ambient radiant glow */}
+            {isDark && (
+                <div className="absolute -inset-1 rounded-3xl blur-2xl opacity-30 bg-gradient-to-br from-[#ff1e56]/15 via-transparent to-transparent pointer-events-none" />
+            )}
 
-            <div
-                className={`relative rounded-2xl p-3 max-[320px]:p-2.5 sm:p-5 overflow-hidden transition-colors duration-300 ${cardBaseClass}`}
-            >
-                {/* Top gradient line */}
-                <div
-                    className={`absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent ${
-                        isDark ? "via-red-900/40" : "via-slate-300"
-                    } to-transparent`}
-                />
-
-                {/* Corner accents */}
-                <div className={`absolute top-2 left-2 border-l border-t ${cornerBorderClass} w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-tl-sm`} />
-                <div className={`absolute top-2 right-2 border-r border-t ${cornerBorderClass} w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-tr-sm`} />
-                <div className={`absolute bottom-2 left-2 border-l border-b ${cornerBorderClass} w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-bl-sm`} />
-                <div className={`absolute bottom-2 right-2 border-r border-b ${cornerBorderClass} w-2.5 h-2.5 sm:w-4 sm:h-4 rounded-br-sm`} />
-
-                {/* ── Header ── */}
-                <div className="flex items-center justify-between gap-2 mb-3.5 sm:mb-5">
-                    <div className="flex items-center gap-2 min-w-0">
+            <div className={`relative overflow-hidden transition-all duration-500 ${cardBaseClass}`}>
+                {/* ── Header Komunitas ── */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-5 border-b border-white/5">
+                    <div className="flex items-center gap-3.5">
                         <div
-                            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                                isDark
-                                    ? "bg-linear-to-br from-[#1a0a0f] to-[#0f0508] border border-red-950/50 shadow-[0_0_12px_rgba(255,30,86,0.08)]"
-                                    : "bg-white border border-slate-200 shadow-sm"
-                            }`}
+                            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 border ${isDark
+                                ? "bg-[#14080b] border-[#ff1e56]/20 shadow-[0_0_20px_rgba(255,30,86,0.2)]"
+                                : "bg-rose-50 border-rose-200 shadow-sm"
+                                }`}
                         >
-                            <i className="fa-solid fa-comments text-[10px] sm:text-xs text-[#ff1e56]" />
+                            <i className="fa-solid fa-comments text-base sm:text-lg text-[#ff1e56]" />
                         </div>
-                        <div className="min-w-0">
-                            <h4 className={`font-black text-[11px] sm:text-sm tracking-tight flex items-center gap-1.5 ${isDark ? "text-white" : "text-slate-800"}`}>
-                                Komentar
+                        <div>
+                            <h4 className={`font-black text-sm sm:text-lg tracking-tight uppercase flex items-center gap-2 ${isDark ? "text-white" : "text-slate-800"}`}>
+                                Diskusi Komunitas
                                 <span
-                                    className={`border text-[7px] sm:text-[8px] px-1 py-px sm:px-1.5 sm:py-0.5 rounded font-black ${
-                                        isDark
-                                            ? "bg-[#ff1e56]/10 text-[#ff1e56] border-[#ff1e56]/20"
-                                            : "bg-rose-50 text-[#ff1e56] border-rose-300/50"
-                                    }`}
+                                    className={`border text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-black ${isDark
+                                        ? "bg-[#ff1e56]/15 text-[#ff1e56] border-[#ff1e56]/30 shadow-[0_0_10px_rgba(255,30,86,0.15)]"
+                                        : "bg-rose-50 text-rose-600 border-rose-200"
+                                        }`}
                                 >
                                     {total}
                                 </span>
                             </h4>
-                            <p className={`text-[9px] sm:text-[11px] mt-0.5 ${isDark ? "text-slate-600" : "text-slate-400"}`}>
-                                Bagikan pendapatmu tentang anime ini
+                            <p className={`text-[10px] sm:text-xs mt-0.5 font-medium ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                Bagikan ulasan, teori cerita, dan diskusikan bersama penggemar lain
                             </p>
                         </div>
                     </div>
 
-                    {/* Sort selector */}
+                    {/* Sliding Sort selector with Framer Motion */}
                     <div
-                        className={`flex items-center gap-0.5 p-0.5 rounded-lg border shrink-0 ${
-                            isDark ? "bg-[#070204] border-[#2a1117]" : "bg-slate-100 border-slate-200"
-                        }`}
+                        className={`flex items-center gap-1 p-1 rounded-2xl border shrink-0 self-start sm:self-auto ${isDark ? "bg-[#060204] border-white/5" : "bg-slate-100 border-slate-200"
+                            }`}
                     >
-                        {SORT_OPTIONS.map((opt) => (
-                            <button
-                                key={opt.id}
-                                type="button"
-                                onClick={() => changeSort(opt.id)}
-                                className={`px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-bold transition-all duration-200 ${
-                                    sort === opt.id
-                                        ? "bg-linear-to-r from-red-500 to-rose-500 text-white shadow-[0_0_10px_rgba(255,30,86,0.2)]"
+                        {SORT_OPTIONS.map((opt) => {
+                            const isActive = sort === opt.id;
+                            return (
+                                <button
+                                    key={opt.id}
+                                    type="button"
+                                    onClick={() => changeSort(opt.id)}
+                                    className={`relative px-3 py-1.5 rounded-xl text-[10px] sm:text-xs font-black tracking-wider uppercase transition-colors z-10 flex items-center gap-1.5 cursor-pointer ${isActive
+                                        ? "text-white"
                                         : isDark
-                                        ? "text-slate-500 hover:text-slate-300"
-                                        : "text-slate-500 hover:text-slate-800"
-                                }`}
-                            >
-                                {opt.label}
-                            </button>
-                        ))}
+                                            ? "text-slate-400 hover:text-slate-200"
+                                            : "text-slate-500 hover:text-slate-900"
+                                        }`}
+                                >
+                                    {isActive && (
+                                        <motion.span
+                                            layoutId="activeCommentSort"
+                                            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                                            className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#ff1e56] to-[#c41e3a] shadow-[0_0_15px_rgba(255,30,86,0.35)] z-[-1]"
+                                        />
+                                    )}
+                                    <i className={`fa-solid ${opt.icon} text-[9px] ${isActive ? "text-white" : isDark ? "text-slate-500" : "text-slate-400"}`} />
+                                    <span>{opt.label}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* ── Form komentar utama ── */}
-                <div className={`pb-4 sm:pb-5 mb-4 sm:mb-5 border-b ${isDark ? "border-[#2a1117]/50" : "border-slate-200"}`}>
+                {/* ── Form Komentar Utama ── */}
+                <div className={`pb-6 mb-6 sm:mb-8 border-b ${isDark ? "border-white/5" : "border-slate-200"}`}>
                     {isLoggedIn ? (
                         <CommentForm
                             avatarSrc={getMyAvatar(currentUser)}
                             displayName={getMyName(currentUser)}
-                            placeholder="Tulis komentar..."
+                            placeholder="Tulis ulasan atau pendapatmu tentang anime ini..."
                             posting={posting}
                             onSubmit={handleAddMain}
                         />
                     ) : (
-                        // Tetap tampilkan form; addComment akan memicu modal login bila belum masuk.
                         <CommentForm
-                            placeholder="Login untuk menulis komentar..."
+                            placeholder="Masuk untuk bergabung dalam diskusi dan menulis ulasan..."
                             posting={posting}
                             onSubmit={handleAddMain}
                         />
                     )}
                 </div>
 
-                {/* ── Daftar komentar ── */}
+                {/* ── Daftar Komentar ── */}
                 {loading ? (
                     <CommentSkeleton />
                 ) : comments.length > 0 ? (
-                    <div className="da-fadeIn">
-                        <div className="space-y-5 sm:space-y-6">
+                    <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-5">
                             {comments.map((comment) => (
                                 <CommentItem key={comment.id} comment={comment} {...itemActions} />
                             ))}
                         </div>
 
-                        {/* Load more */}
+                        {/* Load More Button */}
                         {hasMore && (
-                            <div className="flex justify-center mt-5 sm:mt-6">
-                                <button
+                            <div className="flex justify-center pt-4">
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.96 }}
                                     type="button"
                                     onClick={loadMore}
                                     disabled={loadingMore}
-                                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] sm:text-xs font-bold border transition-all duration-200 active:scale-95 disabled:opacity-50 ${
-                                        isDark
-                                            ? "bg-[#13080c] hover:bg-[#1a0a10] border-[#2a1117] hover:border-red-900/40 text-slate-400 hover:text-white"
-                                            : "bg-white hover:bg-slate-50 border-slate-300 hover:border-rose-300/50 text-slate-500 hover:text-slate-800"
-                                    }`}
+                                    className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black tracking-wider uppercase border transition-all duration-200 disabled:opacity-50 cursor-pointer ${isDark
+                                        ? "bg-white/[0.03] hover:bg-[#ff1e56]/15 border-white/10 hover:border-[#ff1e56]/40 text-slate-300 hover:text-white hover:shadow-[0_0_20px_rgba(255,30,86,0.2)]"
+                                        : "bg-white hover:bg-rose-50 border-slate-200 hover:border-rose-300 text-slate-700 hover:text-rose-600 shadow-sm"
+                                        }`}
                                 >
                                     {loadingMore ? (
                                         <>
-                                            <i className="fa-solid fa-spinner fa-spin" /> Memuat...
+                                            <i className="fa-solid fa-spinner fa-spin text-[#ff1e56]" />
+                                            <span>Memuat Lebih Banyak...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <i className="fa-solid fa-arrow-down" /> Muat lebih banyak
+                                            <i className="fa-solid fa-arrow-down text-[#ff1e56]" />
+                                            <span>Tampilkan Komentar Lainnya</span>
                                         </>
                                     )}
-                                </button>
+                                </motion.button>
                             </div>
                         )}
                     </div>
                 ) : (
-                    <div className="py-10 text-center da-fadeIn">
+                    <div className="py-12 sm:py-16 text-center">
                         <div
-                            className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2.5 ${
-                                isDark ? "bg-[#1a0a0f] border border-[#2a1117]" : "bg-slate-100 border border-slate-200"
-                            }`}
+                            className={`w-14 h-14 mx-auto rounded-3xl flex items-center justify-center mb-3.5 border ${isDark
+                                ? "bg-[#14080b] border-[#ff1e56]/20 shadow-[0_0_25px_rgba(255,30,86,0.15)]"
+                                : "bg-rose-50 border-rose-200 shadow-sm"
+                                }`}
                         >
-                            <i className={`fa-regular fa-comment-dots text-sm ${isDark ? "text-slate-700" : "text-slate-400"}`} />
+                            <i className="fa-regular fa-comments text-xl text-[#ff1e56]" />
                         </div>
-                        <p className={`text-[11px] sm:text-xs font-medium ${isDark ? "text-slate-600" : "text-slate-400"}`}>
-                            Belum ada komentar. Jadilah yang pertama!
+                        <h5 className={`text-sm sm:text-base font-black uppercase tracking-tight mb-1 ${isDark ? "text-white" : "text-slate-800"}`}>
+                            Belum Ada Komentar
+                        </h5>
+                        <p className={`text-xs max-w-sm mx-auto font-medium ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                            Jadilah yang pertama untuk membagikan ulasan atau kesan menonton anime ini kepada komunitas!
                         </p>
                     </div>
                 )}
-
-                {/* Bottom glow */}
-                <div
-                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-20 blur-3xl rounded-full pointer-events-none ${
-                        isDark ? "bg-red-900/5" : "bg-rose-100/20"
-                    }`}
-                />
             </div>
         </div>
-        </>
     );
 }

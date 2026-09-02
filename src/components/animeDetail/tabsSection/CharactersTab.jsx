@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { useTheme } from "../../../context/ThemeContext";
+import { DETAIL_EASE } from "../constants/animeDetailMotion";
 
-export default function CharactersTab({ characters }) {
+export default function CharactersTab({ characters = [] }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
     const [currentPage, setCurrentPage] = useState(1);
+    const [filterRole, setFilterRole] = useState("ALL");
 
-    const validChars =
-        characters?.filter((c) => c.character?.name && c.seiyuu) ?? [];
+    const validChars = characters?.filter((c) => c.character?.name && c.seiyuu) ?? [];
 
     const sortedChars = [...validChars].sort((a, b) => {
         if (a.role === "MAIN" && b.role !== "MAIN") return -1;
@@ -16,16 +18,21 @@ export default function CharactersTab({ characters }) {
         return 0;
     });
 
+    const filteredChars = sortedChars.filter((item) => {
+        if (filterRole === "MAIN") return item.role === "MAIN";
+        if (filterRole === "SUPPORT") return item.role !== "MAIN";
+        return true;
+    });
+
     const INITIAL_LIMIT = 6;
-    const totalPages = Math.ceil(sortedChars.length / INITIAL_LIMIT);
+    const totalPages = Math.max(1, Math.ceil(filteredChars.length / INITIAL_LIMIT));
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [characters]);
+    }, [characters, filterRole]);
 
     const startIndex = (currentPage - 1) * INITIAL_LIMIT;
-    const displayChars = sortedChars.slice(startIndex, startIndex + INITIAL_LIMIT);
-
+    const displayChars = filteredChars.slice(startIndex, startIndex + INITIAL_LIMIT);
     const mainCount = sortedChars.filter((c) => c.role === "MAIN").length;
 
     const getCharImage = (item) =>
@@ -42,330 +49,364 @@ export default function CharactersTab({ characters }) {
         item.seiyuu?.images?.jpg?.image_url ||
         null;
 
-    const cornerClass = `absolute w-3 h-3 sm:w-6 sm:h-6 ${isDark ? "border-red-900/25" : "border-slate-400/30"}`;
-
-    const avatarClass = `border ${isDark ? "bg-[#1a0a0f] border-[#2a1117]" : "bg-slate-200 border-slate-300"}`;
-
-    const fallbackClass = `absolute inset-0 flex items-center justify-center ${isDark ? "bg-[#1a0a0f]" : "bg-slate-200"}`;
-
-    const iconColor = isDark ? "text-slate-700" : "text-slate-400";
-
-    const labelClass = isDark
-        ? "bg-[#ff1e56]/10 text-[#ff1e56] border-[#ff1e56]/20"
-        : "bg-rose-50 text-rose-500 border-rose-300/50";
-
-    // Divider pemisah tipis antara Karakter dan Seiyuu khusus mode HP
-    const mobileDividerColor = isDark
-        ? "from-transparent via-[#2a1117]/40 to-transparent"
-        : "from-transparent via-slate-200 to-transparent";
-
-    function PersonPanel({
-        title,
-        name,
-        subName,
-        image,
-        fallbackIcon,
-        align = "left",
-        isMain = false,
-    }) {
-        return (
-            <div
-                className="w-full transition-all duration-300 rounded-none sm:rounded-xl p-0 sm:p-2.5 sm:border bg-transparent sm:bg-inherit border-none"
-            >
-                <div
-                    className={`flex items-center gap-2 max-[320px]:gap-1.5 sm:gap-3 min-w-0 ${align === "right" ? "sm:flex-row-reverse sm:text-right" : ""}`}
-                >
-                    {/* Avatar dikecilkan dari w-10 ke w-8 di ponsel */}
-                    <div
-                        className={`relative w-8 h-8 sm:w-11 sm:h-11 rounded-lg overflow-hidden shrink-0 transition-colors ${avatarClass}`}
-                    >
-                        {image ? (
-                            <img
-                                src={image}
-                                alt={name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                                onError={(e) => {
-                                    e.currentTarget.style.display = "none";
-                                }}
-                            />
-                        ) : null}
-                        <div
-                            className={fallbackClass}
-                            style={{ display: image ? "none" : "flex" }}
-                        >
-                            <i className={`fa-solid ${fallbackIcon} text-[10px] sm:text-xs ${iconColor}`} />
-                        </div>
-                    </div>
-
-                    {/* Konten detail teks responsif rapat */}
-                    <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between w-full mb-0.5 sm:mb-1">
-                            {/* Lencana jenis ("CHARACTER" / "SEIYUU") merapat di sebelah kiri */}
-                            <span
-                                className={`inline-flex items-center border text-[7px] sm:text-[9px] font-black tracking-wider uppercase px-1 py-px sm:px-1.5 sm:py-0.5 rounded-md ${labelClass}`}
-                            >
-                                {title}
-                            </span>
-
-                            {/* Lencana status peran ("UTAMA" / "PENDUKUNG") didorong merapat di sudut sebelah kanan */}
-                            <span
-                                className={`text-[7px] sm:text-[9px] font-black tracking-wider uppercase ${isMain
-                                    ? "text-[#ff1e56]"
-                                    : isDark
-                                        ? "text-slate-500"
-                                        : "text-slate-400"
-                                    }`}
-                            >
-                                {isMain ? "UTAMA" : "PENDUKUNG"}
-                            </span>
-                        </div>
-                        <div
-                            className={`font-bold text-[10px] sm:text-[13px] leading-tight truncate ${isDark ? "text-slate-200" : "text-slate-700"}`}
-                        >
-                            {name}
-                        </div>
-                        <div
-                            className={`text-[8px] sm:text-[10px] mt-0.5 truncate ${isDark ? "text-slate-500" : "text-slate-400"}`}
-                        >
-                            {subName}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="relative group">
-            {/* Animasi akselerasi perangkat keras kustom Bezier */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @keyframes slideFadeIn {
-                    0% {
-                        opacity: 0;
-                        transform: translateY(12px) scale(0.995);
-                    }
-                    100% {
-                        opacity: 1;
-                        transform: translateY(0) scale(1);
-                    }
-                }
-                .animate-slide-fade {
-                    animation: slideFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-                    will-change: transform, opacity;
-                }
-            `}} />
+            {isDark && (
+                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-br from-[#ff1e56]/10 via-transparent to-transparent blur-2xl pointer-events-none" />
+            )}
 
-            {/* Ambient glow */}
             <div
-                className={`absolute -inset-1 rounded-2xl blur-xl opacity-20 group-hover:opacity-35 transition-opacity duration-700 ${isDark
-                    ? "bg-linear-to-br from-red-900/30 via-transparent to-red-950/20"
-                    : "bg-linear-to-br from-rose-200/30 via-transparent to-rose-100/20"
-                    }`}
-            />
-
-            {/* Kontainer Utama p-2.5 di HP */}
-            <div
-                className={`relative rounded-2xl p-2.5 sm:p-5 shadow-2xl backdrop-blur-xl overflow-hidden border transition-colors duration-300 ${isDark
-                    ? "bg-[#0d0407]/90 border-[#2a1117]/80"
-                    : "bg-slate-100 border-slate-300"
+                className={`relative rounded-3xl p-3 xs:p-4 sm:p-6 md:p-7 shadow-2xl backdrop-blur-xl border transition-all duration-500 overflow-hidden ${isDark
+                    ? "bg-[#0b0406]/90 border-white/5"
+                    : "bg-white/95 border-slate-200"
                     }`}
             >
-                {/* Top gradient line */}
-                <div
-                    className={`absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent ${isDark ? "via-red-900/50" : "via-slate-400/40"
-                        } to-transparent`}
-                />
-
-                {/* Corner accents */}
-                <div className={`${cornerClass} top-2.5 left-2.5 sm:top-3 sm:left-3 border-l border-t rounded-tl-md`} />
-                <div className={`${cornerClass} top-2.5 right-2.5 sm:top-3 sm:right-3 border-r border-t rounded-tr-md`} />
-                <div className={`${cornerClass} bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 border-l border-b rounded-bl-md`} />
-                <div className={`${cornerClass} bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 border-r border-b rounded-br-md`} />
-
-                {/* Header */}
-                <div className="flex items-start sm:items-center justify-between gap-1.5 sm:gap-3 mb-2.5 sm:mb-5">
-                    <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 pb-4 border-b border-white/5">
+                    <div className="flex items-center gap-3">
                         <div
-                            className={`w-7 h-7 sm:w-10 sm:h-10 rounded-lg border flex items-center justify-center shrink-0 ${isDark
-                                ? "bg-linear-to-br from-[#1a0a0f] to-[#0f0508] border-red-950/50 shadow-[0_0_15px_rgba(255,30,86,0.1)]"
-                                : "bg-white border-slate-300 shadow-sm"
+                            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-2xl border flex items-center justify-center shrink-0 shadow-lg ${isDark
+                                ? "bg-[#14080b] border-[#ff1e56]/20 shadow-[0_0_20px_rgba(255,30,86,0.15)]"
+                                : "bg-rose-50 border-rose-200"
                                 }`}
                         >
-                            <i className="fa-solid fa-users text-[10px] sm:text-base text-[#ff1e56]" />
+                            <i className="fa-solid fa-users text-sm sm:text-base text-[#ff1e56]" />
                         </div>
-                        <div className="min-w-0">
+                        <div>
                             <h4
-                                className={`font-black text-[11px] sm:text-base tracking-tight flex items-center gap-1 sm:gap-2 ${isDark ? "text-white" : "text-slate-800"
+                                className={`font-black text-sm sm:text-lg tracking-tight uppercase flex items-center gap-2 ${isDark ? "text-white" : "text-slate-800"
                                     }`}
                             >
                                 Karakter & Seiyuu
                                 <span
-                                    className={`border text-[7px] sm:text-[8px] px-1 py-px sm:px-1.5 sm:py-0.5 rounded font-black ${isDark
-                                        ? "bg-[#ff1e56]/10 text-[#ff1e56] border-[#ff1e56]/20"
-                                        : "bg-rose-50 text-rose-500 border-rose-300/50"
+                                    className={`border text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full font-black ${isDark
+                                        ? "bg-[#ff1e56]/10 text-[#ff1e56] border-[#ff1e56]/30 shadow-[0_0_10px_rgba(255,30,86,0.2)]"
+                                        : "bg-rose-50 text-rose-600 border-rose-200"
                                         }`}
                                 >
                                     {validChars.length}
                                 </span>
                             </h4>
-                            <p
-                                className={`text-[8px] sm:text-[11px] mt-0.5 ${isDark ? "text-slate-500" : "text-slate-400"
-                                    }`}
-                            >
-                                {mainCount} utama · {validChars.length - mainCount} pendukung
+                            <p className={`text-[10px] sm:text-xs mt-0.5 font-medium ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                {mainCount} karakter utama · {validChars.length - mainCount} pendukung
                             </p>
                         </div>
                     </div>
-                </div>
 
-                {/* Cards Container with page transition key */}
-                <div
-                    key={currentPage}
-                    className="grid grid-cols-1 gap-1.5 sm:gap-3.5 h-auto animate-slide-fade"
-                >
-                    {displayChars.map((item, index) => {
-                        const charImage = getCharImage(item);
-                        const seiyuuImage = getSeiyuuImage(item);
-                        const isMain = item.role === "MAIN";
-
-                        return (
-                            <div
-                                key={`${item.character?.id ?? item.character?.name ?? "char"}-${item.seiyuu?.id ?? item.seiyuu?.name ?? "seiyuu"}-${index}`}
-                                className={`group/card relative rounded-xl p-2 sm:p-3.5 transition-all duration-300 border ${isDark
-                                    ? "bg-[#13080c]/60 border-[#2a1117]/50 hover:border-red-900/40 hover:bg-[#1a0a10]/80"
-                                    : "bg-white border-slate-200 hover:border-rose-300/50 hover:bg-slate-50"
-                                    }`}
-                                style={{ animationDelay: `${index * 50}ms` }}
-                            >
-                                <div
-                                    className={`absolute inset-0 rounded-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none bg-linear-to-r ${isDark
-                                        ? "from-red-900/5 to-transparent"
-                                        : "from-rose-100/30 to-transparent"
-                                        }`}
-                                />
-                                <div className="relative flex flex-col sm:flex-row sm:items-stretch gap-1.5 sm:gap-4">
-                                    <PersonPanel
-                                        title="Character"
-                                        name={item.character.name}
-                                        subName={isMain ? "Karakter utama" : "Karakter pendukung"}
-                                        image={charImage}
-                                        fallbackIcon="fa-user"
-                                        isMain={isMain}
-                                        align="left"
-                                    />
-
-                                    {/* Line pembatas tipis elegan pada mobile (HP) */}
-                                    <div className={`block sm:hidden h-px w-full bg-linear-to-r ${mobileDividerColor} my-1`} />
-
-                                    {/* Line pembatas putus-putus pada layar desktop */}
-                                    <div className="hidden sm:flex items-center justify-center w-6 opacity-30">
-                                        <div
-                                            className={`w-10 border-t border-dashed ${isDark ? "border-slate-500" : "border-slate-300"
-                                                }`}
-                                        />
-                                        <i
-                                            className={`fa-solid fa-microphone text-[9px] mx-1 ${isDark ? "text-slate-500" : "text-slate-400"
-                                                }`}
-                                        />
-                                        <div
-                                            className={`w-10 border-t border-dashed ${isDark ? "border-slate-500" : "border-slate-300"
-                                                }`}
-                                        />
-                                    </div>
-
-                                    <PersonPanel
-                                        title="Seiyuu"
-                                        name={item.seiyuu.name}
-                                        subName={item.seiyuu.nativeName || "Voice Actor"}
-                                        image={seiyuuImage}
-                                        fallbackIcon="fa-microphone"
-                                        isMain={isMain}
-                                        align="right"
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                    {validChars.length === 0 && (
-                        <div className="py-8 text-center">
-                            <div
-                                className={`w-10 h-10 mx-auto rounded-full border flex items-center justify-center mb-2 ${isDark
-                                    ? "bg-[#1a0a0f] border-[#2a1117]"
-                                    : "bg-slate-200 border-slate-300"
+                    <div className="flex items-center gap-1 p-1 rounded-xl border self-start sm:self-auto backdrop-blur-md bg-white/[0.02] border-white/5">
+                        {[
+                            { id: "ALL", label: "Semua" },
+                            { id: "MAIN", label: "Utama" },
+                            { id: "SUPPORT", label: "Pendukung" },
+                        ].map((btn) => (
+                            <button
+                                key={btn.id}
+                                onClick={() => setFilterRole(btn.id)}
+                                className={`px-2.5 xs:px-3 py-1 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-300 ${filterRole === btn.id
+                                    ? "bg-gradient-to-r from-[#ff1e56] to-[#c41e3a] text-white shadow-[0_0_12px_rgba(255,30,86,0.4)]"
+                                    : isDark
+                                        ? "text-slate-400 hover:text-white hover:bg-white/5"
+                                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                                     }`}
                             >
-                                <i className={`fa-solid fa-users-slash text-sm ${iconColor}`} />
-                            </div>
-                            <p className={`text-[11px] font-medium ${isDark ? "text-slate-600" : "text-slate-400"}`}>
-                                Tidak ada data karakter
-                            </p>
-                        </div>
-                    )}
+                                {btn.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Pagination (Responsive Tanpa Teks pada Layar Mobile) */}
-                {totalPages > 1 && (
-                    <div
-                        className={`relative z-10 flex items-center justify-between mt-3 sm:mt-6 pt-2 sm:pt-4 border-t ${isDark ? "border-[#2a1117]/50" : "border-slate-300/60"
-                            }`}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={`${currentPage}-${filterRole}`}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.35, ease: DETAIL_EASE }}
+                        className="grid grid-cols-1 gap-3 sm:gap-4"
                     >
-                        <button
-                            type="button"
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                            aria-label="Halaman sebelumnya"
-                            className={`group/btn inline-flex items-center justify-center gap-1.5 border font-bold rounded-lg transition-all duration-200 select-none touch-manipulation
-                                min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px]
-                                px-2 py-1.5 sm:px-4 sm:py-2.5
-                                text-[10px] sm:text-sm
-                                active:scale-95 disabled:opacity-30 disabled:pointer-events-none
-                                ${isDark
-                                    ? "bg-[#13080c] hover:bg-[#1a0a10] border-[#2a1117] hover:border-red-900/40 text-slate-400 hover:text-white"
-                                    : "bg-white hover:bg-slate-50 border-slate-300 hover:border-rose-300/50 text-slate-500 hover:text-slate-800"
-                                }`}
-                        >
-                            <i className="fa-solid fa-chevron-left text-[10px] sm:text-sm" />
-                            <span className="hidden sm:inline">Sebelumnya</span>
-                        </button>
+                        {displayChars.map((item, index) => {
+                            const charImage = getCharImage(item);
+                            const seiyuuImage = getSeiyuuImage(item);
+                            const isMain = item.role === "MAIN";
 
-                        <span
-                            className={`text-[10px] sm:text-sm font-mono tracking-wider select-none ${isDark ? "text-slate-500" : "text-slate-400"
-                                }`}
-                        >
-                            <span className={`font-bold ${isDark ? "text-slate-300" : "text-slate-700"}`}>{currentPage}</span>
-                            <span className="mx-1">/</span>
-                            <span>{totalPages}</span>
-                        </span>
+                            return (
+                                <motion.div
+                                    key={`${item.character?.name}-${item.seiyuu?.name}-${index}`}
+                                    whileHover={{ y: -2 }}
+                                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                    className="relative group/card rounded-2xl p-[1px] overflow-hidden transition-all duration-300"
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff1e56]/30 to-transparent -translate-x-full group-hover/card:animate-[shimmer_2s_infinite] transition-all duration-500 z-0 opacity-0 group-hover/card:opacity-100" />
 
-                        <button
-                            type="button"
-                            disabled={currentPage === totalPages}
-                            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                            aria-label="Halaman berikutnya"
-                            className={`group/btn inline-flex items-center justify-center gap-1.5 border font-bold rounded-lg transition-all duration-200 select-none touch-manipulation
-                                min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px]
-                                px-2 py-1.5 sm:px-4 sm:py-2.5
-                                text-[10px] sm:text-sm
-                                active:scale-95 disabled:opacity-30 disabled:pointer-events-none
-                                ${isDark
-                                    ? "bg-[#13080c] hover:bg-[#1a0a10] border-[#2a1117] hover:border-red-900/40 text-slate-400 hover:text-white"
-                                    : "bg-white hover:bg-slate-50 border-slate-300 hover:border-rose-300/50 text-slate-500 hover:text-slate-800"
+                                    <div
+                                        className={`relative z-10 rounded-[15px] p-3 sm:p-4 border transition-colors duration-300 backdrop-blur-xl ${isDark
+                                            ? "bg-[#120609]/80 border-white/5 group-hover/card:border-[#ff1e56]/30 group-hover/card:bg-[#18090d]/90 shadow-md"
+                                            : "bg-white border-slate-200 group-hover/card:border-rose-300 shadow-sm"
+                                            }`}
+                                    >
+                                        {/* ── DESKTOP STUDIO LAYOUT (md and up) ── */}
+                                        <div className="hidden md:flex items-center justify-between gap-4">
+                                            {/* Character (Left) */}
+                                            <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                                                <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-md group-hover/card:border-[#ff1e56]/40 transition-colors">
+                                                    {charImage ? (
+                                                        <img
+                                                            src={charImage}
+                                                            alt={item.character.name}
+                                                            className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
+                                                            loading="lazy"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-[#1a0a0f] text-slate-500">
+                                                            <i className="fa-solid fa-user text-xs" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400">
+                                                            Character
+                                                        </span>
+                                                        <span
+                                                            className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${isMain
+                                                                ? "bg-[#ff1e56]/15 text-[#ff1e56] border border-[#ff1e56]/30 shadow-[0_0_8px_rgba(255,30,86,0.3)]"
+                                                                : "bg-white/5 text-slate-400 border border-white/5"
+                                                                }`}
+                                                        >
+                                                            {isMain ? "Utama" : "Pendukung"}
+                                                        </span>
+                                                    </div>
+                                                    <h5 className={`font-bold text-sm tracking-tight truncate ${isDark ? "text-slate-100 group-hover/card:text-white" : "text-slate-800"}`}>
+                                                        {item.character.name}
+                                                    </h5>
+                                                    <p className={`text-[10px] mt-0.5 truncate ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                                        {isMain ? "Karakter Utama Serial" : "Karakter Pendukung"}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Studio Audio Equalizer (Center) */}
+                                            <div className="flex items-center justify-center px-4 select-none">
+                                                <div className="flex items-center gap-1.5 opacity-60 group-hover/card:opacity-100 transition-opacity">
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="w-1 h-2 rounded-full bg-[#ff1e56] animate-pulse" />
+                                                        <span className="w-1 h-3.5 rounded-full bg-[#ff1e56]/70" />
+                                                        <span className="w-1 h-1.5 rounded-full bg-[#ff1e56]/40" />
+                                                    </div>
+
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-transform duration-300 group-hover/card:scale-110 ${isDark
+                                                        ? "bg-[#1e0a10] border-[#ff1e56]/30 text-[#ff1e56] shadow-[0_0_12px_rgba(255,30,86,0.2)]"
+                                                        : "bg-rose-50 border-rose-200 text-rose-500"
+                                                        }`}>
+                                                        <i className="fa-solid fa-microphone text-[10px]" />
+                                                    </div>
+
+                                                    <div className="flex items-center gap-1">
+                                                        <span className="w-1 h-1.5 rounded-full bg-[#ff1e56]/40" />
+                                                        <span className="w-1 h-3.5 rounded-full bg-[#ff1e56]/70" />
+                                                        <span className="w-1 h-2 rounded-full bg-[#ff1e56] animate-pulse" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Seiyuu (Right) */}
+                                            <div className="flex items-center gap-3.5 flex-1 min-w-0 justify-end text-right">
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center justify-end gap-2 mb-1">
+                                                        <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                                                            Seiyuu
+                                                        </span>
+                                                        <span className={`text-[9px] font-bold uppercase tracking-widest ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                                                            Voice Actor
+                                                        </span>
+                                                    </div>
+                                                    <h5 className={`font-bold text-sm tracking-tight truncate ${isDark ? "text-slate-100 group-hover/card:text-white" : "text-slate-800"}`}>
+                                                        {item.seiyuu.name}
+                                                    </h5>
+                                                    <p className={`text-[10px] mt-0.5 truncate ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                                        {item.seiyuu.native || "Pengisi Suara Resmi"}
+                                                    </p>
+                                                </div>
+
+                                                <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-md group-hover/card:border-amber-500/40 transition-colors">
+                                                    {seiyuuImage ? (
+                                                        <img
+                                                            src={seiyuuImage}
+                                                            alt={item.seiyuu.name}
+                                                            className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
+                                                            loading="lazy"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-[#1a0a0f] text-slate-500">
+                                                            <i className="fa-solid fa-microphone text-xs" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* ── MOBILE COMPACT DUO LAYOUT (< md) ── */}
+                                        <div className="md:hidden flex flex-col gap-2.5">
+                                            {/* Character Row */}
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-sm">
+                                                    {charImage ? (
+                                                        <img
+                                                            src={charImage}
+                                                            alt={item.character.name}
+                                                            className="w-full h-full object-cover"
+                                                            loading="lazy"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-[#1a0a0f] text-slate-500">
+                                                            <i className="fa-solid fa-user text-xs" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-1.5 mb-0.5">
+                                                        <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">
+                                                            Karakter
+                                                        </span>
+                                                        <span
+                                                            className={`text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isMain
+                                                                ? "bg-[#ff1e56]/15 text-[#ff1e56] border border-[#ff1e56]/30"
+                                                                : "bg-white/5 text-slate-400 border border-white/10"
+                                                                }`}
+                                                        >
+                                                            {isMain ? "Utama" : "Pendukung"}
+                                                        </span>
+                                                    </div>
+                                                    <h5 className={`font-bold text-xs truncate ${isDark ? "text-white" : "text-slate-800"}`}>
+                                                        {item.character.name}
+                                                    </h5>
+                                                </div>
+                                            </div>
+
+                                            {/* Integrated Connector Divider */}
+                                            <div className="relative flex items-center justify-center my-0.5">
+                                                <div className={`w-full h-px ${isDark ? "bg-white/[0.06]" : "bg-slate-200"}`} />
+                                                <span className={`absolute px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider flex items-center gap-1 border shadow-sm ${isDark ? "bg-[#18090d] border-[#ff1e56]/30 text-[#ff1e56]" : "bg-rose-50 border-rose-200 text-rose-600"}`}>
+                                                    <i className="fa-solid fa-microphone text-[7px]" />
+                                                    <span>Diisi Oleh</span>
+                                                </span>
+                                            </div>
+
+                                            {/* Seiyuu Row */}
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-sm">
+                                                    {seiyuuImage ? (
+                                                        <img
+                                                            src={seiyuuImage}
+                                                            alt={item.seiyuu.name}
+                                                            className="w-full h-full object-cover"
+                                                            loading="lazy"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-[#1a0a0f] text-slate-500">
+                                                            <i className="fa-solid fa-microphone text-xs" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-1.5 mb-0.5">
+                                                        <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                                                            Seiyuu / VA
+                                                        </span>
+                                                    </div>
+                                                    <h5 className={`font-bold text-xs truncate ${isDark ? "text-white" : "text-slate-800"}`}>
+                                                        {item.seiyuu.name}
+                                                    </h5>
+                                                    {item.seiyuu.native && (
+                                                        <p className={`text-[9px] truncate ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                                            {item.seiyuu.native}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Empty state */}
+                {displayChars.length === 0 && (
+                    <div className="py-12 text-center">
+                        <div
+                            className={`w-12 h-12 mx-auto rounded-2xl border flex items-center justify-center mb-3 ${isDark
+                                ? "bg-[#14080b] border-[#ff1e56]/20 text-slate-500"
+                                : "bg-slate-100 border-slate-200 text-slate-400"
                                 }`}
                         >
-                            <span className="hidden sm:inline">Berikutnya</span>
-                            <i className="fa-solid fa-chevron-right text-[10px] sm:text-sm" />
-                        </button>
+                            <i className="fa-solid fa-users-slash text-base" />
+                        </div>
+                        <p className={`text-xs font-semibold ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                            Tidak ada karakter pada kategori ini
+                        </p>
                     </div>
                 )}
 
-                {/* Bottom glow */}
-                <div
-                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-20 blur-3xl rounded-full pointer-events-none ${isDark ? "bg-red-900/5" : "bg-rose-200/15"
-                        }`}
-                />
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 mt-5 border-t border-white/5">
+                        <span className={`text-[10px] sm:text-xs text-center sm:text-left ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                            Halaman <span className={`font-bold ${isDark ? "text-slate-300" : "text-slate-700"}`}>{currentPage}</span> dari {totalPages}
+                        </span>
+
+                        <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                aria-label="Halaman Sebelumnya"
+                                className={`h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-xl border text-[10px] sm:text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${isDark
+                                    ? "bg-white/[0.03] border-white/10 text-slate-300 hover:border-[#ff1e56]/50 hover:text-white"
+                                    : "bg-white border-slate-200 text-slate-600 hover:border-rose-400"
+                                    }`}
+                            >
+                                <i className="fa-solid fa-chevron-left text-[9px]" />
+                                <span className="hidden xs:inline">Sebelumnya</span>
+                            </motion.button>
+
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                    <motion.button
+                                        key={p}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => setCurrentPage(p)}
+                                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl border text-[10px] sm:text-[11px] font-black transition ${currentPage === p
+                                            ? "bg-gradient-to-r from-[#ff1e56] to-[#c41e3a] border-[#ff1e56] text-white shadow-[0_0_15px_rgba(255,30,86,0.4)]"
+                                            : isDark
+                                                ? "bg-white/[0.02] border-white/5 text-slate-400 hover:border-white/20 hover:text-white"
+                                                : "bg-white border-slate-200 text-slate-600 hover:border-rose-300"
+                                            }`}
+                                    >
+                                        {p}
+                                    </motion.button>
+                                ))}
+                            </div>
+
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                aria-label="Halaman Selanjutnya"
+                                className={`h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-xl border text-[10px] sm:text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${isDark
+                                    ? "bg-white/[0.03] border-white/10 text-slate-300 hover:border-[#ff1e56]/50 hover:text-white"
+                                    : "bg-white border-slate-200 text-slate-600 hover:border-rose-400"
+                                    }`}
+                            >
+                                <span className="hidden xs:inline">Selanjutnya</span>
+                                <i className="fa-solid fa-chevron-right text-[9px]" />
+                            </motion.button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

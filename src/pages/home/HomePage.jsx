@@ -1,6 +1,9 @@
 import HeroCarousel from "../../components/Home/hero/HeroCarousel";
 import AnimeSection from "../../components/Home/anime/AnimeSection";
 import HomePremiumBanner from "./HomePremiumBanner";
+import HomeAmbientBg from "./HomeAmbientBg";
+import HomeQuickNav from "./HomeQuickNav";
+import HomeSectionDivider from "./HomeSectionDivider";
 import useAnimeHome from "../../hooks/useAnimeHome";
 import HeroCarouselSkeleton from "../../skeletons/heroCarouselSkeleton/HeroCarouselSkeleton";
 
@@ -100,19 +103,26 @@ export default function HomePage() {
     }, [error, error2, error3, loading, loading2, loading3]);
 
     return (
-        <>
+        <div className="relative">
+            <HomeAmbientBg />
+
             {/* Hero */}
             <div className="relative z-10">
                 {shouldShowSkeleton ? <HeroCarouselSkeleton /> : <HeroCarousel animeList={heroAnime} />}
             </div>
 
+            <HomeQuickNav />
+
             {/* Ongoing */}
             {loading ? (
-                <AnimeSectionSkeleton title="LAGI TAYANG" />
+                <div className="relative z-20">
+                    <AnimeSectionSkeleton title="LAGI TAYANG" />
+                </div>
             ) : (
-                <div className="relative z-20 bg-bg-primary transition-colors duration-300">
+                <div className="relative z-20 transition-colors duration-300">
                     <AnimeSection
                         title="SEDANG TAYANG"
+                        subtitle="Episode terbaru setiap minggu"
                         accent="bg-red-600"
                         animeList={ongoingAnime}
                         viewAllLabel="Lihat Semua Ongoing"
@@ -137,15 +147,20 @@ export default function HomePage() {
                 </div>
             )}
 
+            <HomeSectionDivider accent="red" />
             <HomePremiumBanner />
+            <HomeSectionDivider accent="emerald" />
 
             {/* Complete */}
             {loading2 ? (
-                <AnimeSectionSkeleton title="SUDAH TAMAT" />
+                <div className="relative z-20">
+                    <AnimeSectionSkeleton title="SUDAH TAMAT" />
+                </div>
             ) : (
-                <div className="relative z-20 bg-bg-primary transition-colors duration-300">
+                <div className="relative z-20 transition-colors duration-300">
                     <AnimeSection
                         title="SUDAH TAMAT"
+                        subtitle="Koleksi anime yang sudah selesai"
                         accent="bg-emerald-500"
                         animeList={completeAnime}
                         viewAllLabel="Lihat Semua Complete"
@@ -169,6 +184,6 @@ export default function HomePage() {
                     />
                 </div>
             )}
-        </>
+        </div>
     );
 }

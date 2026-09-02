@@ -118,11 +118,12 @@ function AnimeCardSkeleton({ index, isDark, accentColor }) {
 
             {/* Main card */}
             <div
-                className={`relative rounded-xl overflow-hidden ${isDark ? "bg-[#0d0d15]" : "bg-gray-50"
+                className={`relative rounded-2xl overflow-hidden border ${
+                    isDark ? "bg-[#0a0a0f] border-white/[0.06]" : "bg-white border-black/[0.06]"
                 }`}
             >
                 {/* Poster Skeleton */}
-                <div className={`relative aspect-2/3 overflow-hidden ${isDark ? "bg-[#14141f]" : "bg-gray-200"}`}>
+                <div className={`relative aspect-[2/3] overflow-hidden ${isDark ? "bg-[#14141f]" : "bg-gray-200"}`}>
                     {/* Animated shimmer overlay */}
                     <div
                         className="absolute inset-0"
@@ -200,77 +201,11 @@ function AnimeCardSkeleton({ index, isDark, accentColor }) {
                         } animate-pulse`}
                         style={{ animationDelay: `${index * 80 + 400}ms` }}
                     />
-                </div>
 
-                {/* Info Skeleton */}
-                <div className={`p-3 space-y-2.5 ${isDark ? "bg-[#0d0d15]" : "bg-white"}`}>
-                    {/* Divider line */}
-                    <div
-                        className="h-px w-full"
-                        style={{
-                            background: isDark
-                                ? "linear-gradient(to right, rgba(239,68,68,0.15), transparent)"
-                                : "linear-gradient(to right, rgba(0,0,0,0.06), transparent)",
-                        }}
-                    />
-
-                    {/* Title lines with shimmer */}
-                    <div className={`h-4 w-full rounded-md overflow-hidden ${isDark ? "bg-[#14141f]" : "bg-gray-200"}`}>
-                        <div
-                            className="h-full w-full"
-                            style={{
-                                background: isDark
-                                    ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%)"
-                                    : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
-                                backgroundSize: "200% 100%",
-                                animation: "shimmer 2s infinite",
-                                animationDelay: `${index * 80 + 200}ms`,
-                            }}
-                        />
-                    </div>
-                    <div className={`h-4 w-3/4 rounded-md overflow-hidden ${isDark ? "bg-[#14141f]" : "bg-gray-200"}`}>
-                        <div
-                            className="h-full w-full"
-                            style={{
-                                background: isDark
-                                    ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%)"
-                                    : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
-                                backgroundSize: "200% 100%",
-                                animation: "shimmer 2.4s infinite",
-                                animationDelay: `${index * 80 + 300}ms`,
-                            }}
-                        />
-                    </div>
-
-                    {/* Meta row */}
-                    <div className="flex items-center gap-2 pt-1">
-                        <div className={`h-3 w-12 rounded-md overflow-hidden ${isDark ? "bg-[#14141f]" : "bg-gray-200"}`}>
-                            <div
-                                className="h-full w-full"
-                                style={{
-                                    background: isDark
-                                        ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%)"
-                                        : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
-                                    backgroundSize: "200% 100%",
-                                    animation: "shimmer 2.6s infinite",
-                                    animationDelay: `${index * 80 + 400}ms`,
-                                }}
-                            />
-                        </div>
-                        <div className={`h-3 w-1 rounded-full ${isDark ? "bg-zinc-700/50" : "bg-gray-300"}`} />
-                        <div className={`h-3 w-10 rounded-md overflow-hidden ${isDark ? "bg-[#14141f]" : "bg-gray-200"}`}>
-                            <div
-                                className="h-full w-full"
-                                style={{
-                                    background: isDark
-                                        ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%)"
-                                        : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
-                                    backgroundSize: "200% 100%",
-                                    animation: "shimmer 2.2s infinite",
-                                    animationDelay: `${index * 80 + 500}ms`,
-                                }}
-                            />
-                        </div>
+                    {/* Bottom title overlay skeleton */}
+                    <div className="absolute inset-x-0 bottom-0 p-2.5 pt-10 bg-gradient-to-t from-black/80 to-transparent space-y-1.5">
+                        <div className={`h-3 w-full rounded ${isDark ? "bg-white/10" : "bg-white/30"}`} />
+                        <div className={`h-2.5 w-2/3 rounded ${isDark ? "bg-white/8" : "bg-white/20"}`} />
                     </div>
                 </div>
             </div>

@@ -6,7 +6,7 @@ export default function HeroBannerSkeleton() {
     const isDark = theme === "dark";
 
     return (
-        <div className="relative w-full h-[380px] xs:h-[440px] sm:h-[520px] md:h-[640px] overflow-hidden select-none">
+        <div className="relative w-full h-[260px] sm:h-[340px] md:h-[480px] lg:h-[580px] overflow-hidden select-none">
 
             {/* ── BACKGROUND ── */}
             <div className={`absolute inset-0 ${

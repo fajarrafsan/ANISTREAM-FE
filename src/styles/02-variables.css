@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --bg-primary: #f8f9fa;
   --bg-secondary: #ffffff;
   --bg-card: #f1f3f5;
@@ -40,6 +40,14 @@
 
 .font-hanken {
   font-family: 'Hanken Grotesk', sans-serif;
+}
+
+.font-display {
+  font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, sans-serif;
+}
+
+.font-jp {
+  font-family: 'Zen Kaku Gothic New', 'Plus Jakarta Sans', sans-serif;
 }
 
 /* Scrollbar Halus di dalam area Favorites */

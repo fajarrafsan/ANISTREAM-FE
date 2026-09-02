@@ -23,7 +23,7 @@ export default function RangeFilter({
                 <select
                     value={activeRange}
                     onChange={(e) => onRangeChange(e.target.value)}
-                    className={`appearance-none w-full sm:w-auto text-[10px] sm:text-[11px] font-bold pl-2.5 pr-8 py-1.5 sm:py-2 rounded-lg cursor-pointer focus:outline-none transition-all duration-300 border min-w-[100px] sm:min-w-[110px] touch-manipulation ${isDark
+                    className={`appearance-none w-full sm:w-auto text-[10px] sm:text-[11px] font-bold pl-2.5 pr-8 min-h-[44px] sm:min-h-0 py-2 sm:py-2 rounded-lg cursor-pointer focus:outline-none transition-all duration-200 border min-w-[100px] sm:min-w-[110px] touch-manipulation ${isDark
                         ? "bg-[#13080c] border-[#2a1117]/60 text-slate-300 focus:border-red-900/50 hover:border-red-900/30"
                         : "bg-white border-slate-300 text-slate-600 focus:border-rose-400/50 hover:border-rose-300/60"
                         }`}
