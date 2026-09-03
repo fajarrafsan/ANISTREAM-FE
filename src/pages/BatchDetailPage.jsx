@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useBatchDetail } from "../hooks/useBatch";
+import BatchDetailSkeleton from "../skeletons/batch/BatchDetailSkeleton";
 
 function BatchPoster({ poster, isDark }) {
     return (
@@ -25,43 +26,6 @@ function BatchPoster({ poster, isDark }) {
                     onError={(event) => { event.currentTarget.style.opacity = "0"; }}
                 />
             )}
-        </div>
-    );
-}
-
-function DetailSkeleton({ isDark }) {
-    const block = isDark ? "bg-white/[0.07]" : "bg-zinc-200/80";
-    const surface = isDark ? "border-white/10 bg-white/[0.03]" : "border-zinc-200 bg-white";
-
-    return (
-        <div role="status" aria-live="polite" aria-label="Memuat detail batch" className="mt-5 motion-safe:animate-pulse">
-            <div className={`grid gap-6 rounded-2xl border p-5 sm:grid-cols-[184px_minmax(0,1fr)] sm:p-8 ${surface}`} aria-hidden="true">
-                <div className={`aspect-2/3 w-32 rounded-xl sm:w-full ${block}`} />
-                <div className="min-w-0 space-y-4 sm:py-3">
-                    <div className={`h-5 w-24 rounded-md ${block}`} />
-                    <div className={`h-10 w-full rounded-lg ${block}`} />
-                    <div className={`h-5 w-2/3 rounded-md ${block}`} />
-                    <div className="flex gap-2 pt-1">
-                        <div className={`h-8 w-20 rounded-lg ${block}`} />
-                        <div className={`h-8 w-24 rounded-lg ${block}`} />
-                    </div>
-                    <div className={`h-11 w-40 rounded-xl ${block}`} />
-                </div>
-            </div>
-            <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]" aria-hidden="true">
-                <div className="space-y-4">
-                    <div className={`h-8 w-44 rounded-lg ${block}`} />
-                    {[0, 1].map((item) => (
-                        <div key={item} className={`space-y-5 rounded-2xl border p-5 ${surface}`}>
-                            <div className={`h-6 w-28 rounded-md ${block}`} />
-                            <div className={`h-12 w-full rounded-xl ${block}`} />
-                            <div className={`h-12 w-full rounded-xl ${block}`} />
-                        </div>
-                    ))}
-                </div>
-                <div className={`h-72 rounded-2xl border ${surface}`} />
-            </div>
-            <span className="sr-only">Memuat informasi dan pilihan unduhan batch.</span>
         </div>
     );
 }
@@ -217,7 +181,7 @@ export default function BatchDetailPage() {
             </nav>
 
             {loading ? (
-                <DetailSkeleton isDark={isDark} />
+                <BatchDetailSkeleton isDark={isDark} />
             ) : error || !batch ? (
                 <section className={`mx-auto mt-6 max-w-xl rounded-2xl border px-5 py-12 text-center sm:px-10 sm:py-16 ${surface}`} aria-labelledby="batch-error-title">
                     <div className={`mx-auto grid h-14 w-14 place-items-center rounded-2xl ${isDark ? "bg-red-500/10 text-red-400" : "bg-red-50 text-red-600"}`}>

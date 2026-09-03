@@ -11,6 +11,8 @@ import AnimeDetailsPage from "./pages/AnimeDetailsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import BatchPage from "./pages/BatchPage";
 import BatchDetailPage from "./pages/BatchDetailPage";
+import { BatchPageSkeleton } from "./skeletons/batch/BatchListSkeleton";
+import { BatchDetailPageSkeleton } from "./skeletons/batch/BatchDetailSkeleton";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthModal from "./components/Auth/AuthModal";
@@ -137,7 +139,7 @@ function AppContent() {
                     <Route
                         path="/batch"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute loadingFallback={<BatchPageSkeleton />}>
                                 <BatchPage />
                             </ProtectedRoute>
                         }
@@ -146,7 +148,7 @@ function AppContent() {
                     <Route
                         path="/batch/:batchId"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute loadingFallback={<BatchDetailPageSkeleton />}>
                                 <BatchDetailPage />
                             </ProtectedRoute>
                         }
