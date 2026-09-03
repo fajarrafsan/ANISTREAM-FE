@@ -111,11 +111,11 @@ export default function SearchModal({
                 className={`
                     fixed z-50 flex flex-col
                     left-3 right-3 top-[4.5rem] max-h-[min(70vh,520px)]
-                    md:absolute md:top-full md:mt-2 md:left-0 md:right-auto
+                    md:absolute md:top-full md:mt-2 md:left-auto md:right-0
                     md:w-[min(440px,calc(100vw-2rem))] md:max-h-[480px]
                     rounded-2xl overflow-hidden border
                     ${isDark
-                        ? "bg-[#13080c] border-[#2a1117]/80"
+                        ? "bg-[#101017] border-white/10"
                         : "bg-white border-slate-200 shadow-xl"
                     }
                 `}

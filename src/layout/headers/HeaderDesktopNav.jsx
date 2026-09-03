@@ -27,7 +27,7 @@ export default function HeaderDesktopNav({
     useLayoutEffect(() => {
         const measure = () => {
             const el = itemRefs.current.get(activeTab);
-            if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
+            setIndicator(el ? { left: el.offsetLeft, width: el.offsetWidth } : null);
         };
         measure();
 
@@ -54,13 +54,17 @@ export default function HeaderDesktopNav({
         <nav
             ref={navRef}
             aria-label="Navigasi utama"
-            className="hidden lg:flex items-center gap-1 relative select-none"
+            className={`relative hidden lg:flex shrink-0 items-center gap-0.5 rounded-2xl border p-1 select-none ${
+                isDark ? "border-white/[0.06] bg-black/20" : "border-black/[0.05] bg-zinc-100/70"
+            }`}
         >
             {indicator && (
                 <motion.span
                     aria-hidden="true"
-                    className={`absolute inset-y-0 rounded-full pointer-events-none ${
-                        isDark ? "bg-white/[0.07]" : "bg-black/[0.05]"
+                    className={`absolute inset-y-1 rounded-xl border pointer-events-none ${
+                        isDark
+                            ? "border-white/10 bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                            : "border-black/[0.05] bg-white shadow-sm"
                     }`}
                     initial={false}
                     animate={{ left: indicator.left, width: indicator.width }}
@@ -74,6 +78,7 @@ export default function HeaderDesktopNav({
                 const isActive = activeTab === link.id;
                 return (
                     <button
+                        type="button"
                         key={link.id}
                         ref={(el) => {
                             if (el) itemRefs.current.set(link.id, el);
@@ -81,7 +86,7 @@ export default function HeaderDesktopNav({
                         }}
                         onClick={() => handleNavClick(link.id)}
                         aria-current={isActive ? "page" : undefined}
-                        className={`relative inline-flex items-center min-h-11 px-4 text-[13px] font-semibold tracking-wide rounded-full cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${
+                        className={`group relative inline-flex items-center justify-center gap-2 min-h-11 px-3 xl:px-4 text-xs font-semibold rounded-xl cursor-pointer transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${
                             isDark
                                 ? "focus-visible:ring-offset-[#08080e]"
                                 : "focus-visible:ring-offset-white"
@@ -93,26 +98,13 @@ export default function HeaderDesktopNav({
                                     : "text-gray-500 hover:text-gray-900"
                         }`}
                     >
+                        <span aria-hidden="true" className={`size-1.5 rounded-full transition-colors ${
+                            isActive ? "bg-red-500" : isDark ? "bg-white/20 group-hover:bg-white/50" : "bg-zinc-300 group-hover:bg-zinc-500"
+                        }`} />
                         {link.name}
                     </button>
                 );
             })}
-
-            {indicator && (
-                <motion.span
-                    aria-hidden="true"
-                    className="absolute -bottom-1 h-[2px] rounded-full bg-red-500 pointer-events-none"
-                    initial={false}
-                    animate={{
-                        left: indicator.left + indicator.width * 0.28,
-                        width: indicator.width * 0.44,
-                    }}
-                    transition={reduced
-                        ? { duration: 0 }
-                        : { type: "spring", stiffness: 420, damping: 38, mass: 0.8 }}
-                    style={{ boxShadow: "0 0 10px rgba(239,68,68,0.55)" }}
-                />
-            )}
         </nav>
     );
 }

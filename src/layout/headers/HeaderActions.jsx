@@ -96,8 +96,8 @@ export default function HeaderActions({
     };
 
     return (
-        <div className={`flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-2 md:gap-3 transition-all duration-300 ${
-            mobileSearchOpen ? "flex-1 justify-end max-w-full" : "shrink-0"
+        <div className={`flex items-center gap-2 ${
+            mobileSearchOpen ? "min-w-0 flex-1 justify-end max-w-full" : "shrink-0"
         }`}>
             <DesktopSearch
                 isDark={isDark}
@@ -107,7 +107,7 @@ export default function HeaderActions({
                 setIsFocused={setIsFocused}
                 searchLoading={searchLoading}
                 onKeyDown={handleLocalKeyDown}
-                isSearchOpen={isSearchOpen}
+                isSearchOpen={isSearchOpen && !mobileSearchOpen}
                 searchResults={searchResults}
                 searchPhase={searchPhase}
                 openSearch={openSearch}
