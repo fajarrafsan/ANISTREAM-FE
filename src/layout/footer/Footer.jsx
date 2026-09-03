@@ -134,7 +134,7 @@ export default function Footer() {
                     {/* Stats */}
                     <motion.div
                         variants={footerItemVariants}
-                        className="flex flex-wrap justify-center gap-2 sm:gap-3 w-full max-w-2xl"
+                        className="flex max-[360px]:grid max-[360px]:grid-cols-2 flex-wrap justify-center gap-2 sm:gap-3 w-full max-w-2xl"
                     >
                         {stats.map((s) => (
                             <motion.div

@@ -83,7 +83,7 @@ export default memo(function HeroContent({ current, currentIndex, isDark }) {
     };
 
     return (
-        <div className="relative z-10 h-full flex items-end pb-[88px] sm:pb-[96px] md:pb-[100px]">
+        <div className="relative z-10 h-full flex items-end pb-[140px] max-sm:h-auto max-sm:min-h-[480px] max-sm:pt-6 sm:pb-[96px] md:pb-[100px]">
             <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 w-full">
                 <AnimatePresence mode="wait">
                     <motion.div
@@ -92,7 +92,7 @@ export default memo(function HeroContent({ current, currentIndex, isDark }) {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="max-w-xl"
+                        className="max-w-xl max-sm:min-w-0 max-sm:wrap-anywhere"
                     >
                         {/* Editorial label */}
                         <motion.div variants={itemVariants} className="flex items-center gap-3 mb-4 sm:mb-5">

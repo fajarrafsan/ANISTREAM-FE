@@ -24,7 +24,7 @@ export default function Toast({ toast, onRemove, isDesktop = false }) {
             exit="exit"
             role="alert"
             aria-live="polite"
-            className={`group relative flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl border overflow-hidden backdrop-blur-xl w-full sm:min-w-[320px] sm:max-w-[400px] ${
+            className={`group relative flex max-sm:grid max-sm:grid-cols-[minmax(0,1fr)_auto] items-start gap-3 max-sm:gap-y-2.5 p-3.5 sm:p-4 rounded-2xl border overflow-hidden backdrop-blur-xl w-full sm:min-w-[320px] sm:max-w-[400px] ${
                 isDark ? "bg-[#0a0810]/92" : "bg-white/95"
             }`}
             style={{
@@ -49,7 +49,7 @@ export default function Toast({ toast, onRemove, isDesktop = false }) {
             />
 
             <div
-                className="relative z-10 shrink-0 mt-0.5 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border backdrop-blur-sm"
+                className="relative z-10 shrink-0 max-sm:justify-self-start mt-0.5 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border backdrop-blur-sm"
                 style={{
                     color: config.accent,
                     backgroundColor: config.accentSoft,
@@ -68,7 +68,7 @@ export default function Toast({ toast, onRemove, isDesktop = false }) {
                 </span>
             </div>
 
-            <div className="relative z-10 flex-1 min-w-0 pt-0.5 pr-1">
+            <div className="relative z-10 flex-1 min-w-0 max-sm:col-span-2 max-sm:row-start-2 max-sm:wrap-break-word pt-0.5 pr-1">
                 <p
                     className={`text-[13px] sm:text-sm font-semibold leading-snug tracking-tight ${
                         isDark ? "text-white/95" : "text-gray-900"
@@ -93,7 +93,7 @@ export default function Toast({ toast, onRemove, isDesktop = false }) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 aria-label="Tutup notifikasi"
-                className={`relative z-10 shrink-0 px-2 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
+                className={`relative z-10 shrink-0 max-sm:col-start-2 max-sm:row-start-1 max-sm:justify-self-end px-2 py-1 rounded-lg text-[10px] font-semibold uppercase tracking-wider cursor-pointer transition-colors ${
                     isDark
                         ? "text-white/40 hover:text-white/80 hover:bg-white/[0.06]"
                         : "text-gray-400 hover:text-gray-700 hover:bg-black/[0.04]"

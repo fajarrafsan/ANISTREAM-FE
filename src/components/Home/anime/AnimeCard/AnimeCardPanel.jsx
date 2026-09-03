@@ -25,7 +25,7 @@ export default function AnimeCardPanel({ anime, isDark, onPlay, reducedMotion = 
             {/* Glass panel */}
             <motion.div
                 variants={overlayPanelVariants}
-                className={`relative mx-2 mb-2 rounded-xl border backdrop-blur-xl overflow-hidden ${
+                className={`relative mx-2 mb-2 rounded-xl border backdrop-blur-xl overflow-hidden max-sm:max-h-[calc(100%_-_1rem)] max-sm:overflow-y-auto max-sm:overscroll-contain ${
                     isDark
                         ? "bg-[#120a10]/85 border-white/[0.1]"
                         : "bg-black/75 border-white/[0.12]"

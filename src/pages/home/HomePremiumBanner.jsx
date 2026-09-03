@@ -56,11 +56,11 @@ export default function HomePremiumBanner() {
                         <div className="absolute top-0 left-8 right-8 h-px bg-linear-to-r from-transparent via-red-500/40 to-transparent" />
                     </div>
 
-                    <div className="relative z-10 p-6 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div className="relative z-10 p-4 sm:p-6 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
                         {/* Left: Content */}
                         <div
                             ref={textRef}
-                            className="flex-1 text-center lg:text-left"
+                            className="flex-1 text-center lg:text-left max-sm:min-w-0 max-sm:w-full"
                             style={{
                                 opacity: textVisible ? 1 : 0,
                                 transform: textVisible ? "translateX(0px)" : "translateX(-24px)",
@@ -88,7 +88,7 @@ export default function HomePremiumBanner() {
                             </p>
 
                             {/* Stats row */}
-                            <div className="flex items-center justify-center lg:justify-start gap-6 sm:gap-8 mt-6">
+                            <div className="flex items-center justify-center lg:justify-start gap-6 sm:gap-8 mt-6 max-[360px]:grid max-[360px]:grid-cols-2 max-[360px]:gap-4">
                                 {STATS.map((stat) => (
                                     <div key={stat.label} className="text-center">
                                         <p className={`font-display text-xl sm:text-2xl font-black tracking-wide ${
@@ -109,7 +109,7 @@ export default function HomePremiumBanner() {
                         {/* Right: CTA */}
                         <div
                             ref={btnRef}
-                            className="relative z-10 shrink-0"
+                            className="relative z-10 shrink-0 max-sm:w-full max-sm:min-w-0"
                             style={{
                                 opacity: btnVisible ? 1 : 0,
                                 transform: btnVisible ? "translateX(0px)" : "translateX(24px)",
@@ -121,10 +121,10 @@ export default function HomePremiumBanner() {
                                 href="https://saweria.co/fajarrafsan"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group/btn relative inline-flex items-center gap-3
+                                className="group/btn relative inline-flex items-center gap-3 max-sm:w-full max-sm:gap-2
                                     bg-linear-to-r from-[#ff1e56] to-[#e11d48]
                                     hover:from-[#ff336a] hover:to-[#f43f5e]
-                                    text-white font-bold px-8 py-4 rounded-2xl text-sm
+                                    text-white font-bold px-8 max-sm:px-3 py-4 rounded-2xl text-sm
                                     transition-all duration-300
                                     hover:scale-[1.04] active:scale-[0.96]
                                     shadow-[0_8px_32px_rgba(255,30,86,0.3)]
@@ -133,7 +133,7 @@ export default function HomePremiumBanner() {
                             >
                                 <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
-                                <div className="relative w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center group-hover/btn:bg-white/25 transition-colors duration-300">
+                                <div className="relative w-10 h-10 max-sm:shrink-0 rounded-xl bg-white/15 flex items-center justify-center group-hover/btn:bg-white/25 transition-colors duration-300">
                                     <Heart
                                         className="w-5 h-5 fill-current text-white/90
                                             transition-all duration-300
@@ -142,8 +142,8 @@ export default function HomePremiumBanner() {
                                     />
                                 </div>
 
-                                <div className="relative text-left">
-                                    <span className="block font-black tracking-wide text-base">
+                                <div className="relative text-left max-sm:min-w-0 max-sm:flex-1">
+                                    <span className="block font-black tracking-wide text-base max-sm:text-sm">
                                         Dukung di Saweria
                                     </span>
                                     <span className="block text-[10px] text-white/60 font-medium tracking-wider mt-0.5">
@@ -151,7 +151,7 @@ export default function HomePremiumBanner() {
                                     </span>
                                 </div>
 
-                                <span className="relative ml-2 transition-transform duration-300 transform group-hover/btn:translate-x-1 text-lg">
+                                <span className="relative ml-2 max-sm:ml-0 max-sm:shrink-0 transition-transform duration-300 transform group-hover/btn:translate-x-1 text-lg">
                                     →
                                 </span>
 

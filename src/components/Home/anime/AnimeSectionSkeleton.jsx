@@ -20,7 +20,7 @@ export default function AnimeSectionSkeleton({ title = "LAGI TAYANG" }) {
             />
 
             {/* Section Header Skeleton */}
-            <div className="relative z-10 flex items-center justify-between mb-5 sm:mb-8 gap-2 sm:gap-4">
+            <div className="relative z-10 flex items-center justify-between mb-5 sm:mb-8 gap-2 sm:gap-4 max-xs:flex-col max-xs:items-start max-xs:gap-3">
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                     {/* Premium accent bar with glow */}
                     <div className="relative flex items-center">
@@ -60,7 +60,7 @@ export default function AnimeSectionSkeleton({ title = "LAGI TAYANG" }) {
 
                 {/* Premium View All button skeleton */}
                 <div
-                    className={`relative shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase rounded-full border backdrop-blur-sm ${isDark
+                    className={`relative shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2 max-sm:min-h-11 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase rounded-full border backdrop-blur-sm ${isDark
                         ? "bg-white/[0.03] border-white/[0.08] text-white/30"
                         : "bg-black/[0.02] border-black/[0.08] text-black/30"
                     }`}

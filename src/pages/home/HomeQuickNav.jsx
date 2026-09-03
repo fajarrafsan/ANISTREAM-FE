@@ -41,7 +41,7 @@ export default function HomeQuickNav() {
                         <button
                             key={item.id}
                             onClick={() => handleNav(item.path)}
-                            className={`group relative text-left rounded-xl sm:rounded-2xl border p-4 sm:p-5 transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] overflow-hidden ${
+                            className={`group relative text-left rounded-xl sm:rounded-2xl border p-4 max-[360px]:p-3 sm:p-5 transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:scale-[0.98] overflow-hidden ${
                                 isDark
                                     ? "bg-white/[0.03] border-white/[0.07] hover:bg-white/[0.05] hover:border-white/[0.12]"
                                     : "bg-white border-black/[0.06] hover:shadow-md hover:border-black/[0.1]"
@@ -58,7 +58,7 @@ export default function HomeQuickNav() {
                                 style={{ background: item.accent, boxShadow: `0 0 12px ${item.accent}55` }}
                             />
 
-                            <div className="pl-3">
+                            <div className="pl-3 max-[360px]:pl-2">
                                 <span
                                     className="block font-mono text-[10px] font-bold tracking-widest mb-2 opacity-40"
                                     style={{ color: item.accent }}

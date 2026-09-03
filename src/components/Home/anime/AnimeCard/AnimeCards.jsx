@@ -87,7 +87,7 @@ export default function AnimeCards({
                 initial="rest"
                 animate={shellState}
                 transition={motionTransition(reducedMotion, cardSpring)}
-                className={`relative aspect-[2/3] rounded-2xl overflow-hidden cursor-pointer group/card ${
+                className={`relative aspect-[2/3] rounded-2xl overflow-hidden cursor-pointer group/card ${isExpanded ? "max-sm:z-[80]" : ""} ${
                     isDark ? "bg-[#08080d]" : "bg-zinc-100"
                 }`}
                 style={{

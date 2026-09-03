@@ -70,7 +70,7 @@ export default function AnimeSection({
 
             <div
                 ref={headerRef}
-                className="relative z-10 flex items-center justify-between mb-5 sm:mb-8 gap-2 sm:gap-4"
+                className="relative z-10 flex items-center justify-between mb-5 sm:mb-8 gap-2 sm:gap-4 max-xs:flex-col max-xs:items-start max-xs:gap-3"
                 style={{
                     opacity: headerVisible ? 1 : 0,
                     transform: headerVisible ? "translateY(0px)" : "translateY(20px)",
@@ -141,7 +141,7 @@ export default function AnimeSection({
                 <a
                     href="#"
                     onClick={handleViewAll}
-                    className={`group/btn relative shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase rounded-full border backdrop-blur-sm transition-all duration-400 focus:outline-none
+                    className={`group/btn relative shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2 max-sm:min-h-11 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase rounded-full border backdrop-blur-sm transition-all duration-400 focus:outline-none
                         ${isDark
                             ? "bg-white/[0.03] border-white/[0.08] text-white/50 hover:text-white hover:border-red-500/40 hover:bg-red-500/10 hover:shadow-lg hover:shadow-red-500/10"
                             : "bg-black/[0.02] border-black/[0.08] text-black/50 hover:text-red-600 hover:border-red-300 hover:bg-red-50 hover:shadow-lg hover:shadow-red-100/30"

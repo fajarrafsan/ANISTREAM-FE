@@ -7,7 +7,8 @@ export default function HeroCarouselSkeleton() {
     return (
         <section
             className={`relative w-full overflow-hidden select-none
-                aspect-[3/1] min-h-[420px] max-h-[680px]
+                aspect-[3/1] min-h-[480px] max-h-[680px]
+                max-sm:aspect-auto max-sm:max-h-none
                 sm:min-h-[460px] sm:max-h-[720px]
                 md:max-h-[760px]
                 ${isDark ? "bg-[#050508]" : "bg-[#f8f9fa]"}`}
@@ -27,7 +28,7 @@ export default function HeroCarouselSkeleton() {
 
             <div className={`absolute inset-0 ${isDark ? "bg-linear-to-t from-[#07020a] via-transparent to-transparent" : "bg-linear-to-t from-[#f0f2f5] via-transparent to-transparent"}`} />
 
-            <div className="relative z-10 h-full flex items-end pb-[88px] sm:pb-[96px]">
+            <div className="relative z-10 h-full flex items-end pb-[140px] max-sm:h-auto max-sm:min-h-[480px] max-sm:pt-6 sm:pb-[96px]">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 w-full">
                     <div className="max-w-xl space-y-3 sm:space-y-4">
                         <div className="flex items-center gap-3">
@@ -49,13 +50,12 @@ export default function HeroCarouselSkeleton() {
             </div>
 
             <div className="absolute bottom-0 inset-x-0 z-20">
-                <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 pb-4 sm:pb-5">
-                    <div className="flex items-end justify-end gap-2">
-                        {[100, 64, 64].map((h, i) => (
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 pb-3 sm:pb-5">
+                    <div className="flex items-end justify-center sm:justify-end gap-2">
+                        {[0, 1, 2].map((i) => (
                             <div
                                 key={i}
-                                className={`rounded-lg shrink-0 animate-pulse ${isDark ? "bg-white/8" : "bg-black/8"}`}
-                                style={{ width: i === 0 ? 100 : 64, height: i === 0 ? 130 : 64 }}
+                                className={`rounded-lg shrink-0 animate-pulse ${i === 0 ? "w-[88px] h-28 sm:w-[100px] sm:h-[130px]" : "w-14 h-14 sm:w-16 sm:h-16"} ${isDark ? "bg-white/8" : "bg-black/8"}`}
                             />
                         ))}
                     </div>
