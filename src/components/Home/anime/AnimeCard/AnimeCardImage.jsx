@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { Link } from "react-router-dom";
 import { useCardSpotlight } from "./useCardSpotlight";
 import {
     imageVariants,
@@ -11,7 +12,6 @@ export default function AnimeCardImage({
     anime,
     isExpanded,
     isOngoing,
-    isDark,
     canHover = true,
     reducedMotion = false,
 }) {
@@ -106,7 +106,11 @@ export default function AnimeCardImage({
                 animate={isExpanded ? "hidden" : "visible"}
             >
                 <h3 className="font-display font-bold leading-tight line-clamp-2 text-sm sm:text-[15px] text-white tracking-wide drop-shadow-lg">
-                    {anime.title}
+                    {anime.animeId ? (
+                        <Link to={`/anime/detail/${encodeURIComponent(anime.animeId)}`} onClick={(event) => event.stopPropagation()}>
+                            {anime.title}
+                        </Link>
+                    ) : anime.title}
                 </h3>
                 <div className="flex items-center gap-2 mt-1.5 min-w-0 text-[10px] sm:text-[11px]">
                     {anime.genre && (

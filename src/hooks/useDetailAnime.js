@@ -1,46 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { api } from '../api/axios';   
+import { api } from '../api/axios';
+import { getAnimeTitle } from '../utils/animeDetailUtils';
 
 export default function useAnimeDetail() {
-    const { slug } = useParams();              
-    const [anime, setAnime] = useState(null); 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { slug } = useParams();
+    const [result, setResult] = useState({ slug: null, anime: null, loading: true, error: null });
 
     useEffect(() => {
-        if (!slug) return;                    
+        if (!slug) return;
+        const controller = new AbortController();
 
         const fetchData = async () => {
             try {
-                setLoading(true);
-                setError(null);
-                setAnime(null);
-
-                const response = await api.get(`/anime/detail/${slug}`);
-
-                // asumsikan response.data.data berisi object anime detail
-                const mapped = response.data.data;
-                setAnime(mapped);
-                setError(null);
+                const response = await api.get(`/anime/detail/${encodeURIComponent(slug)}`, {
+                    signal: controller.signal,
+                });
+                const anime = response.data.data;
+                if (!getAnimeTitle(anime, '').trim()) throw new Error('Data anime tidak tersedia.');
+                if (!controller.signal.aborted) setResult({ slug, anime, loading: false, error: null });
             } catch (error) {
-                console.error("Terjadi kesalahan:", error);
-                setError(
-                    error.response?.data?.message ||
-                    error.message ||
-                    "Terjadi kesalahan"
-                );
-            } finally {
-                setLoading(false);
+                if (controller.signal.aborted) return;
+                setResult({ slug, anime: null, loading: false,
+                    error: error.response?.data?.message || error.message || 'Terjadi kesalahan' });
             }
         };
 
         fetchData();
+        return () => controller.abort();
     }, [slug]); 
 
-    return {
-        anime,  
-        loading,
-        error
-    };
+    // Do not expose the previous title/content while another slug is loading.
+    return result.slug === slug ? result : { anime: null, loading: true, error: null };
 }

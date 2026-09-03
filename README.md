@@ -133,10 +133,30 @@ VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
 | `/` | Beranda (Hero + Anime Sections) | - |
 | `/catalog` | Katalog Anime | Yes |
 | `/schedule` | Jadwal Rilis Mingguan | Yes |
-| `/anime/detail/:slug` | Detail Anime | Yes |
+| `/anime/detail/:slug` | Detail Anime | - |
 | `/episode/:episodeId` | Video Player | Yes |
 | `/profile` | Profil Pengguna | Yes |
 | `/unauthorized` | Halaman 403 | - |
+
+## SEO dan Google Search Console
+
+Domain utama: https://anistream.fajarrafsan.my.id/. Homepage memiliki judul dan deskripsi AniStream, canonical, metadata berbagi, serta structured data `WebSite` untuk identitas situs.
+
+- `public/robots.txt` menunjukkan lokasi sitemap. `pnpm seo:sitemap` memperbarui `public/sitemap.xml` dengan homepage dan seluruh ID dari API `/anime/all`, tanpa membuat slug dari judul. Build juga mencoba memperbaruinya otomatis; bila API gagal, sitemap tersimpan dipertahankan dengan peringatan. Setelah API pulih, jalankan ulang perintah tersebut dan deploy agar daftar terbaru tersedia.
+- Halaman `/anime/detail/:slug` dapat dibaca tanpa login. Judulnya memakai format `Judul Anime Subtitle Indonesia | AniStream`, dengan deskripsi dari sinopsis, canonical per anime, dan structured data `WebPage`. Tautan judul kartu homepage dapat dirayapi. Menonton, rating, komentar, serta fitur akun tetap mengikuti autentikasi yang ada.
+- `src/components/SiteMetadata.jsx` memperbarui metadata saat navigasi. Halaman akun, halaman error, dan konten lain yang memerlukan login memakai `noindex`; header Vercel juga menerapkannya pada route privat sebelum JavaScript berjalan. Error pemuatan anime tidak diindeks sebagai halaman detail.
+- `pnpm build` menghasilkan `dist/anime-detail.html`. Rewrite Vercel memakai shell ini untuk detail supaya HTML awal tidak salah menunjuk canonical homepage. Google tetap perlu merender JavaScript dan berhasil mengambil data API agar judul, sinopsis, dan metadata lengkap terbaca; ini belum merupakan server-side rendering.
+- Jika nama atau domain berubah, perbarui `index.html`, `SiteMetadata.jsx`, `robots.txt`, dan `sitemap.xml` bersama-sama. Tambahkan halaman ke sitemap hanya jika dapat dibaca tanpa login dan memang ingin ditampilkan di Google.
+
+Setelah deploy produksi:
+
+1. Buka `/robots.txt` dan `/sitemap.xml` pada domain utama. Pastikan keduanya menampilkan teks/XML yang benar, bukan halaman aplikasi.
+2. Di Google Search Console untuk properti `https://anistream.fajarrafsan.my.id/`, buka **Peta Situs**, masukkan `sitemap.xml`, lalu kirim.
+3. Masukkan URL homepage lengkap ke **Inspeksi URL**, pilih **Uji URL Aktif**, lalu **Minta Pengindeksan** jika halaman dapat diindeks. Periksa juga screenshot/HTML hasil render untuk memastikan isi homepage berhasil dimuat.
+   Ulangi pada beberapa URL detail nyata, misalnya URL yang disalin dari kartu anime. Pastikan bukan halaman login/error, judul sesuai anime, canonical menunjuk detail tersebut, dan tidak ada `noindex` atau kegagalan API.
+4. Pantau status pengindeksan dan laporan Performa. Permintaan pengindeksan tidak menjamin halaman langsung masuk Google atau menempati posisi tertentu untuk kata “anistream”. Google dapat memerlukan beberapa hari hingga beberapa minggu untuk merayapi ulang.
+
+Panduan Google: [nama situs](https://developers.google.com/search/docs/appearance/site-names) dan [permintaan perayapan ulang](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl).
 
 ## Architecture Highlights
 

@@ -85,7 +85,15 @@ export default function useCommentFetch({
     );
 
     useEffect(() => {
-        if (!animeId) return;
+        if (!animeId) {
+            setComments([]);
+            setTotal(0);
+            setHasMore(false);
+            setLikedIds(new Set());
+            cacheRef.current = {};
+            setLoading(false);
+            return;
+        }
         let cancelled = false;
 
         const initial = async () => {

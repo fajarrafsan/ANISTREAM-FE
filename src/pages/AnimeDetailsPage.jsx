@@ -12,6 +12,8 @@ import useComments from '../hooks/useComments';
 import AnimeDetailSkeleton from '../skeletons/animeDetailsSkeleton/AnimeDetailSkeleton';
 import { useTheme } from '../context/ThemeContext';
 import { getAnimeTitle, getAnimeId } from '../utils/animeDetailUtils';
+import SiteMetadata from '../components/SiteMetadata';
+import { useAuth } from '../context/AuthContext';
 
 export default function AnimeDetailsPage() {
     const navigate = useNavigate();
@@ -24,26 +26,31 @@ export default function AnimeDetailsPage() {
 
     const { anime, loading, error } = useAnimeDetail();
     const animeId = getAnimeId(anime);
-    const commentsApi = useComments(animeId);
+    const { isLoggedIn } = useAuth();
+    const commentsApi = useComments(isLoggedIn ? animeId : null);
+    const metadata = <SiteMetadata anime={anime} loading={loading} error={error} />;
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' });
     }, []);
 
-    if (loading) return <AnimeDetailSkeleton />;
+    if (loading) return <>{metadata}<AnimeDetailSkeleton /></>;
 
     if (error) {
         return (
+            <>
+            {metadata}
             <div
                 className={`min-h-screen flex items-center justify-center px-4 text-center text-red-400 ${isDark ? "bg-[#08080e]" : "bg-white"
                     }`}
             >
                 <p className="text-sm sm:text-base">{error}</p>
             </div>
+            </>
         );
     }
 
-    if (!anime) return <AnimeDetailSkeleton />;
+    if (!anime) return <>{metadata}<AnimeDetailSkeleton /></>;
 
     const titleMain = getAnimeTitle(anime);
 
@@ -58,6 +65,8 @@ export default function AnimeDetailsPage() {
     };
 
     return (
+        <>
+        {metadata}
         <div
             className={`font-sans antialiased relative min-h-screen transition-colors duration-300 ${isDark ? "bg-[#08080e] text-slate-100" : "bg-white text-slate-900"
                 }`}
@@ -193,5 +202,6 @@ export default function AnimeDetailsPage() {
                 </p>
             </footer>
         </div>
+        </>
     );
 }

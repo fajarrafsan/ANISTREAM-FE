@@ -1,5 +1,21 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/:section(profile|catalog|schedule|batch|episode|reset-password|403|unauthorized)/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/anime/detail/:slug",
+      "destination": "/anime-detail.html"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

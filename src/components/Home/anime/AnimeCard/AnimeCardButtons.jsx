@@ -29,7 +29,7 @@ export default function AnimeCardButtons({
 
     const handlePrimaryClick = (e) => {
         e.stopPropagation();
-        if (!isLoggedIn) {
+        if (isOngoing && !isLoggedIn) {
             toast.warning("Silakan login terlebih dahulu", 3000);
             openModal({ mode: "login" });
             return;

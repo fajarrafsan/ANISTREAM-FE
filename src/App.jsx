@@ -15,6 +15,7 @@ import { BatchPageSkeleton } from "./skeletons/batch/BatchListSkeleton";
 import { BatchDetailPageSkeleton } from "./skeletons/batch/BatchDetailSkeleton";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import SiteMetadata from "./components/SiteMetadata";
 import AuthModal from "./components/Auth/AuthModal";
 
 import { ToastProvider } from "./context/ToastContext";
@@ -68,6 +69,7 @@ function AppContent() {
 
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary overflow-x-hidden transition-colors duration-300">
+            {!isDetails && <SiteMetadata />}
 
             {/* HEADER */}
             {!hideLayout && (
@@ -156,11 +158,7 @@ function AppContent() {
 
                     <Route
                         path="/anime/detail/:slug"
-                        element={
-                            <ProtectedRoute>
-                                <AnimeDetailsPage />
-                            </ProtectedRoute>
-                        }
+                        element={<AnimeDetailsPage />}
                     />
 
                     <Route
@@ -180,7 +178,7 @@ function AppContent() {
             )}
 
             {/* AUTH MODAL */}
-            {!hideLayout && (
+            {(!hideLayout || isDetails) && (
                 <AuthModal />
             )}
         </div>
