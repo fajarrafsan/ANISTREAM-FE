@@ -305,7 +305,12 @@ export default function RafsanimeProfilePage() {
                         >
                             {/* Left Col (8): Currently Watching & Wishlist */}
                             <div className="lg:col-span-8 flex flex-col gap-8">
-                                <CurrentlyWatching shows={watchingList} loading={historyLoading} />
+                                <CurrentlyWatching
+                                    shows={watchingList}
+                                    loading={historyLoading}
+                                    compact
+                                    onViewAll={() => setActiveTab('watching')}
+                                />
 
                                 <div className="pt-2">
                                     <Wishlist

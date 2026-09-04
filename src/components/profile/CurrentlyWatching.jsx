@@ -2,27 +2,62 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext'; 
 import CurrentlyWatchingSkeleton from '../../skeletons/profil/CurrentlyWatchingSkeleton'; 
 
-export default function CurrentlyWatching({ shows, loading = true }) { 
+const OVERVIEW_LIMIT = 6;
+
+export default function CurrentlyWatching({
+    shows = [],
+    loading = true,
+    compact = false,
+    onViewAll,
+}) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
     const navigate = useNavigate();
+    const visibleShows = compact ? shows.slice(0, OVERVIEW_LIMIT) : shows;
+    const hasShows = shows.length > 0;
 
     return (
         <section className="relative w-full">
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
+            <div className="mb-5 flex items-center justify-between gap-3 sm:mb-6">
+                <div className="flex min-w-0 items-center gap-3">
                     <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#ec001d] to-[#ff4d63] shadow-[0_0_12px_rgba(236,0,29,0.5)] dark:shadow-[0_0_16px_rgba(236,0,29,0.8)]" />
-                    <h2 className={`font-sora text-sm md:text-base font-extrabold tracking-wide uppercase transition-colors duration-300 ${
-                        isDark ? "text-white" : "text-neutral-900"
-                    }`}>
-                        Currently Watching
-                    </h2>
+                    <div className="flex min-w-0 items-center gap-2.5">
+                        <h2 className={`truncate font-sora text-xs font-extrabold uppercase tracking-[0.04em] transition-colors duration-300 sm:text-sm sm:tracking-wide md:text-base ${
+                            isDark ? "text-white" : "text-neutral-900"
+                        }`}>
+                            Currently Watching
+                        </h2>
+                        {!loading && hasShows && (
+                            <span className={`hidden shrink-0 rounded-full border px-2 py-0.5 font-mono text-[9px] font-bold sm:inline-block ${
+                                isDark
+                                    ? 'border-white/10 bg-white/[0.05] text-slate-400'
+                                    : 'border-slate-200 bg-white text-slate-500'
+                            }`}>
+                                {shows.length}
+                            </span>
+                        )}
+                    </div>
                 </div>
+
+                {compact && hasShows && onViewAll && (
+                    <button
+                        type="button"
+                        onClick={onViewAll}
+                        className={`group/view-all inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border px-3.5 text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff1e56] focus-visible:ring-offset-2 sm:px-4 ${
+                            isDark
+                                ? 'border-white/10 bg-white/[0.04] text-slate-300 hover:border-[#ff1e56]/45 hover:bg-[#ff1e56]/10 hover:text-white focus-visible:ring-offset-[#080305]'
+                                : 'border-slate-200 bg-white text-slate-600 shadow-sm hover:border-rose-300 hover:text-[#e6002d] focus-visible:ring-offset-[#faf8f5]'
+                        }`}
+                    >
+                        <span><span className="hidden sm:inline">Lihat </span>semua</span>
+                        <i className="fa-solid fa-arrow-right text-[9px] transition-transform duration-300 group-hover/view-all:translate-x-0.5" />
+                    </button>
+                )}
             </div>
 
             {loading ? (
-                <CurrentlyWatchingSkeleton />
-            ) : shows?.length === 0 ? (
+                <CurrentlyWatchingSkeleton compact={compact} />
+            ) : !hasShows ? (
                 <div className={`flex flex-col items-center justify-center rounded-3xl border border-dashed p-10 sm:p-14 text-center transition-all duration-300 ${
                     isDark
                         ? "border-white/10 bg-white/[0.02] backdrop-blur-xl text-neutral-400"
@@ -39,15 +74,27 @@ export default function CurrentlyWatching({ shows, loading = true }) {
                     </p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {shows.map((show) => (
-                        <div
+                <div
+                    className={compact
+                        ? '-mx-3.5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3.5 pb-3 scrollbar-hide sm:mx-0 sm:gap-4 sm:px-0'
+                        : 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3'
+                    }
+                    aria-label={compact ? 'Daftar tontonan ringkas' : 'Daftar tontonan'}
+                >
+                    {visibleShows.map((show) => (
+                        <button
+                            type="button"
                             key={show.id}
                             onClick={() => show.episodeId && navigate(`/episode/${show.episodeId}`)}
-                            className={`group relative rounded-2xl overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hover:-translate-y-2 cursor-pointer border ${
+                            disabled={!show.episodeId}
+                            aria-label={`Lanjut menonton ${show.title}, ${show.episode}`}
+                            className={`group relative overflow-hidden rounded-2xl border text-left transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff1e56] focus-visible:ring-offset-2 disabled:cursor-default ${compact
+                                ? 'w-[82vw] max-w-[280px] shrink-0 snap-start sm:w-[calc((100%_-_1rem)/2)] sm:max-w-none lg:w-[calc((100%_-_2rem)/3)]'
+                                : ''
+                            } ${
                                 isDark
-                                    ? "bg-gradient-to-b from-[#13050a] via-[#0b0305] to-[#070204] border-white/[0.08] hover:border-[#ff1e56]/50 hover:shadow-[0_15px_40px_rgba(255,30,86,0.2)]"
-                                    : "bg-white border-slate-200 hover:border-rose-400 hover:shadow-xl"
+                                    ? "border-white/[0.08] bg-gradient-to-b from-[#13050a] via-[#0b0305] to-[#070204] hover:border-[#ff1e56]/50 hover:shadow-[0_15px_40px_rgba(255,30,86,0.2)] focus-visible:ring-offset-[#080305]"
+                                    : "border-slate-200 bg-white hover:border-rose-400 hover:shadow-xl focus-visible:ring-offset-[#faf8f5]"
                             }`}
                         >
                             <div className="relative aspect-video overflow-hidden bg-slate-900">
@@ -120,7 +167,7 @@ export default function CurrentlyWatching({ shows, loading = true }) {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </button>
                     ))}
                 </div>
             )}

@@ -1,16 +1,22 @@
 import { useTheme } from '../../context/ThemeContext';
 
-export default function CurrentlyWatchingSkeleton() {
+export default function CurrentlyWatchingSkeleton({ compact = false }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        <div className={compact
+            ? '-mx-3.5 flex gap-3 overflow-hidden px-3.5 pb-3 sm:mx-0 sm:gap-4 sm:px-0'
+            : 'grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3'
+        }>
             {/* Merender 3 buah kerangka dummy */}
             {Array.from({ length: 3 }).map((_, idx) => (
                 <div
                     key={idx}
-                    className={`rounded-2xl overflow-hidden border transition-all duration-300 ${isDark
+                    className={`overflow-hidden rounded-2xl border transition-all duration-300 ${compact
+                        ? 'w-[82vw] max-w-[280px] shrink-0 sm:w-[calc((100%_-_1rem)/2)] sm:max-w-none lg:w-[calc((100%_-_2rem)/3)]'
+                        : ''
+                    } ${isDark
                             ? "bg-[#0f0f0f] border-white/5"
                             : "bg-white border-neutral-100"
                         }`}
