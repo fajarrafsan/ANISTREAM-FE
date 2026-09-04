@@ -3,10 +3,10 @@ import { useLocation } from "react-router-dom";
 import { getAnimeTitle } from "../utils/animeDetailUtils";
 import { stripHtml } from "../utils/htmlParser";
 
-const SITE_URL = "https://anistream.fajarrafsan.my.id/";
-const HOME_TITLE = "AniStream — Nonton Anime Subtitle Indonesia";
+const SITE_URL = "https://rafsanime.fajarrafsan.my.id/";
+const HOME_TITLE = "Rafsanime — Nonton Anime Subtitle Indonesia";
 const HOME_DESCRIPTION =
-    "Nonton anime subtitle Indonesia di AniStream. Jelajahi koleksi anime, cek jadwal tayang, dan temukan unduhan batch dalam berbagai kualitas.";
+    "Nonton anime subtitle Indonesia di Rafsanime. Jelajahi koleksi anime, cek jadwal tayang, dan temukan unduhan batch dalam berbagai kualitas.";
 
 const PAGE_TITLES = {
     profile: "Profil",
@@ -41,14 +41,14 @@ export default function SiteMetadata({ anime = null, loading = false, error = nu
         const pageUrl = `${SITE_URL}${pathname.slice(1).replace(/\/$/, "")}`;
         const pageTitle = PAGE_TITLES[pathname.split("/")[1]] || "Halaman";
         const title = isHome ? HOME_TITLE
-            : hasAnime ? `${animeTitle} Subtitle Indonesia | AniStream`
-            : isDetail && error ? "Anime Tidak Tersedia | AniStream"
-            : `${pageTitle} | AniStream`;
+            : hasAnime ? `${animeTitle} Subtitle Indonesia | Rafsanime`
+            : isDetail && error ? "Anime Tidak Tersedia | Rafsanime"
+            : `${pageTitle} | Rafsanime`;
         const synopsis = typeof anime?.synopsis === "string" ? stripHtml(anime.synopsis) : "";
         const description = isHome
             ? HOME_DESCRIPTION
-            : hasAnime ? `${animeTitle} di AniStream. ${synopsis || "Informasi anime, sinopsis, genre, dan daftar episode subtitle Indonesia."}`.slice(0, 160)
-            : `${pageTitle} di AniStream.`;
+            : hasAnime ? `${animeTitle} di Rafsanime. ${synopsis || "Informasi anime, sinopsis, genre, dan daftar episode subtitle Indonesia."}`.slice(0, 160)
+            : `${pageTitle} di Rafsanime.`;
 
         document.title = title;
         setMeta("name", "description", description);
@@ -90,7 +90,7 @@ export default function SiteMetadata({ anime = null, loading = false, error = nu
                     description,
                     url: pageUrl,
                     inLanguage: "id-ID",
-                    isPartOf: { "@type": "WebSite", name: "AniStream", url: SITE_URL },
+                    isPartOf: { "@type": "WebSite", name: "Rafsanime", url: SITE_URL },
                     about: { "@type": "CreativeWork", name: animeTitle },
                 });
                 document.head.appendChild(structured);
@@ -107,7 +107,7 @@ export default function SiteMetadata({ anime = null, loading = false, error = nu
         website.textContent = JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            name: "AniStream",
+            name: "Rafsanime",
             url: SITE_URL,
             inLanguage: "id-ID",
         });

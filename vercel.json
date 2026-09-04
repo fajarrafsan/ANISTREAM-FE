@@ -1,5 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "anistream.fajarrafsan.my.id"
+        }
+      ],
+      "destination": "https://rafsanime.fajarrafsan.my.id/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/:section(profile|catalog|schedule|batch|episode|reset-password|403|unauthorized)/:path*",

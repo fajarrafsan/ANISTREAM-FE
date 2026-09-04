@@ -18,7 +18,7 @@ export default function BatchPageHeader({ isDark }) {
                     <div className="min-w-0">
                         <p className={`mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] sm:text-xs ${isDark ? "text-red-400" : "text-red-600"}`}>
                             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" aria-hidden="true" />
-                            Koleksi AniStream
+                            Koleksi Rafsanime
                         </p>
                         <h1 className={`font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl ${primaryText}`}>
                             Batch <span className={isDark ? "text-red-400" : "text-red-600"}>Download</span>

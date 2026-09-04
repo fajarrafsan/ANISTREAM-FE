@@ -3,10 +3,25 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import process from 'node:process';
 
-export const SITE_URL = 'https://anistream.fajarrafsan.my.id/';
+export const SITE_URL = 'https://rafsanime.fajarrafsan.my.id/';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const sitemapFile = resolve(root, 'public/sitemap.xml');
 const apiUrl = 'https://anistreasm-be.onrender.com/api/anime/all';
+
+function normalizeSlug(value) {
+    if (typeof value !== 'string' || !value) throw new Error('ID anime kosong.');
+    let decoded;
+    try {
+        decoded = decodeURIComponent(value);
+    } catch {
+        throw new Error('ID anime memiliki encoding URL yang rusak.');
+    }
+    const hasControlCharacter = [...decoded].some(character => character.codePointAt(0) <= 31);
+    if (decoded.trim() !== decoded || decoded === '.' || decoded === '..' || /[/\\?#]/.test(decoded) || hasControlCharacter) {
+        throw new Error('ID anime bukan satu segmen URL yang aman.');
+    }
+    return encodeURIComponent(decoded);
+}
 
 export function buildSitemap(response) {
     if (response?.success !== true || !Array.isArray(response.data)) {
@@ -16,17 +31,13 @@ export function buildSitemap(response) {
     for (const group of response.data) {
         if (!Array.isArray(group.animeList)) throw new Error('Grup daftar anime tidak valid.');
         for (const anime of group.animeList) {
-            const slug = anime.animeId;
-            // IDs are URL segments, never arbitrary paths, external URLs, or XML.
-            if (typeof slug !== 'string' || !/^[a-z0-9][a-z0-9_-]*$/i.test(slug)) {
-                throw new Error('Daftar anime mengandung ID yang tidak valid.');
-            }
-            slugs.add(slug);
+            // Keep already encoded Unicode slugs canonical without double encoding.
+            slugs.add(normalizeSlug(anime.animeId));
         }
     }
     if (!slugs.size) throw new Error('Daftar anime kosong; sitemap lama dipertahankan.');
     if (slugs.size >= 50000) throw new Error('Sitemap perlu dibagi sebelum melebihi batas 50.000 URL.');
-    const urls = [SITE_URL, ...[...slugs].sort().map(slug => `${SITE_URL}anime/detail/${encodeURIComponent(slug)}`)];
+    const urls = [SITE_URL, ...[...slugs].sort().map(slug => `${SITE_URL}anime/detail/${slug}`)];
     return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`;
 }
 
@@ -41,7 +52,7 @@ export async function refreshSitemap({ fetchImpl = fetch, outputFile = sitemapFi
 
 export function createDetailShell(html) {
     return html
-        .replace(/<title>[\s\S]*?<\/title>/, '<title>Detail Anime | AniStream</title>')
+        .replace(/<title>[\s\S]*?<\/title>/, '<title>Detail Anime | Rafsanime</title>')
         .replace(/\s*<link\b[^>]*rel="canonical"[^>]*>/g, '')
         .replace(/\s*<script\b[^>]*id="website-structured-data"[^>]*>[\s\S]*?<\/script>/g, '')
         .replace(/\s*<meta\b[^>]*(?:name|property)="(?:description|og:title|og:description|og:url|twitter:title|twitter:description)"[^>]*>/g, '');

@@ -92,7 +92,7 @@ export default function HeaderMobileMenu({
                     }`}
             >
                 <p className={`px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                    Jelajahi AniStream
+                    Jelajahi Rafsanime
                 </p>
 
                 <nav aria-label="Navigasi utama seluler" className="flex flex-col gap-1">

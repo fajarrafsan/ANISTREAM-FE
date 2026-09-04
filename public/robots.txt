@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anistream.fajarrafsan.my.id/sitemap.xml
+Sitemap: https://rafsanime.fajarrafsan.my.id/sitemap.xml

@@ -1,4 +1,4 @@
-/** AniStream toast tokens — aligned with header / card premium theme */
+/** Rafsanime toast tokens — aligned with header / card premium theme */
 
 import { AlertCircle, AlertTriangle, CheckCircle, Info } from "lucide-react";
 

@@ -56,7 +56,7 @@ export default function CoverBanner({
                     <div className="relative z-10 flex flex-col items-center gap-2.5 select-none text-center px-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-[0.2em] bg-[#ff1e56]/10 border border-[#ff1e56]/30 text-[#ff1e56] backdrop-blur-md">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#ff1e56] animate-pulse" />
-                            <span>ANISTREAM CINEMA MEMBER LOUNGE</span>
+                            <span>RAFSANIME CINEMA MEMBER LOUNGE</span>
                         </div>
                         <h3 className={`font-display font-black text-lg sm:text-xl md:text-2xl tracking-tight uppercase ${isDark ? 'text-white/80' : 'text-slate-800'}`}>
                             Studio Personal Dashboard

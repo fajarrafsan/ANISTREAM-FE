@@ -195,7 +195,7 @@ export default function AnimeDetailsPage() {
                     }`}
             >
                 <p className="mb-2 tracking-wide leading-relaxed">
-                    &copy; 2026 AniStream. Didesain menggunakan standar streaming antarmuka modern.
+                    &copy; 2026 Rafsanime. Didesain menggunakan standar streaming antarmuka modern.
                 </p>
                 <p className={`text-[10px] leading-relaxed ${isDark ? "text-slate-700/80" : "text-slate-400/80"}`}>
                     Setiap aset gambar & data terintegrasi didukung oleh database publik.

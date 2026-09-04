@@ -9,7 +9,7 @@ export default function AuthModalFooter({ activeTab, onSwitch }) {
             }`}>
             <span className={`text-[11px] font-medium transition-colors duration-300 ${isDark ? "text-zinc-500" : "text-zinc-500"
                 }`}>
-                {activeTab === "login" ? "Baru di Anistream?" : "Sudah memiliki akun?"}
+                {activeTab === "login" ? "Baru di Rafsanime?" : "Sudah memiliki akun?"}
             </span>
 
             <button

@@ -6,7 +6,7 @@ import Footer from "./layout/footer/Footer";
 
 import HomePage from "./pages/home/HomePage";
 import UnauthorizedPage from "./pages/unauthorized/Unauthorizedpage";
-import AniStreamProfilePage from "./pages/AnimeStreamProfilePage";
+import RafsanimeProfilePage from "./pages/RafsanimeProfilePage";
 import AnimeDetailsPage from "./pages/AnimeDetailsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import BatchPage from "./pages/BatchPage";
@@ -115,7 +115,7 @@ function AppContent() {
                         path="/profile"
                         element={
                             <ProtectedRoute>
-                                <AniStreamProfilePage />
+                                <RafsanimeProfilePage />
                             </ProtectedRoute>
                         }
                     />

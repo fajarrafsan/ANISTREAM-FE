@@ -394,7 +394,7 @@ export default function DownloadSection({ formats }) {
                             isDark ? "text-slate-600" : "text-slate-400"
                         }`}
                     >
-                        AniStream Download Engine
+                        Rafsanime Download Engine
                     </span>
                 </div>
             </div>

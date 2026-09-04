@@ -27,7 +27,7 @@ function getRelativeTime(dateString) {
     return `${diffDays} hari lalu`;
 }
 
-export default function AniStreamProfilePage() {
+export default function RafsanimeProfilePage() {
     const { theme } = useTheme();
     const isDark = theme === "dark";
 
@@ -43,7 +43,6 @@ export default function AniStreamProfilePage() {
     const [mounted, setMounted] = useState(true);
 
     const revealGrid = useScrollReveal({ threshold: 0.1, once: true });
-    const revealWishlist = useScrollReveal({ threshold: 0.1, once: true });
 
     useEffect(() => {
         const t = setTimeout(() => setMounted(true), 60);
@@ -338,7 +337,7 @@ export default function AniStreamProfilePage() {
                                     </div>
 
                                     <h4 className="font-display font-black text-lg text-white mb-3">
-                                        AniStream Titanium Pass
+                                        Rafsanime Titanium Pass
                                     </h4>
 
                                     <ul className="space-y-2.5 text-xs text-slate-300 mb-5">

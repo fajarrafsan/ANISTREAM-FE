@@ -191,7 +191,7 @@ export default function MovieCatalogPage() {
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-[0.15em] bg-[#ff1e56]/15 border border-[#ff1e56]/30 text-[#ff1e56]">
                                         <span className="w-1.5 h-1.5 rounded-full bg-[#ff1e56] animate-pulse" />
-                                        <span>ANISTREAM ARCHIVE ENGINE</span>
+                                        <span>RAFSANIME ARCHIVE ENGINE</span>
                                     </span>
                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-mono font-bold uppercase bg-white/[0.04] border border-white/[0.08] text-slate-400">
                                         <i className="fa-solid fa-bolt text-[9px] text-amber-400" />

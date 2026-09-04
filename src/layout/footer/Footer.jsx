@@ -163,10 +163,10 @@ export default function Footer() {
                             type="button"
                             onClick={(e) => handleNavigation(e, "/")}
                             className="cursor-pointer group bg-transparent border-none p-0"
-                            aria-label="AniStream Beranda"
+                            aria-label="Rafsanime Beranda"
                         >
                             <span className={`font-display text-2xl sm:text-3xl tracking-[0.08em] uppercase transition-colors ${isDark ? "text-white" : "text-gray-900"}`}>
-                                Ani<span className="text-red-500 group-hover:text-red-400 transition-colors">Stream</span>
+                                Rafsa<span className="text-red-500 group-hover:text-red-400 transition-colors">nime</span>
                             </span>
                         </button>
                         <p className={`text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.25em] ${isDark ? "text-white/35" : "text-gray-500"}`}>
@@ -296,7 +296,7 @@ export default function Footer() {
                         </p>
                         <p className={`text-[10px] font-semibold tracking-wide ${isDark ? "text-white/25" : "text-gray-400"}`}>
                             © {currentYear}{" "}
-                            <span className={isDark ? "text-white/45" : "text-gray-500"}>AniStream</span>
+                            <span className={isDark ? "text-white/45" : "text-gray-500"}>Rafsanime</span>
                             {" · "}All rights reserved
                         </p>
                     </motion.div>
