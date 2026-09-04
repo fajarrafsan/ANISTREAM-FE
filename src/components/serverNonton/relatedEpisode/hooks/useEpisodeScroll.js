@@ -38,7 +38,8 @@ export default function useEpisodeScroll(episodes, effectiveEpisodeId) {
             if (!container) return;
             const activeCard = container.querySelector('[data-active="true"]');
             if (!activeCard) return;
-            activeCard.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+            const targetLeft = activeCard.offsetLeft - ((container.clientWidth - activeCard.clientWidth) / 2);
+            container.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
             setTimeout(checkScroll, 300);
         };
         const t1 = setTimeout(scrollToActive, 100);

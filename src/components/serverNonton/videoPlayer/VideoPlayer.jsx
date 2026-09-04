@@ -111,6 +111,15 @@ export default function VideoPlayer({
         }
     }, [isPlaying]);
 
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, []);
+
     // ── Helpers ───────────────────────────────────────────────────────
     const togglePlay = useCallback(() => {
         if (!videoRef.current) return;
@@ -270,7 +279,6 @@ export default function VideoPlayer({
                 tabIndex={0} // Memungkinkan kontainer menerima fokus keyboard untuk shortcut keydown
                 onKeyDown={handleKeyDown}
                 onMouseMove={handleMouseMove}
-                onFullScreenChange={() => setIsFullscreen(!!document.fullscreenElement)}
                 className={`relative w-full aspect-video max-h-[72vh] sm:max-h-[85vh] overflow-hidden group/player border-b outline-none focus:outline-none ${isDark
                     ? "bg-[#0a0305] border-[#2a1117]"
                     : "bg-white border-slate-200 shadow-sm"

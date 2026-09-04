@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import useEpisodeDetail from '../hooks/useEpisodeDetail';
 import useWatchHistory from '../hooks/useWatchHistory';
 import { api } from '../api/axios';
@@ -25,8 +25,6 @@ export default function VideoPlayerPage() {
     const normalizedEpisodeId = normalizeEpisodeId(episodeId);
     const { episode, loading, error, prevEpisode } = useEpisodeDetail();
     const { saveHistory, history } = useWatchHistory();
-
-    console.log("normalizedEpisodeId", normalizedEpisodeId);
 
     const [selectedServer, setSelectedServer] = useState(null);
     const [activeStreamUrl, setActiveStreamUrl] = useState(null);
@@ -181,8 +179,8 @@ export default function VideoPlayerPage() {
                 }`}
         >
             {/* ── TOP STICKY CINEMA NAVIGATION BAR ── */}
-            <header className={`sticky top-0 z-50 w-full backdrop-blur-2xl transition-colors duration-300 border-b ${isDark ? 'bg-[#070204]/90 border-white/5 shadow-2xl' : 'bg-white/95 border-slate-200 shadow-sm'}`}>
-                <div className="mx-auto max-w-[1440px] px-3 sm:px-4 md:px-6 h-14 flex items-center justify-between gap-2.5 sm:gap-3 select-none">
+            <header className={`sticky top-0 z-50 w-full border-b backdrop-blur-2xl transition-colors duration-300 ${isDark ? 'border-white/5 bg-[#070204]/90 shadow-2xl' : 'border-slate-200 bg-white/95 shadow-sm'}`}>
+                <div className="mx-auto flex h-14 max-w-[1280px] select-none items-center justify-between gap-1.5 px-2.5 sm:gap-3 sm:px-4 md:px-6">
                     {/* Left: Back to Detail Anime & Home & Breadcrumbs */}
                     <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
                         <motion.button
@@ -190,21 +188,20 @@ export default function VideoPlayerPage() {
                             whileTap={{ scale: 0.95 }}
                             onClick={handleBack}
                             aria-label="Kembali ke Detail Anime"
-                            className={`group flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl font-black text-[9px] sm:text-[11px] tracking-wider uppercase transition-all duration-200 cursor-pointer shrink-0 ${isDark
+                            className={`group flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl px-2 font-black text-[9px] uppercase tracking-wider transition-all duration-200 sm:gap-2 sm:px-3 sm:text-[11px] ${isDark
                                 ? "bg-white/[0.04] border border-white/10 text-slate-200 hover:text-white hover:bg-[#ff1e56] hover:border-[#ff1e56] hover:shadow-[0_0_15px_rgba(255,30,86,0.5)]"
                                 : "bg-slate-100 border border-slate-200 text-slate-700 hover:text-white hover:bg-[#ff1e56] hover:border-[#ff1e56]"
                                 }`}
                             title="Kembali ke halaman detail & daftar episode anime"
                         >
                             <i className="fa-solid fa-arrow-left text-[10px] sm:text-[11px] group-hover:-translate-x-1 transition-transform" />
-                            <span className="hidden xs:inline">Detail Anime</span>
-                            <span className="xs:hidden">Detail</span>
+                            <span className="hidden sm:inline">Detail Anime</span>
                         </motion.button>
 
                         <Link
                             to="/"
                             aria-label="Beranda"
-                            className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl border transition-all duration-200 shrink-0 ${isDark
+                            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 sm:flex ${isDark
                                 ? "bg-white/[0.02] border-white/5 text-slate-400 hover:text-white hover:bg-white/[0.08]"
                                 : "bg-white border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                                 }`}
@@ -240,7 +237,7 @@ export default function VideoPlayerPage() {
                     </div>
 
                     {/* Right Actions: Jump to Section, Prev/Next Ep, Theater Mode & Share */}
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <div className="flex shrink-0 items-center gap-1 sm:gap-2">
                         {/* Quick Jump Buttons (Unduh, Komentar) */}
                         <button
                             onClick={() => {
@@ -278,6 +275,7 @@ export default function VideoPlayerPage() {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => navigate(`/episode/${episode.prevEpisode.episodeId}`)}
+                                aria-label="Putar episode sebelumnya"
                                 className={`flex items-center gap-1 h-8 sm:h-9 px-2 sm:px-2.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${isDark
                                     ? "bg-white/[0.02] border-white/10 text-slate-300 hover:text-white hover:bg-white/[0.06]"
                                     : "bg-white border-slate-200 text-slate-700 hover:text-slate-900 shadow-sm"
@@ -295,10 +293,11 @@ export default function VideoPlayerPage() {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => navigate(`/episode/${episode.nextEpisode.episodeId}`)}
-                                className="flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl border border-white/20 text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-[#ff1e56] to-[#c4143a] text-white shadow-[0_0_12px_rgba(255,30,86,0.35)] cursor-pointer"
+                                aria-label="Putar episode selanjutnya"
+                                className="flex h-9 cursor-pointer items-center gap-1.5 rounded-xl border border-white/20 bg-gradient-to-r from-[#ff1e56] to-[#c4143a] px-2 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_0_12px_rgba(255,30,86,0.35)] sm:px-3"
                                 title="Putar Episode Selanjutnya"
                             >
-                                <span>Next</span>
+                                <span className="hidden sm:inline">Next</span>
                                 <i className="fa-solid fa-forward-step text-[10px]" />
                             </motion.button>
                         )}
@@ -308,7 +307,8 @@ export default function VideoPlayerPage() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setIsTheaterMode((prev) => !prev)}
-                            className={`flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl border text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${isTheaterMode
+                            aria-label={isTheaterMode ? "Matikan mode bioskop" : "Aktifkan mode bioskop"}
+                            className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border text-[10px] font-black uppercase tracking-wider transition-all duration-200 sm:w-auto sm:gap-1.5 sm:px-3 ${isTheaterMode
                                 ? "bg-amber-500/20 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
                                 : isDark
                                     ? "bg-white/[0.02] border-white/5 text-slate-400 hover:text-white hover:bg-white/[0.06]"
@@ -316,8 +316,8 @@ export default function VideoPlayerPage() {
                                 }`}
                             title={isTheaterMode ? "Matikan Mode Bioskop" : "Aktifkan Mode Bioskop"}
                         >
-                            <i className={`fa-solid ${isTheaterMode ? "fa-lightbulb text-amber-400" : "fa-lightbulb-slash"} text-[11px]`} />
-                            <span className="hidden xs:inline">{isTheaterMode ? "Bioskop ON" : "Bioskop"}</span>
+                            <i className={`fa-solid fa-lightbulb text-[11px] ${isTheaterMode ? "text-amber-400" : ""}`} />
+                            <span className="hidden sm:inline">{isTheaterMode ? "Bioskop ON" : "Bioskop"}</span>
                         </motion.button>
 
                         {/* Share Button */}
@@ -325,6 +325,7 @@ export default function VideoPlayerPage() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={handleCopyUrl}
+                            aria-label={isCopied ? "Tautan berhasil disalin" : "Salin tautan episode"}
                             className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl border transition-all duration-200 cursor-pointer ${isCopied
                                 ? "bg-emerald-500 border-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]"
                                 : isDark
@@ -341,7 +342,7 @@ export default function VideoPlayerPage() {
 
             {/* Server error banner */}
             {serverError && (
-                <div className={`mx-3 sm:mx-4 md:mx-auto md:max-w-[1440px] mt-3 rounded-lg text-xs py-2 px-4 border flex items-center justify-between gap-3 ${isDark ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-rose-50 border-rose-200 text-rose-600'
+                <div className={`mx-3 mt-3 flex items-center justify-between gap-3 rounded-xl border px-4 py-2 text-xs sm:mx-4 md:mx-auto md:max-w-[1280px] ${isDark ? 'border-red-500/30 bg-red-500/10 text-red-400' : 'border-rose-200 bg-rose-50 text-rose-600'
                     }`}>
                     <span>{serverError}</span>
                     <button
@@ -354,7 +355,7 @@ export default function VideoPlayerPage() {
             )}
 
             {/* ── CINEMA STAGE & VIDEO PLAYER CONTAINER ── */}
-            <div className={`relative mx-auto max-w-[1440px] px-3 sm:px-4 md:px-6 pt-3 sm:pt-4 md:pt-6 transition-all duration-500 ${isTheaterMode ? "scale-[1.01]" : ""}`}>
+            <div className={`relative mx-auto max-w-[1280px] px-3 pt-3 transition-all duration-500 sm:px-4 sm:pt-4 md:px-6 md:pt-6 ${isTheaterMode ? "scale-[1.01]" : ""}`}>
                 {/* Dynamic Ambilight Aura (Behind Video Player) */}
                 {isDark && (
                     <div
@@ -379,20 +380,20 @@ export default function VideoPlayerPage() {
                         <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-black uppercase tracking-widest">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#ff1e56] shadow-[0_0_8px_#ff1e56]" />
                             <span className={isDark ? "text-white font-black" : "text-slate-800 font-black"}>Cinema Studio</span>
-                            <span className="text-slate-600">•</span>
-                            <span>4K UHD Ready</span>
+                            <span className="hidden text-slate-600 sm:inline">•</span>
+                            <span className="hidden sm:inline">4K UHD Ready</span>
                             <span className="hidden sm:inline text-slate-600">•</span>
                             <span className="hidden sm:inline">Sub Indo</span>
                         </div>
 
                         <div className="flex items-center gap-2">
                             {selectedServer && (
-                                <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-bold text-emerald-400">
+                                <span className="inline-flex max-w-[92px] items-center gap-1 truncate text-[8px] font-bold text-emerald-400 sm:max-w-none sm:text-[9px]">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    {selectedServer.name}
+                                    <span className="truncate">{selectedServer.name}</span>
                                 </span>
                             )}
-                            <span className="text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">
+                            <span className="hidden rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[9px] font-black text-slate-400 sm:inline">
                                 60 FPS
                             </span>
                         </div>
@@ -416,18 +417,8 @@ export default function VideoPlayerPage() {
             </div>
 
             {/* ── INFO & RELATED CONTENT SECTION ── */}
-            <section className={`mx-auto max-w-[1440px] px-3 sm:px-4 md:px-6 py-4 sm:py-5 md:py-6 transition-colors duration-300 ${isDark ? 'text-white' : 'text-slate-900'
+            <section className={`mx-auto max-w-[1280px] px-3 py-4 transition-colors duration-300 sm:px-4 sm:py-5 md:px-6 md:py-6 ${isDark ? 'text-white' : 'text-slate-900'
                 }`}>
-                <RelatedEpisodes
-                    episodes={relatedEpisodes}
-                    currentEpisodeId={normalizedEpisodeId}
-                />
-
-                {episode && (
-                    <div className={`h-px bg-gradient-to-r my-5 sm:my-6 ${isDark ? 'from-[#2a1117]/60 via-[#2a1117]/30 to-transparent' : 'from-slate-200 via-slate-300/60 to-transparent'
-                        }`} />
-                )}
-
                 {episode && (
                     <EpisodeInfo
                         episode={episode}
@@ -435,6 +426,16 @@ export default function VideoPlayerPage() {
                         selectedServer={selectedServer}
                     />
                 )}
+
+                {episode && (
+                    <div className={`my-5 h-px bg-gradient-to-r sm:my-6 ${isDark ? 'from-[#2a1117]/60 via-[#2a1117]/30 to-transparent' : 'from-slate-200 via-slate-300/60 to-transparent'
+                        }`} />
+                )}
+
+                <RelatedEpisodes
+                    episodes={relatedEpisodes}
+                    currentEpisodeId={normalizedEpisodeId}
+                />
 
                 {effectiveEpisode?.movies?.length > 0 && (
                     <>
@@ -466,7 +467,7 @@ export default function VideoPlayerPage() {
                                         Diskusi & Komentar Penonton
                                     </h3>
                                     <p className={`text-[10px] sm:text-[11px] font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                        Bahas keseruan episode ini bersama komunitas AnimeStream
+                                        Bahas keseruan episode ini bersama komunitas Rafsanime
                                     </p>
                                 </div>
                             </div>

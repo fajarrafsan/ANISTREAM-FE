@@ -3,14 +3,12 @@ import { useTheme } from "../../../context/ThemeContext";
 
 export default function RelatedHeader({
     episodesCount = 0,
-    displayProgressNumber = 1,
     hasEpisodes = false,
     viewMode = "carousel",
     onViewModeChange,
     searchQuery = "",
     onSearchChange,
     onJumpToActive,
-    activeEpisodeNumber = null,
 }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
@@ -42,7 +40,8 @@ export default function RelatedHeader({
                                 isDark ? "text-white" : "text-slate-900"
                             }`}
                         >
-                            Episode Terkait & Daftar Putar
+                            <span className="sm:hidden">Daftar Episode</span>
+                            <span className="hidden sm:inline">Episode Terkait & Daftar Putar</span>
                         </h3>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#ff1e56]/10 border border-[#ff1e56]/30 text-[#ff1e56]">
                             {episodesCount} EP
@@ -115,7 +114,8 @@ export default function RelatedHeader({
                             title="Lompat ke episode yang sedang diputar"
                         >
                             <span className="w-1.5 h-1.5 rounded-full bg-[#ff1e56] animate-ping" />
-                            <span>Sedang Nonton</span>
+                            <span className="sm:hidden">Aktif</span>
+                            <span className="hidden sm:inline">Sedang Nonton</span>
                         </button>
                     )}
 

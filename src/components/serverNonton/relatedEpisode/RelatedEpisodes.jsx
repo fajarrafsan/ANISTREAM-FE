@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { useTheme } from "../../../context/ThemeContext";
 import RelatedHeader from "./RelatedHeader";
 import EpisodeCard from "./EpisodeCard";
-import EmptyState from "./EmptyState";
 import ScrollPaddles from "./ScrollPaddles";
 import useEpisodeScroll from "./hooks/useEpisodeScroll";
 import useActiveEpisode from "./hooks/useActiveEpisode";
@@ -18,13 +17,9 @@ export default function RelatedEpisodes({ episodes = [], currentEpisodeId }) {
 
     const [viewMode, setViewMode] = useState("carousel");
     const [searchQuery, setSearchQuery] = useState("");
-    const [hoveredIndex, setHoveredIndex] = useState(null);
-
-    const { activeIndex, isDescending, handleEpisodeClick } = useActiveEpisode(episodes, effectiveEpisodeId);
+    const { activeIndex, handleEpisodeClick } = useActiveEpisode(episodes, effectiveEpisodeId);
     const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useEpisodeScroll(episodes, effectiveEpisodeId);
 
-    const currentProgressIndex = hoveredIndex !== null ? hoveredIndex : activeIndex !== -1 ? activeIndex : 0;
-    const displayProgressNumber = isDescending ? episodes.length - currentProgressIndex : currentProgressIndex + 1;
     const hasEpisodes = episodes.length > 0;
 
     // Filter episodes by search query (e.g. number or title)
@@ -69,7 +64,6 @@ export default function RelatedEpisodes({ episodes = [], currentEpisodeId }) {
                 {/* Header Controls */}
                 <RelatedHeader
                     episodesCount={episodes.length}
-                    displayProgressNumber={displayProgressNumber}
                     hasEpisodes={hasEpisodes}
                     viewMode={viewMode}
                     onViewModeChange={setViewMode}
@@ -89,7 +83,6 @@ export default function RelatedEpisodes({ episodes = [], currentEpisodeId }) {
 
                         <div
                             ref={scrollRef}
-                            onMouseLeave={() => setHoveredIndex(null)}
                             className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide py-3 sm:py-4 px-2 sm:px-3"
                             style={{
                                 scrollbarWidth: "none",
@@ -110,7 +103,6 @@ export default function RelatedEpisodes({ episodes = [], currentEpisodeId }) {
                                                 index={originalIndex >= 0 ? originalIndex : index}
                                                 isActive={originalIndex === activeIndex}
                                                 handleEpisodeClick={handleEpisodeClick}
-                                                setHoveredIndex={setHoveredIndex}
                                                 isGrid={false}
                                             />
                                         </div>
@@ -137,7 +129,6 @@ export default function RelatedEpisodes({ episodes = [], currentEpisodeId }) {
                                             index={originalIndex >= 0 ? originalIndex : index}
                                             isActive={originalIndex === activeIndex}
                                             handleEpisodeClick={handleEpisodeClick}
-                                            setHoveredIndex={setHoveredIndex}
                                             isGrid={true}
                                         />
                                     );

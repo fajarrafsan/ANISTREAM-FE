@@ -129,7 +129,7 @@ export default function DownloadSection({ formats }) {
                         </div>
 
                         <div className="min-w-0">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <h3
                                     className={`font-display font-black text-sm sm:text-base tracking-tight uppercase leading-tight ${
                                         isDark ? "text-white" : "text-slate-900"

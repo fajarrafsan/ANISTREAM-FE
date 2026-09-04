@@ -155,18 +155,18 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
                     {/* Detail Serial Button */}
                     {animeId && (
                         <button
                             onClick={() => navigate(`/anime/detail/${animeId}`)}
-                            className={`group inline-flex items-center justify-center gap-2 font-black h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer border w-full sm:w-auto shadow-sm ${isDark
+                            className={`group col-span-2 inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 text-[10px] font-black uppercase tracking-wider shadow-sm transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 sm:h-11 sm:w-auto sm:px-5 sm:text-[11px] ${isDark
                                 ? "bg-white/[0.04] border-white/10 hover:border-[#ff1e56]/40 hover:bg-white/[0.08] text-slate-200 hover:text-white"
                                 : "bg-white border-slate-200 hover:border-rose-400 text-slate-700 hover:text-slate-900"
                                 }`}
                         >
                             <i className="fa-solid fa-layer-group text-[10px] text-[#ff1e56] group-hover:scale-110 transition-transform" />
-                            <span>Semua Episode & Detail</span>
+                            <span><span className="sm:hidden">Detail Anime</span><span className="hidden sm:inline">Semua Episode & Detail</span></span>
                         </button>
                     )}
 
@@ -174,15 +174,15 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                     {episode?.hasNextEpisode && episode?.nextEpisode ? (
                         <button
                             onClick={() => navigate(`/episode/${episode.nextEpisode.episodeId}`)}
-                            className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#ff1e56] via-[#e11d48] to-[#be123c] text-white font-black h-10 sm:h-11 px-4 sm:px-6 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 shadow-[0_4px_16px_rgba(255,30,86,0.35)] hover:shadow-[0_6px_25px_rgba(255,30,86,0.55)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer w-full sm:w-auto border border-white/20"
+                        className="group col-span-2 inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/20 bg-gradient-to-r from-[#ff1e56] via-[#e11d48] to-[#be123c] px-4 text-[10px] font-black uppercase tracking-wider text-white shadow-[0_4px_16px_rgba(255,30,86,0.35)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_25px_rgba(255,30,86,0.55)] active:translate-y-0 active:scale-95 sm:h-11 sm:w-auto sm:px-6 sm:text-[11px]"
                         >
-                            <span>Episode selanjutnya</span>
+                            <span><span className="sm:hidden">Episode berikutnya</span><span className="hidden sm:inline">Episode selanjutnya</span></span>
                             <i className="fa-solid fa-forward text-[9px] transition-transform group-hover:translate-x-1" />
                         </button>
                     ) : (
                         <button
                             disabled
-                            className={`inline-flex items-center justify-center gap-2 font-bold h-10 sm:h-11 px-4 sm:px-6 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase cursor-not-allowed border w-full sm:w-auto ${isDark
+                            className={`col-span-2 inline-flex h-10 w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border px-4 text-[10px] font-bold uppercase tracking-wider sm:h-11 sm:w-auto sm:px-6 sm:text-[11px] ${isDark
                                 ? "bg-[#170a0e] border-[#2d1219] text-slate-600"
                                 : "bg-slate-100 border-slate-200 text-slate-400"
                                 }`}
@@ -196,13 +196,13 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                     {episode?.hasPrevEpisode && episode?.prevEpisode && (
                         <button
                             onClick={() => navigate(`/episode/${episode.prevEpisode.episodeId}`)}
-                            className={`group inline-flex items-center justify-center gap-2 font-black h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer border w-full sm:w-auto ${isDark
+                            className={`group inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 text-[9px] font-black uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 sm:h-11 sm:w-auto sm:px-5 sm:text-[11px] ${isDark
                                 ? "bg-white/[0.03] border-white/10 hover:border-[#ff1e56]/30 text-slate-300 hover:text-white hover:bg-white/[0.06]"
                                 : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900 shadow-sm"
                                 }`}
                         >
                             <i className="fa-solid fa-backward text-[9px] transition-transform group-hover:-translate-x-1" />
-                            <span>Episode sebelumnya</span>
+                            <span><span className="sm:hidden">Sebelumnya</span><span className="hidden sm:inline">Episode sebelumnya</span></span>
                         </button>
                     )}
 
@@ -210,7 +210,7 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                     <button
                         onClick={handleWishlistClick}
                         disabled={wishlistLoading}
-                        className={`group inline-flex items-center justify-center gap-2 font-black h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border w-full sm:w-auto ${isBookmarked
+                        className={`group inline-flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 text-[9px] font-black uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 sm:h-11 sm:w-auto sm:px-5 sm:text-[11px] ${isBookmarked
                             ? isDark
                                 ? "bg-[#ff1e56]/15 border-[#ff1e56]/40 text-[#ff1e56] shadow-[0_0_15px_rgba(255,30,86,0.25)]"
                                 : "bg-rose-50 border-rose-300 text-rose-600"
@@ -235,7 +235,7 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                             const el = document.getElementById("download-section");
                             if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                         }}
-                        className={`group inline-flex items-center justify-center gap-1.5 font-bold h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border w-full sm:w-auto ${isDark
+                        className={`group inline-flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border px-3 text-[9px] font-bold uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 sm:h-11 sm:w-auto sm:px-4 sm:text-[11px] ${isDark
                             ? "bg-white/[0.02] border-white/[0.08] hover:border-[#ff1e56]/30 text-slate-400 hover:text-white"
                             : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900"
                             }`}
@@ -251,7 +251,7 @@ export default function EpisodeInfo({ episode, animeTitle, selectedServer }) {
                             const el = document.getElementById("comments-section");
                             if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                         }}
-                        className={`group inline-flex items-center justify-center gap-1.5 font-bold h-10 sm:h-11 px-3.5 sm:px-4 rounded-xl text-[10px] sm:text-[11px] tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer border w-full sm:w-auto ${isDark
+                        className={`group inline-flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border px-3 text-[9px] font-bold uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 sm:h-11 sm:w-auto sm:px-4 sm:text-[11px] ${isDark
                             ? "bg-white/[0.02] border-white/[0.08] hover:border-[#ff1e56]/30 text-slate-400 hover:text-white"
                             : "bg-white border-slate-200 hover:border-rose-300 text-slate-600 hover:text-slate-900"
                             }`}

@@ -143,7 +143,7 @@ export default function ServerSelector({
 
                             {s.resolution !== "unknown" && (
                                 <span
-                                    className={`hidden sm:inline-flex text-[9px] font-black px-1.5 py-0.5 rounded-md shrink-0 ${isActive
+                                    className={`inline-flex shrink-0 rounded-md px-1.5 py-0.5 text-[8px] font-black sm:text-[9px] ${isActive
                                             ? isDark
                                                 ? "bg-[#ff1e56]/20 text-[#ff1e56]"
                                                 : "bg-rose-100 text-[#ff1e56]"
@@ -239,9 +239,9 @@ export default function ServerSelector({
                         }`}
                 >
                     <i className="fa-solid fa-circle-check text-[10px] text-[#ff1e56]/50 mt-0.5" />
-                    <p className={`text-[10px] leading-relaxed font-medium ${isDark ? "text-slate-700" : "text-slate-600"}`}>
+                    <p className={`text-[10px] font-medium leading-relaxed ${isDark ? "text-slate-500" : "text-slate-600"}`}>
                         Aktif:{" "}
-                        <span className={isDark ? "text-slate-500" : "text-slate-500"}>
+                        <span className={isDark ? "text-slate-300" : "text-slate-700"}>
                             {selectedServer.resolution} — {selectedServer.name}
                         </span>
                     </p>

@@ -13,7 +13,7 @@ export default function ScrollPaddles({ canScrollLeft, canScrollRight, onScroll 
             {canScrollLeft && (
                 <button
                     onClick={() => onScroll(-1)}
-                    className={`absolute left-1 sm:left-2 top-[44%] -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border backdrop-blur-md transition-all duration-300 hover:scale-115 active:scale-95 cursor-pointer opacity-100 lg:opacity-0 lg:group-hover/section:opacity-100 ${buttonClass}`}
+                    className={`absolute left-2 top-[44%] z-30 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border opacity-100 backdrop-blur-md transition-all duration-300 hover:scale-115 active:scale-95 sm:flex lg:opacity-0 lg:group-hover/section:opacity-100 ${buttonClass}`}
                     aria-label="Scroll ke kiri"
                 >
                     <i className="fa-solid fa-chevron-left text-[11px] sm:text-xs font-black -translate-x-0.5" />
@@ -23,7 +23,7 @@ export default function ScrollPaddles({ canScrollLeft, canScrollRight, onScroll 
             {canScrollRight && (
                 <button
                     onClick={() => onScroll(1)}
-                    className={`absolute right-1 sm:right-2 top-[44%] -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border backdrop-blur-md transition-all duration-300 hover:scale-115 active:scale-95 cursor-pointer opacity-100 lg:opacity-0 lg:group-hover/section:opacity-100 ${buttonClass}`}
+                    className={`absolute right-2 top-[44%] z-30 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border opacity-100 backdrop-blur-md transition-all duration-300 hover:scale-115 active:scale-95 sm:flex lg:opacity-0 lg:group-hover/section:opacity-100 ${buttonClass}`}
                     aria-label="Scroll ke kanan"
                 >
                     <i className="fa-solid fa-chevron-right text-[11px] sm:text-xs font-black translate-x-0.5" />
