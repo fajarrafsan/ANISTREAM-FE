@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validate } from "../../../../validations/validate";
 import useRegister from "../../../../hooks/useRegister";
 import useLogin from "../../../../hooks/useLogin";
@@ -18,11 +18,17 @@ export default function useAuthForm(activeTab, onSuccess, onChange) {
     const [showConfirm, setShowConfirm] = useState(false);
     const [isErrorVisible, setIsErrorVisible] = useState(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const hasMountedRef = useRef(false);
 
     const loading = registerLoading || loginLoading;
     const currentError = submitError || (activeTab === "register" ? registerError : loginError);
 
     useEffect(() => {
+        if (!hasMountedRef.current) {
+            hasMountedRef.current = true;
+            return undefined;
+        }
+
         setIsTransitioning(true);
         const timer = setTimeout(() => {
 
@@ -89,7 +95,6 @@ export default function useAuthForm(activeTab, onSuccess, onChange) {
             }
         } catch (error) {
             const errorMsg = error.response?.data?.errors || error.message || "Terjadi kesalahan";
-            console.log(error.response.data);
             setSubmitError(errorMsg);
             setIsErrorVisible(true);
             toast.error(errorMsg, 3000);

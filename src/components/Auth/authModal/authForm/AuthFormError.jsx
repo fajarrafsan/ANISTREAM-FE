@@ -4,24 +4,25 @@ export default function AuthFormError({ error, isVisible, isDark, onClose }) {
     if (!error || !isVisible) return null;
 
     return (
-        <div className="transition-all duration-300 ease-out">
-            <div className={`px-3 py-2.5 rounded-xl border flex items-start gap-2.5 backdrop-blur-sm transition-all ${isDark
-                ? "bg-red-950/10 border-red-500/20 shadow-lg shadow-red-950/10"
-                : "bg-red-50/50 border-red-200/50 shadow-sm shadow-red-100/30"
+        <div role="alert" aria-live="polite">
+            <div className={`flex items-start gap-3 rounded-xl border px-3.5 py-3 ${isDark
+                ? "border-red-500/20 bg-red-500/[0.07]"
+                : "border-red-200 bg-red-50"
                 }`}>
-                <AlertCircle className={`w-4 h-4 shrink-0 mt-0.5 ${isDark ? "text-red-400" : "text-red-500"}`} />
+                <AlertCircle className={`mt-0.5 size-4 shrink-0 ${isDark ? "text-red-400" : "text-red-600"}`} aria-hidden="true" />
                 <div className="flex-1 min-w-0">
-                    <p className={`text-[11px] font-semibold leading-none ${isDark ? "text-red-400" : "text-red-600"}`}>
-                        Oops, Ada Kesalahan
+                    <p className={`text-xs font-bold ${isDark ? "text-red-300" : "text-red-700"}`}>
+                        Tidak dapat melanjutkan
                     </p>
-                    <p className={`text-[10px] mt-1 leading-relaxed ${isDark ? "text-red-400/80" : "text-red-600/80"}`}>
+                    <p className={`mt-1 text-[11px] leading-relaxed ${isDark ? "text-red-300/80" : "text-red-700/80"}`}>
                         {error}
                     </p>
                 </div>
                 <button
                     type="button"
                     onClick={onClose}
-                    className={`shrink-0 p-1 rounded-md transition-colors ${isDark
+                    aria-label="Tutup pesan kesalahan"
+                    className={`shrink-0 rounded-md p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 ${isDark
                         ? "hover:bg-red-500/10 text-red-400/50 hover:text-red-400"
                         : "hover:bg-red-100 text-red-500/50 hover:text-red-600"
                         }`}

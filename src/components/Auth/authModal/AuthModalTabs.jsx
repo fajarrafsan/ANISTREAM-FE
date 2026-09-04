@@ -6,18 +6,20 @@ export default function AuthModalTabs({ activeTab, onChange }) {
 
     return (
         <div
-            className={`aml-layer-1 flex mb-6 rounded-2xl p-1.5 border transition-all duration-300 relative ${
+            role="tablist"
+            aria-label="Pilih mode autentikasi"
+            className={`relative mb-6 flex rounded-2xl border p-1 ${
                 isDark
-                    ? "bg-zinc-900/40 border-zinc-800/80 shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
-                    : "bg-zinc-100/80 border-zinc-200/60 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]"
+                    ? "border-white/[0.08] bg-white/[0.04]"
+                    : "border-zinc-200 bg-zinc-100/80"
             }`}
         >
-            {/* Sliding background indicator */}
             <div
-                className={`absolute top-1.5 bottom-1.5 left-1.5 w-[calc(50%-6px)] rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] border ${
+                aria-hidden="true"
+                className={`absolute bottom-1 left-1 top-1 w-[calc(50%-4px)] rounded-xl border transition-transform duration-300 ease-out ${
                     isDark
-                        ? "bg-zinc-800/90 border-zinc-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
-                        : "bg-white border-zinc-200/80 shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
+                        ? "border-white/10 bg-white/[0.08] shadow-[0_8px_20px_rgba(0,0,0,0.18)]"
+                        : "border-zinc-200 bg-white shadow-sm"
                 }`}
                 style={{
                     transform: activeTab === "login" ? "translateX(0)" : "translateX(100%)",
@@ -32,27 +34,29 @@ export default function AuthModalTabs({ activeTab, onChange }) {
                 return (
                     <button
                         key={tab.id}
+                        id={`auth-${tab.id}-tab`}
                         type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        aria-controls="auth-form-panel"
                         onClick={() => onChange(tab.id)}
-                        className={`flex-1 py-2.5 text-xs font-semibold tracking-wide rounded-xl transition-all duration-300 relative z-10 focus:outline-none flex items-center justify-center gap-1.5 active:scale-[0.97] ${
+                        className={`relative z-10 flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl text-xs font-bold tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 ${
                             isActive
                                 ? isDark
-                                    ? "text-zinc-100"
-                                    : "text-zinc-900"
+                                    ? "text-white"
+                                    : "text-zinc-950"
                                 : isDark
-                                    ? "text-zinc-550 hover:text-zinc-300 hover:bg-zinc-800/20"
-                                    : "text-zinc-500 hover:text-zinc-850 hover:bg-zinc-200/30"
+                                    ? "text-zinc-500 hover:text-zinc-300"
+                                    : "text-zinc-500 hover:text-zinc-800"
                         }`}
                     >
-                        {/* Dot Indicator Merah Minimalis untuk Tab Aktif */}
                         <span
-                            className={`w-1.5 h-1.5 rounded-full bg-red-500 transition-all duration-500 ${
-                                isActive ? "opacity-100 scale-100" : "opacity-0 scale-0 w-0 h-0"
+                            aria-hidden="true"
+                            className={`size-1.5 rounded-full bg-red-500 transition-all ${
+                                isActive ? "scale-100 opacity-100" : "scale-0 opacity-0"
                             }`}
                         />
-                        <span className="transition-all duration-300">
-                            {tab.label}
-                        </span>
+                        {tab.label}
                     </button>
                 );
             })}

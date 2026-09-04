@@ -1,254 +1,168 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Check, Play, ShieldCheck, Sparkles, X } from "lucide-react";
+import { createPortal } from "react-dom";
 import { useTheme } from "../../../context/ThemeContext";
-import { useAuthModal } from "../../../context/AuthModalContext";
+
+const focusableSelector = [
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "a[href]",
+    "[tabindex]:not([tabindex='-1'])",
+].join(",");
 
 export default function AuthModalLayout({ isOpen, onClose, children }) {
     const { theme } = useTheme();
     const isDark = theme === "dark";
-    const { closeModal } = useAuthModal();
-
+    const dialogRef = useRef(null);
+    const previousFocusRef = useRef(null);
+    const [shouldRender, setShouldRender] = useState(isOpen);
     const [isVisible, setIsVisible] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
-    const [tilt, setTilt] = useState({ x: 0, y: 0 });
-    const cardRef = useRef(null);
-    const isTilting = useRef(false);
 
-    const handleMouseMove = useCallback((e) => {
-        if (!cardRef.current || !isTilting.current) return;
-        const rect = cardRef.current.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dx = (e.clientX - cx) / rect.width;
-        const dy = (e.clientY - cy) / rect.height;
-        setTilt({ x: dy * -8, y: dx * 8 });
-    }, []);
-
-    const handleMouseEnter = useCallback(() => { isTilting.current = true; }, []);
-    const handleMouseLeave = useCallback(() => {
-        isTilting.current = false;
-        setTilt({ x: 0, y: 0 });
-    }, []);
-
-    const handleClose = () => {
-        setIsClosing(true);
-        closeModal();
-        onClose?.();
-    };
-
-    useEffect(() => {
-        const handler = (e) => { if (e.key === "Escape") handleClose(); };
-        if (isOpen) window.addEventListener("keydown", handler);
-        return () => window.removeEventListener("keydown", handler);
-    }, [isOpen]);
+    const handleClose = useCallback(() => onClose?.(), [onClose]);
 
     useEffect(() => {
         if (isOpen) {
-            setIsClosing(false);
-            requestAnimationFrame(() => setIsVisible(true));
-        } else {
-            setIsVisible(false);
+            setShouldRender(true);
+            const frame = requestAnimationFrame(() => setIsVisible(true));
+            return () => cancelAnimationFrame(frame);
         }
+
+        setIsVisible(false);
+        const timer = window.setTimeout(() => setShouldRender(false), 240);
+        return () => window.clearTimeout(timer);
     }, [isOpen]);
 
     useEffect(() => {
-        if (!isOpen && isVisible === false) {
-            const timer = setTimeout(() => setIsClosing(false), 500);
-            return () => clearTimeout(timer);
-        }
-    }, [isOpen, isVisible]);
+        if (!isOpen) return undefined;
 
-    const isHidden = !isOpen && !isClosing;
+        previousFocusRef.current = document.activeElement;
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
 
-    return (
+        const focusTimer = window.setTimeout(() => {
+            dialogRef.current?.querySelector("input, button")?.focus();
+        }, 100);
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                handleClose();
+                return;
+            }
+
+            if (event.key !== "Tab" || !dialogRef.current) return;
+            const focusableElements = [...dialogRef.current.querySelectorAll(focusableSelector)];
+            if (!focusableElements.length) return;
+
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements.at(-1);
+            if (event.shiftKey && document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement.focus();
+            } else if (!event.shiftKey && document.activeElement === lastElement) {
+                event.preventDefault();
+                firstElement.focus();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.clearTimeout(focusTimer);
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener("keydown", handleKeyDown);
+            previousFocusRef.current?.focus?.();
+        };
+    }, [handleClose, isOpen]);
+
+    if (!shouldRender) return null;
+
+    return createPortal(
         <div
-            className="fixed inset-0 z-99999 flex items-center justify-center p-3"
-            style={{
-                visibility: isHidden ? "hidden" : "visible",
-                pointerEvents: isHidden ? "none" : "auto",
-            }}
+            className={`aml-root fixed inset-0 z-99999 flex items-center justify-center p-3 sm:p-6 ${isVisible ? "is-visible" : ""}`}
         >
-            {/* Backdrop */}
             <div
-                className={`absolute inset-0 transition-all duration-500 ease-out ${isVisible ? "opacity-100 backdrop-blur-xl" : "opacity-0 backdrop-blur-0"}`}
-                style={{
-                    backgroundColor: isVisible
-                        ? (isDark ? "rgba(0,0,0,0.88)" : "rgba(0,0,0,0.65)")
-                        : "rgba(0,0,0,0)",
-                }}
-                onClick={handleClose}
+                className="aml-backdrop absolute inset-0 bg-zinc-950/75 backdrop-blur-md"
+                aria-hidden="true"
+                onMouseDown={handleClose}
             />
 
-            {/* 3D Perspective Wrapper */}
-            <div className="aml-perspective w-full max-w-[320px] flex items-center justify-center">
-            {/* Modal Container */}
-            <div
-                ref={cardRef}
-                onMouseMove={handleMouseMove}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                className={`aml-3d-card relative w-full max-w-[320px] max-h-[85vh] rounded-2xl border overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+            <section
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="auth-modal-title"
+                aria-describedby="auth-modal-description"
+                className={`aml-dialog relative grid w-full max-w-[900px] overflow-hidden rounded-[26px] border shadow-2xl md:grid-cols-[0.9fr_1.1fr] ${
                     isDark
-                        ? "bg-[#09090b] border-zinc-800/80 shadow-[0_0_0_1px_rgba(255,255,255,0.02)_inset]"
-                        : "bg-white border-gray-200/60 shadow-[0_0_0_1px_rgba(0,0,0,0.02)_inset]"
-                } ${isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-[0.92] translate-y-8"}`}
-                style={{
-                    transform: isVisible
-                        ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
-                        : "rotateX(0) rotateY(0)",
-                    boxShadow: isVisible
-                        ? (isDark
-                            ? `0 0 0 1px rgba(255,255,255,0.03), 0 30px 60px -15px rgba(0,0,0,0.9), 0 0 60px -10px rgba(239,68,68,0.06), ${tilt.y * -2}px ${tilt.x * 2}px 40px -10px rgba(239,68,68,0.08)`
-                            : `0 0 0 1px rgba(0,0,0,0.03), 0 30px 60px -15px rgba(0,0,0,0.12), 0 0 40px -10px rgba(239,68,68,0.04), ${tilt.y * -2}px ${tilt.x * 2}px 30px -10px rgba(239,68,68,0.05)`)
-                        : (isDark
-                            ? "0 4px 6px -1px rgba(0,0,0,0.1)"
-                            : "0 4px 6px -1px rgba(0,0,0,0.05)"),
-                    transition: isTilting.current
-                        ? "box-shadow 0.3s ease"
-                        : "all 0.5s cubic-bezier(0.25,1,0.5,1)",
-                }}
+                        ? "border-white/10 bg-[#0d0d10] shadow-black/60"
+                        : "border-zinc-200 bg-white shadow-zinc-950/20"
+                }`}
             >
-                {/* Inner Glow */}
-                {isVisible && (
-                    <div
-                        className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.15]"
-                        style={{
-                            background: isDark
-                                ? "radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.3) 0%, transparent 60%)"
-                                : "radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.06) 0%, transparent 60%)",
-                            zIndex: 0,
-                        }}
-                    />
-                )}
-
-                {/* Gradient Border */}
-                {isVisible && (
-                    <div
-                        className="absolute inset-0 rounded-2xl pointer-events-none"
-                        style={{
-                            padding: "1px",
-                            background: isDark
-                                ? "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(239,68,68,0.08) 30%, rgba(255,255,255,0.02) 70%, rgba(239,68,68,0.06) 100%)"
-                                : "linear-gradient(135deg, rgba(0,0,0,0.06) 0%, rgba(239,68,68,0.04) 30%, rgba(0,0,0,0.02) 70%, rgba(239,68,68,0.03) 100%)",
-                            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                            maskComposite: "exclude",
-                            WebkitMaskComposite: "xor",
-                            animation: isDark
-                                ? "aml-borderPulse 3s ease-in-out infinite"
-                                : "aml-borderPulseLight 3s ease-in-out infinite",
-                            zIndex: 10,
-                        }}
-                    />
-                )}
-
-                {/* Close Button */}
                 <button
+                    type="button"
                     onClick={handleClose}
-                    className={`absolute top-3 right-3 p-2 rounded-full z-10 transition-all duration-300 ${
+                    aria-label="Tutup modal autentikasi"
+                    className={`absolute right-3 top-3 z-30 flex size-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 sm:right-4 sm:top-4 ${
                         isDark
-                            ? "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 hover:shadow-lg hover:shadow-black/20"
-                            : "text-gray-400 hover:text-red-600 hover:bg-red-50/60 hover:shadow-md hover:shadow-red-200/20"
-                    } ${isVisible ? "opacity-100 scale-100 rotate-0" : "opacity-0 scale-50 rotate-180"}`}
-                    style={{
-                        transitionTimingFunction: isVisible
-                            ? "cubic-bezier(0.34, 1.56, 0.64, 1)"
-                            : "cubic-bezier(0.4, 0, 1, 1)",
-                        transitionDelay: isVisible ? "200ms" : "0ms",
-                    }}
-                    aria-label="Close modal"
+                            ? "border-white/10 bg-white/[0.06] text-zinc-300 hover:bg-white/10 hover:text-white"
+                            : "border-zinc-200 bg-white/90 text-zinc-500 shadow-sm hover:bg-zinc-100 hover:text-zinc-900"
+                    }`}
                 >
-                    <X className="w-4 h-4" />
+                    <X className="size-[18px]" aria-hidden="true" />
                 </button>
 
-                {/* Top Shine */}
-                {isVisible && (
-                    <div
-                        className="absolute top-0 left-0 right-0 pointer-events-none"
-                        style={{
-                            height: "2px",
-                            background: isDark
-                                ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)"
-                                : "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%)",
-                            animation: isDark
-                                ? "aml-topShineDark 3s ease-in-out infinite"
-                                : "aml-topShineLight 3s ease-in-out infinite",
-                            boxShadow: isDark
-                                ? "0 0 15px rgba(255,255,255,0.05)"
-                                : "0 0 20px rgba(255,255,255,0.4)",
-                            zIndex: 20,
-                        }}
-                    />
-                )}
+                <aside className="aml-brand-panel relative hidden min-h-[610px] overflow-hidden bg-[#151519] p-9 text-white md:flex md:flex-col md:justify-between lg:p-11">
+                    <div className="aml-grid-pattern absolute inset-0 opacity-60" aria-hidden="true" />
+                    <div className="absolute -left-24 top-16 size-64 rounded-full bg-red-600/20 blur-[80px]" aria-hidden="true" />
+                    <div className="absolute -bottom-24 right-0 size-72 rounded-full bg-rose-500/10 blur-[90px]" aria-hidden="true" />
 
-                {/* 3D Floating Orb Behind Content */}
-                {isVisible && (
-                    <div
-                        className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full pointer-events-none z-1"
-                        style={{
-                            background: isDark
-                                ? "radial-gradient(circle, rgba(239,68,68,0.12) 0%, transparent 70%)"
-                                : "radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%)",
-                            animation: "aml-glowPulse 4s ease-in-out infinite",
-                            transform: `translateZ(-20px)`,
-                        }}
-                    />
-                )}
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-3">
+                            <span className="flex size-11 items-center justify-center rounded-2xl bg-red-600 shadow-[0_12px_30px_rgba(220,38,38,0.35)]">
+                                <Play className="size-[18px] translate-x-px fill-white" aria-hidden="true" />
+                            </span>
+                            <span className="text-xl font-black tracking-[-0.04em]">
+                                Rafsa<span className="text-red-500">nime</span>
+                            </span>
+                        </div>
 
-                {/* Content */}
-                <div className="p-5 pt-8 overflow-y-auto flex-1 aml-scrollbar-hide relative z-5 overscroll-contain aml-layer-2">
-                    <div
-                        className={`transition-all duration-500 ${
-                            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-                        }`}
-                        style={{
-                            transitionTimingFunction: isVisible
-                                ? "cubic-bezier(0.34, 1.56, 0.64, 1)"
-                                : "cubic-bezier(0.4, 0, 1, 1)",
-                            transitionDelay: isVisible ? "150ms" : "50ms",
-                        }}
-                    >
-                        {children}
+                        <div className="mt-16 max-w-xs">
+                            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-300">
+                                <Sparkles className="size-3 text-red-400" aria-hidden="true" />
+                                Ruang tontonanmu
+                            </div>
+                            <p className="text-4xl font-black leading-[1.08] tracking-[-0.05em]">
+                                Satu akun.<br />Semua cerita.
+                            </p>
+                            <p className="mt-5 text-[13px] leading-6 text-zinc-400">
+                                Simpan favorit, lanjutkan episode, dan nikmati pengalaman menonton yang terasa personal.
+                            </p>
+                        </div>
                     </div>
+
+                    <div className="relative z-10 space-y-3">
+                        {["Koleksi tersimpan rapi", "Akses cepat di semua perangkat"].map((item) => (
+                            <div key={item} className="flex items-center gap-3 text-xs font-medium text-zinc-300">
+                                <span className="flex size-6 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10 text-red-400">
+                                    <Check className="size-3.5" strokeWidth={2.4} aria-hidden="true" />
+                                </span>
+                                {item}
+                            </div>
+                        ))}
+                        <div className="mt-6 flex items-center gap-2 border-t border-white/[0.08] pt-5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                            <ShieldCheck className="size-4 text-zinc-400" aria-hidden="true" />
+                            Akses aman dan terlindungi
+                        </div>
+                    </div>
+                </aside>
+
+                <div className={`aml-content max-h-[calc(100dvh-24px)] overflow-y-auto px-4 py-6 sm:px-8 sm:py-8 md:max-h-[calc(100dvh-48px)] lg:px-11 lg:py-10 ${
+                    isDark ? "bg-[#0d0d10]" : "bg-white"
+                }`}>
+                    {children}
                 </div>
-
-                {/* Bottom Shine */}
-                {isVisible && (
-                    <div
-                        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-                        style={{
-                            height: "2px",
-                            background: isDark
-                                ? "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)"
-                                : "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.08) 50%, transparent 100%)",
-                            animation: isDark
-                                ? "aml-bottomShineDark 3s ease-in-out infinite"
-                                : "aml-bottomShineLight 3s ease-in-out infinite",
-                            zIndex: 20,
-                        }}
-                    />
-                )}
-
-                {/* Sweep Shine */}
-                {isVisible && (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden z-1">
-                        <div
-                            style={{
-                                position: "absolute",
-                                top: "-50%",
-                                left: "-50%",
-                                width: "200%",
-                                height: "200%",
-                                background: isDark
-                                    ? "linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.03) 50%, transparent 55%)"
-                                    : "linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.2) 50%, transparent 55%)",
-                                animation: "aml-sweepShine 5s cubic-bezier(0.25, 1, 0.5, 1) infinite",
-                            }}
-                        />
-                    </div>
-                )}
-            </div>
-            </div>
-        </div>
+            </section>
+        </div>,
+        document.body,
     );
 }

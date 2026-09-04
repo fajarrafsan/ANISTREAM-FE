@@ -20,15 +20,15 @@ export default function AuthModal() {
     const switchTab = () => setActiveTab((prev) => (prev === "login" ? "register" : "login"));
 
     const handleSuccess = (userData) => {
-        console.log("MASUK SINI JUGA")
+        const redirectAction = getRedirectAction();
         login(userData);
         closeModal();
-        getRedirectAction()?.();
+        redirectAction?.();
     };
 
     return (
         <AuthModalLayout isOpen={isOpen} onClose={closeModal}>
-            <AuthModalHeader />
+            <AuthModalHeader activeTab={activeTab} />
             <AuthModalTabs activeTab={activeTab} onChange={setActiveTab} />
             <AuthForm activeTab={activeTab} onSuccess={handleSuccess} onChange={setActiveTab} />
             <SocialLogin />
