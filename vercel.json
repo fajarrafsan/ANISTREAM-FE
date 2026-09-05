@@ -16,7 +16,7 @@
   ],
   "headers": [
     {
-      "source": "/:section(profile|catalog|schedule|batch|episode|reset-password|403|unauthorized)/:path*",
+      "source": "/:section(profile|search|catalog|schedule|batch|episode|reset-password|403|unauthorized)/:path*",
       "headers": [
         {
           "key": "X-Robots-Tag",

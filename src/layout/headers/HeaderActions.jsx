@@ -68,8 +68,13 @@ export default function HeaderActions({
             return;
         }
 
-        triggerSearch(q);
-    }, [searchQuery, searchLoading, isLoggedIn, toast, openModal, triggerSearch]);
+        // Enter membuka halaman hasil; modal hanya untuk pratinjau saat mengetik.
+        // Lewat URL agar hasil bisa di-bookmark, dibagikan, dan tombol kembali
+        // browser berperilaku seperti yang diharapkan.
+        handleCloseSearch();
+        setMobileSearchOpen(false);
+        navigate(`/search?q=${encodeURIComponent(q)}`);
+    }, [searchQuery, searchLoading, isLoggedIn, toast, openModal, navigate, handleCloseSearch, setMobileSearchOpen]);
 
     const handleLocalKeyDown = useCallback((e) => {
         if (e.key === "Enter") {

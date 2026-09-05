@@ -25,6 +25,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import VideoPlayerPage from "./pages/VideoPlayerPage";
 import MovieCatalogPage from "./pages/MovieKatalogPage";
 import WeeklySchedulePage from "./pages/WeeklySchedulePage";
+import SearchPage from "./pages/SearchPage";
 
 export default function App() {
     return (
@@ -116,6 +117,15 @@ function AppContent() {
                         element={
                             <ProtectedRoute>
                                 <RafsanimeProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/search"
+                        element={
+                            <ProtectedRoute>
+                                <SearchPage />
                             </ProtectedRoute>
                         }
                     />
