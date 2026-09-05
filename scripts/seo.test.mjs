@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, writeFile, unlink, rmdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildSitemap, refreshSitemap, createDetailShell, SITE_URL } from './seo.mjs';
+import { buildSitemap, refreshSitemap, createDetailShell, createDetailPage, animeFromSitemap, isPrerenderableSlug, collectAnime, SITE_URL } from './seo.mjs';
 
 test('sitemap uses real IDs, deduplicates, and includes only public detail routes', () => {
     const xml = buildSitemap({ success: true, data: [{ animeList: [
@@ -74,4 +74,53 @@ test('primary SEO signals use the Rafsanime domain and preserve the old-domain r
         destination: 'https://rafsanime.fajarrafsan.my.id/:path*',
         permanent: true,
     });
+});
+
+test('each prerendered detail page carries its own title, description and canonical', async () => {
+    const index = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+    const one = createDetailPage(index, { slug: 'one-piece', title: 'One Piece' });
+    const two = createDetailPage(index, { slug: 'naruto', title: 'Naruto' });
+
+    assert(one.includes('<title>One Piece Sub Indo'));
+    assert(one.includes(`<link rel="canonical" href="${SITE_URL}anime/detail/one-piece" />`));
+    assert(one.includes('name="description" content="Nonton One Piece'));
+    assert(one.includes(`"@type":"TVSeries"`));
+    // Judul duplikat adalah cacat yang diperbaiki ini, jadi dijaga eksplisit.
+    assert.notEqual(one.match(/<title>[^<]*<\/title>/)[0], two.match(/<title>[^<]*<\/title>/)[0]);
+    assert(!one.includes('Detail Anime | Rafsanime'));
+    assert(one.includes('src="/src/main.jsx"'));
+
+    // Tanpa judul dari API, slug tetap menghasilkan judul yang terbaca.
+    assert(createDetailPage(index, { slug: 'black-torch', title: '' }).includes('<title>black torch Sub Indo'));
+    // Kutip di judul tidak boleh memutus atribut meta.
+    assert(createDetailPage(index, { slug: 'x', title: 'A "B" & C' }).includes('&quot;B&quot; &amp; C'));
+});
+
+test('only filesystem-safe slugs are prerendered, the rest keep the shell', () => {
+    for (const slug of ['one-piece', 'naruto', 'classroom-of-the-elite-season-4']) {
+        assert(isPrerenderableSlug(slug), slug);
+    }
+    for (const slug of ['ranma-%C2%BD-2024', '..', 'a/b', '-lead', 'a b', '']) {
+        assert(!isPrerenderableSlug(slug), slug);
+    }
+});
+
+test('a saved sitemap still yields the slug list when the API is down', () => {
+    const xml = buildSitemap({ success: true, data: [{ animeList: [
+        { title: 'One Piece', animeId: 'one-piece' },
+        { title: 'Naruto', animeId: 'naruto' },
+    ] }] });
+    const anime = animeFromSitemap(xml);
+    assert.deepEqual([...anime.keys()].sort(), ['naruto', 'one-piece']);
+    // Beranda bukan halaman detail dan tidak boleh ikut terbawa.
+    assert(!anime.has(''));
+});
+
+test('collectAnime keeps the first title for a duplicated slug', () => {
+    const anime = collectAnime({ success: true, data: [{ animeList: [
+        { title: 'One Piece', animeId: 'one-piece' },
+        { title: 'One Piece (dup)', animeId: 'one-piece' },
+    ] }] });
+    assert.equal(anime.size, 1);
+    assert.equal(anime.get('one-piece'), 'One Piece');
 });

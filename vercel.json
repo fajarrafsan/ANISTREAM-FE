@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
   "redirects": [
     {
       "source": "/:path*",
@@ -27,7 +28,7 @@
   "rewrites": [
     {
       "source": "/anime/detail/:slug",
-      "destination": "/anime-detail.html"
+      "destination": "/anime-detail"
     },
     {
       "source": "/(.*)",
